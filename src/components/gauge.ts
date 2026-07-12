@@ -140,7 +140,7 @@ export class ExtendedGauge extends LitElement {
   @property({ type: String }) public needleStyle: NeedleStyle = "default";
   @property({ type: String }) public needleIcon?: string;
   @property({ type: Boolean }) public needleIconKeepVertical = false;
-  @property({ type: Number }) public needleIconSize = 1;
+  @property({ type: Number }) public needleIconSize = 2;
   @property({ type: String }) public needleIconColor?: string;
   @property({ type: String }) public needleIconBackgroundColor?: string;
   @property({ type: Boolean }) public animation = true;
@@ -313,8 +313,8 @@ export class ExtendedGauge extends LitElement {
           // Use <ha-icon> inside a <foreignObject> for all icon packs (MDI and custom).
           // HA's <ha-icon> element resolves any registered icon set, so no icon-pack-specific
           // parsing is needed here.
-          // needleIconSize is a multiplier: 1 = default (scale 0.12), 2 = double, etc.
-          const scale = 0.12 * (this.needleIconSize || 2);
+          // needleIconSize is a multiplier: 2 = default, 1 = smaller, 3 = larger, etc.
+          const scale = 0.12 * this.needleIconSize;
           const iconSize = 24 * scale;
           // foreignObject side length – give a little extra room so the icon isn't clipped.
           const foSize = iconSize * 2;
@@ -348,7 +348,7 @@ export class ExtendedGauge extends LitElement {
             `;
           } else {
             // Rotate the icon with the gauge bearing (icon follows the arc direction).
-            const iconX = -43 - foSize / 2;
+            const iconX = -40 - foSize / 2;
             return svg`
               <g
                 class="needle needle-icon ${animClass}"
