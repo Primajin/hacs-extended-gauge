@@ -79,6 +79,20 @@ export class ExtendedGaugeUiEditor extends ConfigFramework {
           }
         }
         break;
+      // Needle settings page
+      case "main":
+        switch (sectionName) {
+          case "needle": {
+            // When background color toggle is turned off, remove the color from config
+            if (!sectionConfigData?.needle_icon_background_color_enabled) {
+              sectionConfigData = { ...sectionConfigData };
+              delete sectionConfigData.needle_icon_background_color;
+            }
+            pageConfigData[sectionName] = sectionConfigData;
+            break;
+          }
+        }
+        break;
     }
     return pageConfigData;
   }

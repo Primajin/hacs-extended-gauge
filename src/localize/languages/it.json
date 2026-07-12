@@ -23,6 +23,7 @@
       "needle_icon_keep_vertical": "Mantieni icona verticale",
       "needle_icon_size": "Moltiplicatore dimensione icona",
       "needle_icon_color": "Colore dell'icona",
+      "needle_icon_background_color_enabled": "Mostra colore di sfondo dell'icona",
       "needle_icon_background_color": "Colore di sfondo dell'icona",
       "add_segment": "Aggiungi segmento",
       "edit_segment": "Modifica segmento",

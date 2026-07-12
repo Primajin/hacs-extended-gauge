@@ -23,6 +23,7 @@
     "needle_icon_keep_vertical": "Keep icon vertical",
     "needle_icon_size": "Icon size multiplier",
     "needle_icon_color": "Icon color",
+    "needle_icon_background_color_enabled": "Show icon background color",
     "needle_icon_background_color": "Icon background color",
     "add_segment": "Add segment",
     "edit_segment": "Edit segment",

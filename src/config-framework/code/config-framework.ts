@@ -444,9 +444,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
         <ha-form
           .hass=${this.hass}
           .schema=${section.conditionalSchemaField
-            ? section.schema(
-                configData ? configData[section.conditionalSchemaField] : ""
-              )
+            ? section.schema(configData)
             : section.schema}
           .data=${configData}
           .computeLabel=${this.computeLabelCallback}
@@ -480,9 +478,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
       <ha-form
         .hass=${this.hass}
         .schema=${section.conditionalSchemaField
-          ? section.schema(
-              configData ? configData[section.conditionalSchemaField] : ""
-            )
+          ? section.schema(configData)
           : section.schema}
         .data=${configData}
         .computeLabel=${this.computeLabelCallback}

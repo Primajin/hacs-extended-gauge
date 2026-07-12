@@ -23,6 +23,7 @@
     "needle_icon_keep_vertical": "Symbol vertikal halten",
     "needle_icon_size": "Symbol-Grössenmultiplikator",
     "needle_icon_color": "Symbol-Farbe",
+    "needle_icon_background_color_enabled": "Symbol-Hintergrundfarbe anzeigen",
     "needle_icon_background_color": "Symbol-Hintergrundfarbe",
     "add_segment": "Segment hinzufügen",
     "edit_segment": "Segment bearbeiten",
