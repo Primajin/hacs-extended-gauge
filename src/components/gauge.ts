@@ -13,10 +13,11 @@ import {
   normalizeValue,
   getValueInPercentage,
   getAngle,
+  isMdiIcon,
 } from "../utils/gauge-math";
 
 // Re-export for consumers that import directly from this file.
-export { mdiIconToPath, normalizeValue, getValueInPercentage, getAngle };
+export { mdiIconToPath, isMdiIcon, normalizeValue, getValueInPercentage, getAngle };
 
 /*****************************************************************************************************************************/
 /* Purpose: Interface for demo timer management
@@ -308,26 +309,26 @@ export class ExtendedGauge extends LitElement {
             d="M -34,-3 L -40,-1 A 1,1,0,0,0,-40,1 L -34,3 A 2,2,0,0,0,-34,-3 Z"
             style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
           </path>
-          <circle class="needle-pivot" cx="0" cy="0" r="3"></circle>
         `;
       case "icon":
         if (this.needleIcon) {
-          // Resolve the MDI icon name to SVG path data
-          const iconPathData = mdiIconToPath(this.needleIcon);
-          if (iconPathData) {
-            // MDI icons have a 24x24 viewbox. Scale to fit within the gauge.
-            // needleIconSize is a multiplier: 1 = default (scale 0.12), 2 = double, etc.
-            const scale = 0.12 * (this.needleIconSize || 1);
-            const iconSize = 24 * scale;
-            const iconColor =
-              this.needleIconColor ?? "var(--primary-text-color)";
-            const bgColor = this.needleIconBackgroundColor;
-            // Background circle radius slightly larger than half the icon diagonal
-            const bgRadius = iconSize * 0.75;
+          // For MDI icons, resolve the SVG path data from @mdi/js for inline SVG rendering.
+          // For non-MDI icons (e.g. "hacs:hacs"), use a foreignObject containing <ha-icon>
+          // so that HA's own icon resolution handles custom icon packs.
+          const isMdi = isMdiIcon(this.needleIcon);
+          const iconPathData = isMdi ? mdiIconToPath(this.needleIcon) : undefined;
+          // needleIconSize is a multiplier: 1 = default (scale 0.12), 2 = double, etc.
+          const scale = 0.12 * (this.needleIconSize || 2);
+          const iconSize = 24 * scale;
+          const iconColor =
+            this.needleIconColor ?? "var(--primary-text-color)";
+          const bgColor = this.needleIconBackgroundColor;
+          // Background circle radius slightly larger than half the icon diagonal
+          const bgRadius = iconSize * 0.75;
+
+          if (isMdi && iconPathData) {
+            // Inline SVG path rendering for MDI icons
             if (this.needleIconKeepVertical) {
-              // Move icon to the arc position but keep it vertical (no rotation).
-              // The angle convention is consistent: cos(θ) and sin(θ) give the same
-              // arc positions as CSS rotate(θdeg) applied to a left-pointing element.
               const iconAngleRad = (this._valueAngle * Math.PI) / 180;
               const cx = -40 * Math.cos(iconAngleRad);
               const cy = -40 * Math.sin(iconAngleRad);
@@ -349,7 +350,6 @@ export class ExtendedGauge extends LitElement {
                 </g>
               `;
             } else {
-              // Rotate icon with the gauge bearing (icon follows the arc direction)
               const iconX = -43 - iconSize;
               const iconY = -iconSize / 2;
               return svg`
@@ -371,6 +371,58 @@ export class ExtendedGauge extends LitElement {
                     class="needle-icon-path"
                     style=${styleMap({ fill: iconColor })}>
                   </path>
+                </g>
+              `;
+            }
+          } else {
+            // Non-MDI icon: use foreignObject to embed <ha-icon> so HA resolves custom icon packs
+            const foSize = iconSize * 2;
+            if (this.needleIconKeepVertical) {
+              const iconAngleRad = (this._valueAngle * Math.PI) / 180;
+              const cx = -40 * Math.cos(iconAngleRad);
+              const cy = -40 * Math.sin(iconAngleRad);
+              return svg`
+                <g class="needle needle-icon ${animClass}">
+                  ${
+                    bgColor
+                      ? svg`<circle cx=${cx} cy=${cy} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
+                      : ``
+                  }
+                  <foreignObject
+                    x=${cx - foSize / 2}
+                    y=${cy - foSize / 2}
+                    width=${foSize}
+                    height=${foSize}>
+                    <ha-icon
+                      icon=${this.needleIcon}
+                      style="width:${foSize}px;height:${foSize}px;color:${iconColor};display:block;">
+                    </ha-icon>
+                  </foreignObject>
+                </g>
+              `;
+            } else {
+              const iconX = -43 - foSize / 2;
+              return svg`
+                <g
+                  class="needle needle-icon ${animClass}"
+                  style=${styleMap({
+                    transform: `rotate(${this._valueAngle}deg)`,
+                  })}>
+                  ${
+                    bgColor
+                      ? svg`<circle cx=${iconX + foSize / 2} cy=${0} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
+                      : ``
+                  }
+                  <foreignObject
+                    x=${iconX}
+                    y=${-foSize / 2}
+                    width=${foSize}
+                    height=${foSize}>
+                    <ha-icon
+                      icon=${this.needleIcon}
+                      style="width:${foSize}px;height:${foSize}px;color:${iconColor};display:block;">
+                    </ha-icon>
+                  </foreignObject>
                 </g>
               `;
             }
@@ -403,9 +455,10 @@ export class ExtendedGauge extends LitElement {
             gaugeValueColor = segment.color;
         });
     }
-    // showDial controls the value fill arc; defaults true. When needle is shown
-    // the background arc uses gaugeInfoColor, when dial is also shown it overlays the value fill.
-    const dialVisible = this.showDial || !this.showNeedle;
+    // showDial controls the value fill arc. When needle is not shown, the dial
+    // is always visible (it is the primary indicator). When the needle is shown,
+    // showDial determines whether the value fill arc is also rendered.
+    const dialVisible = !this.showNeedle || this.showDial;
     return html`
       <div class="gauge-container">
       <svg viewBox="-50 -50 130 55" class="gauge">
@@ -601,7 +654,6 @@ export class ExtendedGauge extends LitElement {
       stroke: var(--card-background-color);
       stroke-width: 1;
       stroke-linecap: round;
-      opacity: 0.8;
     }
 
     .needle-pivot {

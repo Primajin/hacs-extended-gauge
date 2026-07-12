@@ -8,6 +8,10 @@ import * as mdiIcons from "@mdi/js";
 /* Purpose: Convert an MDI icon name (e.g. "mdi:arrow-up-bold") to its SVG path data string using @mdi/js
 /* History: 12-JUL-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
+export function isMdiIcon(iconName: string): boolean {
+  return iconName?.startsWith("mdi:");
+}
+
 export function mdiIconToPath(iconName: string): string | undefined {
   if (!iconName || !iconName.startsWith("mdi:")) return undefined;
   const kebab = iconName.slice(4); // strip "mdi:"

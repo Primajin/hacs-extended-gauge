@@ -27,6 +27,7 @@ export function getDefaultConfig(_hass: HomeAssistant): object {
     color_value: normalColor,
     color_background: backgroundColor,
     show_needle: true,
+    show_dial: true,
     show_entity_name: true,
     show_min_max_values: true,
     show_segment_labels: true,
