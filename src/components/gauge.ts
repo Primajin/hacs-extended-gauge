@@ -14,6 +14,24 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit-element";
 import { NeedleStyle } from "../config-framework/data/config-data";
+import * as mdiIcons from "@mdi/js";
+
+
+/*****************************************************************************************************************************/
+/* Purpose: Convert an MDI icon name (e.g. "mdi:arrow-up-bold") to its SVG path data string using @mdi/js
+/* History: 12-JUL-2025 D.Geisenhoff   Created
+/*****************************************************************************************************************************/
+function mdiIconToPath(iconName: string): string | undefined
+{
+  if (!iconName || !iconName.startsWith("mdi:"))
+    return undefined;
+  const kebab = iconName.slice(4); // strip "mdi:"
+  const camel = "mdi" + kebab
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join("");
+  return (mdiIcons as Record<string, string>)[camel];
+}
 
 
 /*****************************************************************************************************************************/
@@ -352,42 +370,46 @@ export class ExtendedGauge extends LitElement
       case "icon":
         if (this.needleIcon)
         {
-          // MDI icons have a 24x24 viewbox. Scale to fit within the gauge.
-          const scale = 0.12;
-          const iconSize = 24 * scale; // = 2.88 in SVG units
-          if (this.needleIconKeepVertical)
+          // Resolve the MDI icon name to SVG path data
+          const iconPathData = mdiIconToPath(this.needleIcon);
+          if (iconPathData)
           {
-            // Move icon to the arc position but keep it vertical (no rotation)
-            const iconAngleRad = (this._valueAngle * Math.PI) / 180;
-            const iconX = -40 * Math.cos(iconAngleRad) - iconSize / 2;
-            const iconY = -40 * Math.sin(iconAngleRad) - iconSize / 2;
-            return svg`
-              <g class="needle needle-icon ${animClass}">
-                <path
-                  d=${this.needleIcon}
-                  transform="translate(${iconX}, ${iconY}) scale(${scale})"
-                  class="needle-icon-path">
-                </path>
-              </g>
-            `;
-          }
-          else
-          {
-            // Rotate icon with the gauge bearing (icon follows the arc direction)
-            return svg`
-              <g
-                class="needle needle-icon ${animClass}"
-                style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
-                <path
-                  d=${this.needleIcon}
-                  transform="translate(${-43 - iconSize}, ${-iconSize / 2}) scale(${scale})"
-                  class="needle-icon-path">
-                </path>
-              </g>
-            `;
+            // MDI icons have a 24x24 viewbox. Scale to fit within the gauge.
+            const scale = 0.12;
+            const iconSize = 24 * scale; // = 2.88 in SVG units
+            if (this.needleIconKeepVertical)
+            {
+              // Move icon to the arc position but keep it vertical (no rotation)
+              const iconAngleRad = (this._valueAngle * Math.PI) / 180;
+              const iconX = -40 * Math.cos(iconAngleRad) - iconSize / 2;
+              const iconY = -40 * Math.sin(iconAngleRad) - iconSize / 2;
+              return svg`
+                <g class="needle needle-icon ${animClass}">
+                  <path
+                    d=${iconPathData}
+                    transform="translate(${iconX}, ${iconY}) scale(${scale})"
+                    class="needle-icon-path">
+                  </path>
+                </g>
+              `;
+            }
+            else
+            {
+              // Rotate icon with the gauge bearing (icon follows the arc direction)
+              return svg`
+                <g
+                  class="needle needle-icon ${animClass}"
+                  style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
+                  <path
+                    d=${iconPathData}
+                    transform="translate(${-43 - iconSize}, ${-iconSize / 2}) scale(${scale})"
+                    class="needle-icon-path">
+                  </path>
+                </g>
+              `;
+            }
           }
         }
-        // Fallback to default if no icon provided
         return svg`
           <path
             class="needle ${animClass}"
