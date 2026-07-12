@@ -65,7 +65,7 @@ function e(e,t,i,n){var s,o=arguments.length,r=o<3?t:null===n?n=Object.getOwnPro
                   </ha-icon>
                 </foreignObject>
               </g>
-            `}}return this._renderDefaultNeedle(t);default:return this._renderDefaultNeedle(t)}}render(){this._normalizeSegments();const e=Object.assign({},this.formatOptions);e.thousandSeparator="";let t=this.gaugeInfoColor;this.segments&&!this.showNeedle&&this.segments.sort(((e,t)=>e.lower-t.lower)).map((e=>{this.value>=e.lower&&this.value<=e.upper&&(t=e.color)}));const i=!this.showNeedle||this.showDial;return R`
+            `}}return this._renderDefaultNeedle(t);default:return this._renderDefaultNeedle(t)}}render(){this._normalizeSegments();const e=Object.assign({},this.formatOptions);e.thousandSeparator="";let t=this.gaugeInfoColor;this.segments&&!this.showNeedle&&this.segments.sort(((e,t)=>e.lower-t.lower)).map((e=>{this.value>=e.lower&&this.value<=e.upper&&(t=e.color)}));const i=this.showDial;return R`
       <div class="gauge-container">
       <svg viewBox="-50 -50 130 55" class="gauge">
       <g transform="translate(15 5)">
@@ -95,8 +95,8 @@ function e(e,t,i,n){var s,o=arguments.length,r=o<3?t:null===n?n=Object.getOwnPro
             `:""}
           ${this.showNeedle?this._renderNeedle():""}
       ${this._updated=!0}
-      </svg>
       </g>
+      </svg>
       <svg class="text">
         <text class="center">
           <tspan class="value-text">
@@ -273,7 +273,7 @@ function e(e,t,i,n){var s,o=arguments.length,r=o<3?t:null===n?n=Object.getOwnPro
             .valueLabel="${(null===(n=D.main)||void 0===n?void 0:n.show_entity_name)?(null===(s=D.entity)||void 0===s?void 0:s.settings)&&(null===(r=null===(o=D.entity)||void 0===o?void 0:o.settings)||void 0===r?void 0:r.name)?null===(a=null===(l=D.entity)||void 0===l?void 0:l.settings)||void 0===a?void 0:a.name:null===(d=D.entity)||void 0===d?void 0:d.entity:void 0}"
             .unitOfMeasure=${null!==(h=null===(u=null===(c=D.entity)||void 0===c?void 0:c.settings)||void 0===u?void 0:u.unit_of_measurement)&&void 0!==h?h:""}
             .showNeedle=${null===(m=D.main)||void 0===m?void 0:m.show_needle}
-            .showDial=${null!==(_=null===(p=D.main)||void 0===p?void 0:p.show_dial)&&void 0!==_&&_}
+            .showDial=${null===(_=null===(p=D.main)||void 0===p?void 0:p.show_dial)||void 0===_||_}
             .needleStyle=${null!==(f=null===(v=null===(g=D.main)||void 0===g?void 0:g.needle)||void 0===v?void 0:v.needle_style)&&void 0!==f?f:"default"}
             .needleIcon=${null===(b=null===(y=D.main)||void 0===y?void 0:y.needle)||void 0===b?void 0:b.needle_icon}
             .needleIconKeepVertical=${null!==(x=null===(w=null===($=D.main)||void 0===$?void 0:$.needle)||void 0===w?void 0:w.needle_icon_keep_vertical)&&void 0!==x&&x}

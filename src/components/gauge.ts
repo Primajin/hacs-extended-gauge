@@ -403,10 +403,7 @@ export class ExtendedGauge extends LitElement {
             gaugeValueColor = segment.color;
         });
     }
-    // showDial controls the value fill arc. When needle is not shown, the dial
-    // is always visible (it is the primary indicator). When the needle is shown,
-    // showDial determines whether the value fill arc is also rendered.
-    const dialVisible = !this.showNeedle || this.showDial;
+    const dialVisible = this.showDial;
     return html`
       <div class="gauge-container">
       <svg viewBox="-50 -50 130 55" class="gauge">
@@ -470,8 +467,8 @@ export class ExtendedGauge extends LitElement {
           }
           ${this.showNeedle ? this._renderNeedle() : ``}
       ${(this._updated = true)}
-      </svg>
       </g>
+      </svg>
       <svg class="text">
         <text class="center">
           <tspan class="value-text">
