@@ -25,9 +25,6 @@
 #Python
 __pycache__
 
-#Github
-.github
-
 #Debug files
 dist
 node_modules
