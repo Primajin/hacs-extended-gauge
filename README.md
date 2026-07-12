@@ -31,6 +31,22 @@ The Extended Gauge Card is inspired by the Home Assistant Gauge Card but offers 
 <br />
 <br />
 
+## Visual examples
+
+### Needle styles
+
+| Default needle | Original HA needle | Icon needle (rotates) | Icon needle (vertical) |
+|:-:|:-:|:-:|:-:|
+| ![Default needle](assets/preview-needle-default.svg) | ![Original HA needle](assets/preview-needle-old.svg) | ![Icon needle rotating](assets/preview-needle-icon-rotate.svg) | ![Icon needle vertical](assets/preview-needle-icon-vertical.svg) |
+
+### Segments and display options
+
+| Segments + needle | Segment threshold labels | Custom range | No needle (dial mode) |
+|:-:|:-:|:-:|:-:|
+| ![Segments and needle](assets/preview-segments-needle.svg) | ![Segment labels](assets/preview-segments-labels.svg) | ![Custom range](assets/preview-custom-range.svg) | ![No needle](assets/preview-no-needle.svg) |
+
+<br />
+
 ## Installation
 
 ### HACS (recommended)

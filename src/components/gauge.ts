@@ -14,24 +14,10 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit-element";
 import { NeedleStyle } from "../config-framework/data/config-data";
-import * as mdiIcons from "@mdi/js";
+import { mdiIconToPath, normalizeValue, getValueInPercentage, getAngle } from "../utils/gauge-math";
 
-
-/*****************************************************************************************************************************/
-/* Purpose: Convert an MDI icon name (e.g. "mdi:arrow-up-bold") to its SVG path data string using @mdi/js
-/* History: 12-JUL-2025 D.Geisenhoff   Created
-/*****************************************************************************************************************************/
-function mdiIconToPath(iconName: string): string | undefined
-{
-  if (!iconName || !iconName.startsWith("mdi:"))
-    return undefined;
-  const kebab = iconName.slice(4); // strip "mdi:"
-  const camel = "mdi" + kebab
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join("");
-  return (mdiIcons as Record<string, string>)[camel];
-}
+// Re-export for consumers that import directly from this file.
+export { mdiIconToPath, normalizeValue, getValueInPercentage, getAngle };
 
 
 /*****************************************************************************************************************************/
@@ -221,44 +207,24 @@ export class ExtendedGauge extends LitElement
   /* Purpose: Keep value in range of defined min and max
   /* History: 24-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
-  private _normalizeValue = (value: number, min: number, max: number): number => 
-  {
-    if (isNaN(value) || isNaN(min) || isNaN(max)) 
-    {
-      // Not a number, return 0
-      return 0;
-    }
-    if (value > max) return max;
-    if (value < min) return min;
-    return value;
-  };
+  private _normalizeValue = (value: number, min: number, max: number): number =>
+    normalizeValue(value, min, max);
 
 
   /*****************************************************************************************************************************/
   /* Purpose: Get percentage of value
   /* History: 04-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
-  private _getValueInPercentage = (
-    value: number,
-    min: number,
-    max: number
-  ): number => 
-  {
-    const newMax = max - min;
-    const newVal = value - min;
-    return (100 * newVal) / newMax;
-  };
+  private _getValueInPercentage = (value: number, min: number, max: number): number =>
+    getValueInPercentage(value, min, max);
 
 
   /*****************************************************************************************************************************/
   /* Purpose: Compute angle in a percentage of 180° depending on value
   /* History: 04-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
-  private _getAngle = (value: number, min: number, max: number) => 
-  {
-    const percentage = this._getValueInPercentage(this._normalizeValue(value, min, max), min, max);
-    return (percentage * 180) / 100;
-  };
+  private _getAngle = (value: number, min: number, max: number) =>
+    getAngle(value, min, max);
     
  
   /*****************************************************************************************************************************/
