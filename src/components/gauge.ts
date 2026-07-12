@@ -314,13 +314,13 @@ export class ExtendedGauge extends LitElement {
           // HA's <ha-icon> element resolves any registered icon set, so no icon-pack-specific
           // parsing is needed here.
           // needleIconSize is a multiplier: 1 = default, 0.5 = half, 2 = double, etc.
-          // Base size of 10 SVG units at size=1 gives a clearly visible icon on the arc.
-          const iconSize = 10 * this.needleIconSize;
-          // foreignObject side length – a little extra room so the icon isn't clipped.
-          const foSize = iconSize * 1.5;
+          // Base foreignObject size of 14 SVG units at size=1 (arc radius is 40 units).
+          // ha-icon is sized 100%/100% of the foreignObject so it scales correctly with
+          // the card width regardless of CSS pixel density.
+          const foSize = 14 * this.needleIconSize;
           const iconColor = this.needleIconColor ?? "var(--primary-text-color)";
           const bgColor = this.needleIconBackgroundColor;
-          const bgRadius = iconSize * 0.6;
+          const bgRadius = foSize * 0.5;
 
           if (this.needleIconKeepVertical) {
             // Position the icon on the arc but keep it upright (no rotation).
@@ -341,7 +341,7 @@ export class ExtendedGauge extends LitElement {
                   height=${foSize}>
                   <ha-icon
                     icon=${this.needleIcon}
-                    style="width:${iconSize}px;height:${iconSize}px;color:${iconColor};display:block;margin:auto;">
+                    style="width:100%;height:100%;color:${iconColor};display:block;">
                   </ha-icon>
                 </foreignObject>
               </g>
@@ -369,7 +369,7 @@ export class ExtendedGauge extends LitElement {
                   height=${foSize}>
                   <ha-icon
                     icon=${this.needleIcon}
-                    style="width:${iconSize}px;height:${iconSize}px;color:${iconColor};display:block;margin:auto;">
+                    style="width:100%;height:100%;color:${iconColor};display:block;">
                   </ha-icon>
                 </foreignObject>
               </g>

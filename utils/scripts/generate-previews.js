@@ -155,17 +155,21 @@ function svgWrap(innerContent, extraRootContent) {
 </svg>`;
 }
 
-/** Icon needle that stays vertical; icon positioned on the arc at the given angle. */
+/**
+ * Icon needle that stays vertical; icon positioned on the arc at the given angle.
+ * Matches gauge.ts: foSize = 14 * sizeMult, bgRadius = foSize * 0.5.
+ * The MDI path is on a 24×24 viewBox; scale = foSize/24 maps it into SVG units.
+ */
 function iconNeedleVertical(angleDeg, iconPath, iconColor, bgColor, sizeMult) {
-  sizeMult = sizeMult || 1.5;
-  const scale    = 0.12 * sizeMult;
-  const iconSize = 24 * scale;
-  const bgR      = r2(iconSize * 0.75);
+  sizeMult = sizeMult || 1;
+  const foSize   = 14 * sizeMult;           // foreignObject side length in SVG units
+  const scale    = r2(foSize / 24);         // map 24×24 MDI viewBox → foSize × foSize
+  const bgR      = r2(foSize * 0.5);
   const a        = toRad(angleDeg);
   const icx      = r2(-R * Math.cos(a));
   const icy      = r2(-R * Math.sin(a));
-  const ix       = r2(icx - iconSize / 2);
-  const iy       = r2(icy - iconSize / 2);
+  const ix       = r2(icx - foSize / 2);
+  const iy       = r2(icy - foSize / 2);
   const bg       = bgColor ? `<circle cx="${icx}" cy="${icy}" r="${bgR}" fill="${bgColor}" opacity="0.9"/>` : '';
   return `${bg}<path d="${iconPath}" transform="translate(${ix}, ${iy}) scale(${scale})" fill="${iconColor}"/>`;
 }
@@ -214,30 +218,32 @@ function previewNeedleOldMid() {
 }
 
 function previewNeedleIconRotate() {
-  // Chevron icon rotated with gauge (size=2× default)
-  const scale    = 0.24;          // 0.12 × 2
-  const iconSize = 24 * scale;    // 5.76 SVG units
-  const iconX    = r2(-43 - iconSize);
-  const iconY    = r2(-iconSize / 2);
-  const bgR      = r2(iconSize * 0.75);
-  const bgCX     = r2(iconX + iconSize / 2);
+  // Chevron icon rotated with gauge (sizeMult=1 default)
+  // Matches gauge.ts: foSize = 14 * sizeMult, iconX = -40 - foSize/2
+  const foSize = 14;                      // 14 SVG units at sizeMult=1
+  const scale  = r2(foSize / 24);         // map 24×24 MDI viewBox → foSize × foSize
+  const iconX  = r2(-40 - foSize / 2);    // -47 SVG units
+  const iconY  = r2(-foSize / 2);
+  const bgR    = r2(foSize * 0.5);
+  const bgCX   = r2(iconX + foSize / 2);  // -40 (arc tip)
   // mdi:chevron-down approximate path (24×24 viewBox)
-  const chevron  = 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z';
-  const content  = `<g transform="rotate(${ANGLE_25})"><circle cx="${bgCX}" cy="0" r="${bgR}" fill="#2a5c8f" opacity="0.9"/><path d="${chevron}" transform="translate(${iconX}, ${iconY}) scale(${scale})" fill="#5bc8ff"/></g>`;
+  const chevron = 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z';
+  const content = `<g transform="rotate(${ANGLE_25})"><circle cx="${bgCX}" cy="0" r="${bgR}" fill="#2a5c8f" opacity="0.9"/><path d="${chevron}" transform="translate(${iconX}, ${iconY}) scale(${scale})" fill="#5bc8ff"/></g>`;
   return svgWrap([BG_ARC, content, gaugeLabels('25%')].join('\n    '));
 }
 
 function previewNeedleIconVertical() {
-  const scale    = 0.24;
-  const iconSize = 24 * scale;
-  const bgR      = r2(iconSize * 0.75);
-  const a        = toRad(ANGLE_25);
-  const cx       = r2(-R * Math.cos(a));
-  const cy       = r2(-R * Math.sin(a));
-  const ix       = r2(cx - iconSize / 2);
-  const iy       = r2(cy - iconSize / 2);
-  const chevron  = 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z';
-  const content  = `<circle cx="${cx}" cy="${cy}" r="${bgR}" fill="#2a5c8f" opacity="0.9"/><path d="${chevron}" transform="translate(${ix}, ${iy}) scale(${scale})" fill="#5bc8ff"/>`;
+  // Matches gauge.ts keepVertical=true path: foSize = 14 * sizeMult
+  const foSize = 14;
+  const scale  = r2(foSize / 24);
+  const bgR    = r2(foSize * 0.5);
+  const a      = toRad(ANGLE_25);
+  const cx     = r2(-R * Math.cos(a));
+  const cy     = r2(-R * Math.sin(a));
+  const ix     = r2(cx - foSize / 2);
+  const iy     = r2(cy - foSize / 2);
+  const chevron = 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z';
+  const content = `<circle cx="${cx}" cy="${cy}" r="${bgR}" fill="#2a5c8f" opacity="0.9"/><path d="${chevron}" transform="translate(${ix}, ${iy}) scale(${scale})" fill="#5bc8ff"/>`;
   return svgWrap([BG_ARC, content, gaugeLabels('25%')].join('\n    '));
 }
 
