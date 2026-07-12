@@ -318,8 +318,7 @@ export class ExtendedGauge extends LitElement {
           const iconSize = 24 * scale;
           // foreignObject side length – give a little extra room so the icon isn't clipped.
           const foSize = iconSize * 2;
-          const iconColor =
-            this.needleIconColor ?? "var(--primary-text-color)";
+          const iconColor = this.needleIconColor ?? "var(--primary-text-color)";
           const bgColor = this.needleIconBackgroundColor;
           const bgRadius = foSize * 0.5;
 
@@ -330,7 +329,11 @@ export class ExtendedGauge extends LitElement {
             const cy = -40 * Math.sin(iconAngleRad);
             return svg`
               <g class="needle needle-icon ${animClass}">
-                ${bgColor ? svg`<circle cx=${cx} cy=${cy} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>` : ``}
+                ${
+                  bgColor
+                    ? svg`<circle cx=${cx} cy=${cy} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
+                    : ``
+                }
                 <foreignObject
                   x=${cx - foSize / 2}
                   y=${cy - foSize / 2}
@@ -349,8 +352,16 @@ export class ExtendedGauge extends LitElement {
             return svg`
               <g
                 class="needle needle-icon ${animClass}"
-                style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
-                ${bgColor ? svg`<circle cx=${iconX + foSize / 2} cy=${0} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>` : ``}
+                style=${styleMap({
+                  transform: `rotate(${this._valueAngle}deg)`,
+                })}>
+                ${
+                  bgColor
+                    ? svg`<circle cx=${
+                        iconX + foSize / 2
+                      } cy=${0} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
+                    : ``
+                }
                 <foreignObject
                   x=${iconX}
                   y=${-foSize / 2}
