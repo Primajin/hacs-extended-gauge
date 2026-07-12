@@ -385,9 +385,13 @@ export class ExtendedGaugeCard extends LitElement
               .valueLabel = "${config.main?.show_entity_name ? (config.entity?.settings && config.entity?.settings?.name ? config.entity?.settings?.name : config.entity?.entity) : undefined}"
               .unitOfMeasure = ${config.entity?.settings?.unit_of_measurement ?? ""}
               .showNeedle=${config.main?.show_needle}
+              .showDial=${config.main?.show_dial ?? false}
               .needleStyle=${config.main?.needle?.needle_style ?? "default"}
               .needleIcon=${config.main?.needle?.needle_icon}
               .needleIconKeepVertical=${config.main?.needle?.needle_icon_keep_vertical ?? false}
+              .needleIconSize=${config.main?.needle?.needle_icon_size ?? 1}
+              .needleIconColor=${config.main?.needle?.needle_icon_color ? rgbToHex(config.main.needle.needle_icon_color) : undefined}
+              .needleIconBackgroundColor=${config.main?.needle?.needle_icon_background_color ? rgbToHex(config.main.needle.needle_icon_background_color) : undefined}
               .gaugeInfoColor=${rgbToHex(config.main?.color_value)}
               .gaugeBackgroundColor=${rgbToHex(config.main?.color_background)}
               .segments=${this._convertSegments(config)}

@@ -160,9 +160,13 @@ export class ExtendedGauge extends LitElement
   @property({ attribute: false, type: String }) public valueText?: string;
   @property({ attribute: false }) public locale!: FrontendLocaleData;
   @property({ type: Boolean }) public showNeedle = false;
+  @property({ type: Boolean }) public showDial = false;
   @property({ type: String }) public needleStyle: NeedleStyle = "default";
   @property({ type: String }) public needleIcon?: string;
   @property({ type: Boolean }) public needleIconKeepVertical = false;
+  @property({ type: Number }) public needleIconSize = 1;
+  @property({ type: String }) public needleIconColor?: string;
+  @property({ type: String }) public needleIconBackgroundColor?: string;
   @property({ type: Boolean }) public animation = true;
   @property({ type: Array }) public segments?: GaugeSegment[];
   @property({ type: Boolean }) public showSegmentLabels = true;
@@ -343,11 +347,11 @@ export class ExtendedGauge extends LitElement
     switch (this.needleStyle)
     {
       case "old":
-        // Original HA-style needle: thin triangle pointing from center outward
+        // Original HA-style needle path from home-assistant/frontend ha-gauge.ts
         return svg`
           <path
             class="needle needle-old ${animClass}"
-            d="M 0 -1.5 L -43 0 L 0 1.5 z"
+            d="M -34,-3 L -40,-1 A 1,1,0,0,0,-40,1 L -34,3 A 2,2,0,0,0,-34,-3 Z"
             style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
           </path>
           <circle class="needle-pivot" cx="0" cy="0" r="3"></circle>
@@ -360,22 +364,31 @@ export class ExtendedGauge extends LitElement
           if (iconPathData)
           {
             // MDI icons have a 24x24 viewbox. Scale to fit within the gauge.
-            const scale = 0.12;
-            const iconSize = 24 * scale; // = 2.88 in SVG units
+            // needleIconSize is a multiplier: 1 = default (scale 0.12), 2 = double, etc.
+            const scale = 0.12 * (this.needleIconSize || 1);
+            const iconSize = 24 * scale;
+            const iconColor = this.needleIconColor ?? "var(--primary-text-color)";
+            const bgColor = this.needleIconBackgroundColor;
+            // Background circle radius slightly larger than half the icon diagonal
+            const bgRadius = iconSize * 0.75;
             if (this.needleIconKeepVertical)
             {
               // Move icon to the arc position but keep it vertical (no rotation).
               // The angle convention is consistent: cos(θ) and sin(θ) give the same
               // arc positions as CSS rotate(θdeg) applied to a left-pointing element.
               const iconAngleRad = (this._valueAngle * Math.PI) / 180;
-              const iconX = -40 * Math.cos(iconAngleRad) - iconSize / 2;
-              const iconY = -40 * Math.sin(iconAngleRad) - iconSize / 2;
+              const cx = -40 * Math.cos(iconAngleRad);
+              const cy = -40 * Math.sin(iconAngleRad);
+              const iconX = cx - iconSize / 2;
+              const iconY = cy - iconSize / 2;
               return svg`
                 <g class="needle needle-icon ${animClass}">
+                  ${bgColor ? svg`<circle cx=${cx} cy=${cy} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>` : ``}
                   <path
                     d=${iconPathData}
                     transform="translate(${iconX}, ${iconY}) scale(${scale})"
-                    class="needle-icon-path">
+                    class="needle-icon-path"
+                    style=${styleMap({ fill: iconColor })}>
                   </path>
                 </g>
               `;
@@ -383,14 +396,18 @@ export class ExtendedGauge extends LitElement
             else
             {
               // Rotate icon with the gauge bearing (icon follows the arc direction)
+              const iconX = -43 - iconSize;
+              const iconY = -iconSize / 2;
               return svg`
                 <g
                   class="needle needle-icon ${animClass}"
                   style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
+                  ${bgColor ? svg`<circle cx=${iconX + iconSize / 2} cy=${0} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>` : ``}
                   <path
                     d=${iconPathData}
-                    transform="translate(${-43 - iconSize}, ${-iconSize / 2}) scale(${scale})"
-                    class="needle-icon-path">
+                    transform="translate(${iconX}, ${iconY}) scale(${scale})"
+                    class="needle-icon-path"
+                    style=${styleMap({ fill: iconColor })}>
                   </path>
                 </g>
               `;
@@ -422,17 +439,20 @@ export class ExtendedGauge extends LitElement
     // set color if gauge to color of segment, where the current value is in
     this.segments
         .sort((a, b) => a.lower! - b.lower!)
-        .map((segment) => 
+        .map((segment) =>
         {
           if (this.value >= segment.lower! && this.value <= segment.upper!)
             gaugeValueColor = segment.color;
         })
     }
+    // showDial controls the value fill arc; defaults true. When needle is shown
+    // the background arc uses gaugeInfoColor, when dial is also shown it overlays the value fill.
+    const dialVisible = this.showDial || !this.showNeedle;
     return html`
       <div class="gauge-container">
       <svg viewBox="-50 -50 130 55" class="gauge">
       <g transform="translate(15 5)">
-        <path 
+        <path
           style =${styleMap({ stroke: `${this.segments && this.showNeedle? this.gaugeInfoColor : this.gaugeBackgroundColor}` })}
           class="dial"
           d="M -40 0 A 40 40 0 0 1 40 0">
@@ -441,7 +461,7 @@ export class ExtendedGauge extends LitElement
           this.segments && this.showNeedle
             ? this.segments
                 .sort((a, b) => a.lower! - b.lower!)
-                .map((segment) => 
+                .map((segment) =>
                 {
                   const angle_lower = this._getLowerAngle(segment.lower!, this.min, this.max);
                   const angle_upper = this._getUpperAngle(segment.upper!, this.min, this.max);
@@ -452,20 +472,24 @@ export class ExtendedGauge extends LitElement
                       d="M
                         ${0 - 40 * Math.cos((angle_lower * Math.PI) / 180)}
                         ${0 - 40 * Math.sin((angle_lower * Math.PI) / 180)}
-                       A 40 40 0 0 1 
+                       A 40 40 0 0 1
                         ${0 - 40 * Math.cos((angle_upper * Math.PI) / 180)}
                         ${0 - 40 * Math.sin((angle_upper * Math.PI) / 180)}
                        ">
                   </path>
                   `;
                 })
-            : 
-            svg `<path
+            : ``
+          }
+          ${
+          dialVisible
+            ? svg `<path
                 class="dial ${this._updated && this.animation ? `animation` : ``}"
                 style =${styleMap({ stroke: `${gaugeValueColor}`, transform: `rotate(${this._valueAngle-180}deg)` })}
                 d="M -40 0 A 40 40 0 0 1 40 0">
             </path>
             `
+            : ``
           }
           ${
           this.showNeedle
@@ -575,6 +599,9 @@ static styles = css`
     .needle-old
     {
       fill: var(--primary-text-color);
+      stroke: var(--card-background-color);
+      stroke-width: 1;
+      stroke-linecap: round;
       opacity: 0.8;
     }
 

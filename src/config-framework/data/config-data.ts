@@ -70,6 +70,9 @@ export interface NeedleConfigData
   needle_style?: NeedleStyle;
   needle_icon?: string;
   needle_icon_keep_vertical?: boolean;
+  needle_icon_size?: number;
+  needle_icon_color?: any;
+  needle_icon_background_color?: any;
 }
 
 
@@ -84,6 +87,7 @@ interface MainConfigData
   color_value?: any;
   color_background?: any;
   show_needle?: boolean;
+  show_dial?: boolean;
   needle?: NeedleConfigData;
   show_entity_name?: boolean;
   show_min_max_values?: boolean;

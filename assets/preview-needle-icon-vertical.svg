@@ -1,11 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="240" height="130" viewBox="0 0 240 130">
-  <rect width="240" height="130" rx="12" fill="#1c1c1e"/>
-  <g transform="translate(105, 91)">
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="110" viewBox="0 0 240 110">
+  <rect width="240" height="110" rx="12" fill="#1c1c1e"/>
+  <g transform="translate(105, 78)">
     <path d="M -40 0 A 40 40 0 0 1 40 0" fill="none" stroke="#3a3a3c" stroke-width="14.7" stroke-linecap="butt"/>
-    <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" fill="#e0e0e0" transform="translate(-29.724, -29.724) scale(0.12)"/>
+    <circle cx="-28.28" cy="-28.28" r="4.32" fill="#2a5c8f" opacity="0.9"/><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" transform="translate(-31.16, -31.16) scale(0.24)" fill="#5bc8ff"/>
     <text x="0" y="-5" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#e0e0e0" font-weight="bold">25%</text>
-    <text x="-38" y="5" text-anchor="middle" font-family="sans-serif" font-size="5" fill="#e0e0e0" opacity="0.5">0</text><text x="38" y="5" text-anchor="middle" font-family="sans-serif" font-size="5" fill="#e0e0e0" opacity="0.5">100</text>
+    <text x="-38" y="5" text-anchor="middle" font-family="sans-serif" font-size="5" fill="#e0e0e0" opacity="0.5">0</text>
+    <text x="38" y="5" text-anchor="middle" font-family="sans-serif" font-size="5" fill="#e0e0e0" opacity="0.5">100</text>
   </g>
-  <text x="120" y="116" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#e0e0e0" opacity="0.9">Icon needle (vertical)</text>
-  <text x="120" y="127" text-anchor="middle" font-family="sans-serif" font-size="8.5" fill="#e0e0e0" opacity="0.55">needle_style: icon  keep_vertical: true</text>
 </svg>

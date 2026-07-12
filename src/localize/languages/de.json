@@ -1,5 +1,5 @@
 {
-  "editor": 
+  "editor":
   {
     "entity_settings": "Einstellungen der Entität bearbeiten",
     "needle_settings": "Nadeleinstellungen bearbeiten",
@@ -14,12 +14,16 @@
     "color_value": "Farbe für die Anzeige des Wertes",
     "color_background": "Hintergrundfarbe (kein Wert)",
     "show_needle": "Nadel anzeigen",
+    "show_dial": "Anzeigescale zeigen",
     "show_entity_name": "Name der Entität anzeigen",
     "show_min_max_values": "Min. / Max. Werte anzeigen",
     "show_segment_labels": "Segmentgrenzwerte anzeigen",
     "needle_style": "Nadelstil",
     "needle_icon": "Nadel-Symbol",
     "needle_icon_keep_vertical": "Symbol vertikal halten",
+    "needle_icon_size": "Symbol-Grössenmultiplikator",
+    "needle_icon_color": "Symbol-Farbe",
+    "needle_icon_background_color": "Symbol-Hintergrundfarbe",
     "add_segment": "Segment hinzufügen",
     "edit_segment": "Segment bearbeiten",
     "segment_list": "Segmente",
@@ -29,7 +33,7 @@
     "segment_color": "Farbe de Segments",
     "segment_value_replacement": "Wert überschreiben"
   },
-  "error": 
+  "error":
   {
       "range_lower_greater_than_upper":"Die untere Bereichsgrenze ist grösser als die obere.",
       "value_lower_greater_than_upper":"Der angezeigte Minimalwert ist grösser als der Maximalwert."

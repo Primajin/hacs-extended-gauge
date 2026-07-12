@@ -190,6 +190,18 @@ export const needleConfigSchema =
         name: "needle_icon_keep_vertical",
         selector: { boolean: {} },
       },
+      {
+        name: "needle_icon_size",
+        selector: { number: { mode: "box", min: 0.5, max: 10, step: 0.5 } },
+      },
+      {
+        name: "needle_icon_color",
+        selector: { color_rgb: {} },
+      },
+      {
+        name: "needle_icon_background_color",
+        selector: { color_rgb: {} },
+      },
     ],
   },
 ];
@@ -224,6 +236,10 @@ export const mainConfigSchema =
       },
       {
         name: "show_needle",
+        selector: { boolean: {} },
+      },
+      {
+        name: "show_dial",
         selector: { boolean: {} },
       },
       {
