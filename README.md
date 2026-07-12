@@ -33,6 +33,11 @@ The Extended Gauge Card is inspired by the Home Assistant Gauge Card but offers 
 
 ## Visual examples
 
+> To regenerate the preview images after making changes, run:
+> ```bash
+> node utils/scripts/generate-previews.js
+> ```
+
 ### Default needle style
 
 ![Default needle](assets/preview-needle-default.svg)
