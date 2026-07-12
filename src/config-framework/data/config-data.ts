@@ -61,6 +61,7 @@ export interface NeedleConfigData {
   needle_icon_keep_vertical?: boolean;
   needle_icon_size?: number;
   needle_icon_color?: any;
+  needle_icon_background_color_enabled?: boolean;
   needle_icon_background_color?: any;
 }
 

@@ -367,7 +367,7 @@ export class ExtendedGaugeCard extends LitElement {
               : undefined}"
             .unitOfMeasure=${config.entity?.settings?.unit_of_measurement ?? ""}
             .showNeedle=${config.main?.show_needle}
-            .showDial=${config.main?.show_dial ?? false}
+            .showDial=${config.main?.show_dial ?? true}
             .needleStyle=${config.main?.needle?.needle_style ?? "default"}
             .needleIcon=${config.main?.needle?.needle_icon}
             .needleIconKeepVertical=${config.main?.needle
