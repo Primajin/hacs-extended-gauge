@@ -2,27 +2,6 @@
 /* Purpose: Pure gauge math helpers, separated for testability (no browser/decorator dependencies).
 /* History: 12-JUL-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
-import * as mdiIcons from "@mdi/js";
-
-/*****************************************************************************************************************************/
-/* Purpose: Convert an MDI icon name (e.g. "mdi:arrow-up-bold") to its SVG path data string using @mdi/js
-/* History: 12-JUL-2025 D.Geisenhoff   Created
-/*****************************************************************************************************************************/
-export function isMdiIcon(iconName: string): boolean {
-  return iconName?.startsWith("mdi:");
-}
-
-export function mdiIconToPath(iconName: string): string | undefined {
-  if (!iconName || !iconName.startsWith("mdi:")) return undefined;
-  const kebab = iconName.slice(4); // strip "mdi:"
-  const camel =
-    "mdi" +
-    kebab
-      .split("-")
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join("");
-  return (mdiIcons as Record<string, string>)[camel];
-}
 
 /*****************************************************************************************************************************/
 /* Purpose: Keep a numeric value within [min, max]. Returns 0 when any argument is NaN.

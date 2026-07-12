@@ -6,7 +6,6 @@ import {
   normalizeValue,
   getValueInPercentage,
   getAngle,
-  mdiIconToPath,
 } from "../utils/gauge-math";
 
 describe("normalizeValue", () => {
@@ -115,48 +114,5 @@ describe("getAngle", () => {
     expect(getAngle(-10, -20, 0)).toBe(90);
     expect(getAngle(-20, -20, 0)).toBe(0);
     expect(getAngle(0, -20, 0)).toBe(180);
-  });
-});
-
-describe("mdiIconToPath", () => {
-  it("returns a non-empty string for the well-known 'mdi:home' icon", () => {
-    const path = mdiIconToPath("mdi:home");
-    expect(typeof path).toBe("string");
-    expect(path!.length).toBeGreaterThan(0);
-  });
-
-  it("returns a string beginning with 'M' (valid SVG moveto command)", () => {
-    const path = mdiIconToPath("mdi:arrow-up");
-    expect(path).toMatch(/^M/);
-  });
-
-  it("returns undefined for an icon name that does not exist in @mdi/js", () => {
-    expect(mdiIconToPath("mdi:this-icon-does-not-exist-xyz")).toBeUndefined();
-  });
-
-  it("returns undefined when the 'mdi:' prefix is absent", () => {
-    expect(mdiIconToPath("home")).toBeUndefined();
-  });
-
-  it("returns undefined for an empty string", () => {
-    expect(mdiIconToPath("")).toBeUndefined();
-  });
-
-  it("converts multi-word kebab-case names (mdi:arrow-up-bold)", () => {
-    const path = mdiIconToPath("mdi:arrow-up-bold");
-    expect(typeof path).toBe("string");
-    expect(path!.length).toBeGreaterThan(0);
-  });
-
-  it("handles a single-word icon name (mdi:thermometer)", () => {
-    const path = mdiIconToPath("mdi:thermometer");
-    expect(typeof path).toBe("string");
-    expect(path!.length).toBeGreaterThan(0);
-  });
-
-  it("handles a long hyphenated icon name (mdi:home-thermometer-outline)", () => {
-    const path = mdiIconToPath("mdi:home-thermometer-outline");
-    expect(typeof path).toBe("string");
-    expect(path!.length).toBeGreaterThan(0);
   });
 });

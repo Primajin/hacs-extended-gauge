@@ -9,15 +9,13 @@ import { css, html, LitElement, svg, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit-element";
 import { NeedleStyle } from "../config-framework/data/config-data";
 import {
-  mdiIconToPath,
   normalizeValue,
   getValueInPercentage,
   getAngle,
-  isMdiIcon,
 } from "../utils/gauge-math";
 
 // Re-export for consumers that import directly from this file.
-export { mdiIconToPath, isMdiIcon, normalizeValue, getValueInPercentage, getAngle };
+export { normalizeValue, getValueInPercentage, getAngle };
 
 /*****************************************************************************************************************************/
 /* Purpose: Interface for demo timer management
@@ -312,123 +310,62 @@ export class ExtendedGauge extends LitElement {
         `;
       case "icon":
         if (this.needleIcon) {
-          // For MDI icons, resolve the SVG path data from @mdi/js for inline SVG rendering.
-          // For non-MDI icons (e.g. "hacs:hacs"), use a foreignObject containing <ha-icon>
-          // so that HA's own icon resolution handles custom icon packs.
-          const isMdi = isMdiIcon(this.needleIcon);
-          const iconPathData = isMdi ? mdiIconToPath(this.needleIcon) : undefined;
+          // Use <ha-icon> inside a <foreignObject> for all icon packs (MDI and custom).
+          // HA's <ha-icon> element resolves any registered icon set, so no icon-pack-specific
+          // parsing is needed here.
           // needleIconSize is a multiplier: 1 = default (scale 0.12), 2 = double, etc.
           const scale = 0.12 * (this.needleIconSize || 2);
           const iconSize = 24 * scale;
+          // foreignObject side length – give a little extra room so the icon isn't clipped.
+          const foSize = iconSize * 2;
           const iconColor =
             this.needleIconColor ?? "var(--primary-text-color)";
           const bgColor = this.needleIconBackgroundColor;
-          // Background circle radius slightly larger than half the icon diagonal
-          const bgRadius = iconSize * 0.75;
+          const bgRadius = foSize * 0.5;
 
-          if (isMdi && iconPathData) {
-            // Inline SVG path rendering for MDI icons
-            if (this.needleIconKeepVertical) {
-              const iconAngleRad = (this._valueAngle * Math.PI) / 180;
-              const cx = -40 * Math.cos(iconAngleRad);
-              const cy = -40 * Math.sin(iconAngleRad);
-              const iconX = cx - iconSize / 2;
-              const iconY = cy - iconSize / 2;
-              return svg`
-                <g class="needle needle-icon ${animClass}">
-                  ${
-                    bgColor
-                      ? svg`<circle cx=${cx} cy=${cy} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
-                      : ``
-                  }
-                  <path
-                    d=${iconPathData}
-                    transform="translate(${iconX}, ${iconY}) scale(${scale})"
-                    class="needle-icon-path"
-                    style=${styleMap({ fill: iconColor })}>
-                  </path>
-                </g>
-              `;
-            } else {
-              const iconX = -43 - iconSize;
-              const iconY = -iconSize / 2;
-              return svg`
-                <g
-                  class="needle needle-icon ${animClass}"
-                  style=${styleMap({
-                    transform: `rotate(${this._valueAngle}deg)`,
-                  })}>
-                  ${
-                    bgColor
-                      ? svg`<circle cx=${
-                          iconX + iconSize / 2
-                        } cy=${0} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
-                      : ``
-                  }
-                  <path
-                    d=${iconPathData}
-                    transform="translate(${iconX}, ${iconY}) scale(${scale})"
-                    class="needle-icon-path"
-                    style=${styleMap({ fill: iconColor })}>
-                  </path>
-                </g>
-              `;
-            }
+          if (this.needleIconKeepVertical) {
+            // Position the icon on the arc but keep it upright (no rotation).
+            const iconAngleRad = (this._valueAngle * Math.PI) / 180;
+            const cx = -40 * Math.cos(iconAngleRad);
+            const cy = -40 * Math.sin(iconAngleRad);
+            return svg`
+              <g class="needle needle-icon ${animClass}">
+                ${bgColor ? svg`<circle cx=${cx} cy=${cy} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>` : ``}
+                <foreignObject
+                  x=${cx - foSize / 2}
+                  y=${cy - foSize / 2}
+                  width=${foSize}
+                  height=${foSize}>
+                  <ha-icon
+                    icon=${this.needleIcon}
+                    style="width:${foSize}px;height:${foSize}px;color:${iconColor};display:block;">
+                  </ha-icon>
+                </foreignObject>
+              </g>
+            `;
           } else {
-            // Non-MDI icon: use foreignObject to embed <ha-icon> so HA resolves custom icon packs
-            const foSize = iconSize * 2;
-            if (this.needleIconKeepVertical) {
-              const iconAngleRad = (this._valueAngle * Math.PI) / 180;
-              const cx = -40 * Math.cos(iconAngleRad);
-              const cy = -40 * Math.sin(iconAngleRad);
-              return svg`
-                <g class="needle needle-icon ${animClass}">
-                  ${
-                    bgColor
-                      ? svg`<circle cx=${cx} cy=${cy} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
-                      : ``
-                  }
-                  <foreignObject
-                    x=${cx - foSize / 2}
-                    y=${cy - foSize / 2}
-                    width=${foSize}
-                    height=${foSize}>
-                    <ha-icon
-                      icon=${this.needleIcon}
-                      style="width:${foSize}px;height:${foSize}px;color:${iconColor};display:block;">
-                    </ha-icon>
-                  </foreignObject>
-                </g>
-              `;
-            } else {
-              const iconX = -43 - foSize / 2;
-              return svg`
-                <g
-                  class="needle needle-icon ${animClass}"
-                  style=${styleMap({
-                    transform: `rotate(${this._valueAngle}deg)`,
-                  })}>
-                  ${
-                    bgColor
-                      ? svg`<circle cx=${iconX + foSize / 2} cy=${0} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
-                      : ``
-                  }
-                  <foreignObject
-                    x=${iconX}
-                    y=${-foSize / 2}
-                    width=${foSize}
-                    height=${foSize}>
-                    <ha-icon
-                      icon=${this.needleIcon}
-                      style="width:${foSize}px;height:${foSize}px;color:${iconColor};display:block;">
-                    </ha-icon>
-                  </foreignObject>
-                </g>
-              `;
-            }
+            // Rotate the icon with the gauge bearing (icon follows the arc direction).
+            const iconX = -43 - foSize / 2;
+            return svg`
+              <g
+                class="needle needle-icon ${animClass}"
+                style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
+                ${bgColor ? svg`<circle cx=${iconX + foSize / 2} cy=${0} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>` : ``}
+                <foreignObject
+                  x=${iconX}
+                  y=${-foSize / 2}
+                  width=${foSize}
+                  height=${foSize}>
+                  <ha-icon
+                    icon=${this.needleIcon}
+                    style="width:${foSize}px;height:${foSize}px;color:${iconColor};display:block;">
+                  </ha-icon>
+                </foreignObject>
+              </g>
+            `;
           }
         }
-        // Fallback to default if icon cannot be resolved
+        // Fallback to default needle if no icon is configured.
         return this._renderDefaultNeedle(animClass);
       case "default":
       default:
