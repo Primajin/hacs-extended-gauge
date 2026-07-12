@@ -349,7 +349,26 @@ export class ExtendedGauge extends LitElement
 
 
   /*****************************************************************************************************************************/
-  /* Purpose: Render the needle based on the configured needle style
+  /* Purpose: Render the default arrow needle (shared helper used by "default" style and as fallback)
+  /* History: 12-JUL-2025 D.Geisenhoff   Created
+  /*****************************************************************************************************************************/
+  private _renderDefaultNeedle(animClass: string)
+  {
+    return svg`
+      <path
+        class="needle ${animClass}"
+        d="M -25 -2.5 L -47.5 0 L -25 2.5 z"
+        style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
+      </path>
+    `;
+  }
+
+
+  /*****************************************************************************************************************************/
+  /* Purpose: Render the needle based on the configured needle style.
+  /*          The gauge arc spans 0° (left, value=min) to 180° (right, value=max) through the top at 90°.
+  /*          CSS rotate(θdeg) applied to a left-pointing element and Math.cos/sin(θ) both use the same
+  /*          angular convention for this gauge, so arc positions are consistent between methods.
   /* History: 12-JUL-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _renderNeedle()
@@ -379,7 +398,9 @@ export class ExtendedGauge extends LitElement
             const iconSize = 24 * scale; // = 2.88 in SVG units
             if (this.needleIconKeepVertical)
             {
-              // Move icon to the arc position but keep it vertical (no rotation)
+              // Move icon to the arc position but keep it vertical (no rotation).
+              // The angle convention is consistent: cos(θ) and sin(θ) give the same
+              // arc positions as CSS rotate(θdeg) applied to a left-pointing element.
               const iconAngleRad = (this._valueAngle * Math.PI) / 180;
               const iconX = -40 * Math.cos(iconAngleRad) - iconSize / 2;
               const iconY = -40 * Math.sin(iconAngleRad) - iconSize / 2;
@@ -410,22 +431,11 @@ export class ExtendedGauge extends LitElement
             }
           }
         }
-        return svg`
-          <path
-            class="needle ${animClass}"
-            d="M -25 -2.5 L -47.5 0 L -25 2.5 z"
-            style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
-          </path>
-        `;
+        // Fallback to default if icon cannot be resolved
+        return this._renderDefaultNeedle(animClass);
       case "default":
       default:
-        return svg`
-          <path
-            class="needle ${animClass}"
-            d="M -25 -2.5 L -47.5 0 L -25 2.5 z"
-            style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
-          </path>
-        `;
+        return this._renderDefaultNeedle(animClass);
     }
   }
 
