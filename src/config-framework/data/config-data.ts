@@ -60,16 +60,31 @@ interface EntityPageConfigData
 
 
 /*****************************************************************************************************************************/
+/* Purpose: Needle style configuration
+/* History: 12-JUL-2025 D.Geisenhoff   Created
+/*****************************************************************************************************************************/
+export type NeedleStyle = "default" | "old" | "icon";
+
+export interface NeedleConfigData
+{
+  needle_style?: NeedleStyle;
+  needle_icon?: string;
+  needle_icon_keep_vertical?: boolean;
+}
+
+
+/*****************************************************************************************************************************/
 /* Purpose: General settings configuration
 /* History: 19-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
-interface MainConfigData 
+interface MainConfigData
 {
   min_value?: number;
   max_value?: number;
   color_value?: any;
   color_background?: any;
   show_needle?: boolean;
+  needle?: NeedleConfigData;
   show_entity_name?: boolean;
   show_min_max_values?: boolean;
   show_segment_labels?: boolean;

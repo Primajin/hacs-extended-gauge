@@ -27,6 +27,7 @@ The Extended Gauge Card is inspired by the Home Assistant Gauge Card but offers 
 - Unlimited number of segments.
 - Shows values of segment bounds.
 - Shows with or without a needle.
+- Configurable needle styles: default, original Home Assistant style, or icon-based needle.
 <br />
 <br />
 
@@ -80,6 +81,48 @@ To gain more control over how the entity value is displayed, click the edit butt
 | *Number of decimals* | The number of decimal places to be displayed. |
 | *Thousands separator* | The character to be used as the thousands separator. |
 | *Decimal separator* | The character to be used as the decimal separator. |
+<br />
+
+### Editing the needle settings
+When *Show needle* is enabled, click **Edit needle settings** to configure the needle appearance.
+
+| Field name | Description |
+| ---------- | ----------- |
+| *Needle style* | The visual style of the needle. Options: `default` (current arrow style), `old` (original Home Assistant gauge needle), `icon` (a custom MDI icon). |
+| *Needle icon* | Only used when *Needle style* is set to `icon`. Select any MDI icon to use as the needle indicator. |
+| *Keep icon vertical* | Only used when *Needle style* is set to `icon`. When enabled, the icon stays upright and does not rotate with the gauge direction; it only moves along the gauge arc. When disabled, the icon rotates to follow the gauge bearing. |
+<br />
+
+**YAML example — old needle style:**
+```yaml
+type: custom:extended-gauge-card
+main:
+  show_needle: true
+  needle:
+    needle_style: old
+```
+
+**YAML example — icon needle (rotating with gauge):**
+```yaml
+type: custom:extended-gauge-card
+main:
+  show_needle: true
+  needle:
+    needle_style: icon
+    needle_icon: mdi:arrow-up-bold
+    needle_icon_keep_vertical: false
+```
+
+**YAML example — icon needle (always vertical):**
+```yaml
+type: custom:extended-gauge-card
+main:
+  show_needle: true
+  needle:
+    needle_style: icon
+    needle_icon: mdi:chevron-down
+    needle_icon_keep_vertical: true
+```
 <br />
 
 ### Adding segments

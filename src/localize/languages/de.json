@@ -2,6 +2,7 @@
   "editor": 
   {
     "entity_settings": "Einstellungen der Entität bearbeiten",
+    "needle_settings": "Nadeleinstellungen bearbeiten",
     "name": "Name",
     "unit_of_measurement": "Masseinheit",
     "conversion_factor": "Umrechnungsfaktor",
@@ -16,6 +17,9 @@
     "show_entity_name": "Name der Entität anzeigen",
     "show_min_max_values": "Min. / Max. Werte anzeigen",
     "show_segment_labels": "Segmentgrenzwerte anzeigen",
+    "needle_style": "Nadelstil",
+    "needle_icon": "Nadel-Symbol",
+    "needle_icon_keep_vertical": "Symbol vertikal halten",
     "add_segment": "Segment hinzufügen",
     "edit_segment": "Segment bearbeiten",
     "segment_list": "Segmente",

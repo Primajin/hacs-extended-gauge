@@ -2,6 +2,7 @@
     "editor": 
     {
       "entity_settings": "Modifier les paramètres de l'entité",
+      "needle_settings": "Modifier les paramètres de l'aiguille",
       "name": "Nom",
       "unit_of_measurement": "Unité de mesure",
       "conversion_factor": "Facteur de conversion",
@@ -16,6 +17,9 @@
       "show_entity_name": "Afficher le nom de l'entité",
       "show_min_max_values": "Afficher les valeurs min / max",
       "show_segment_labels": "Afficher les limites des segments",
+      "needle_style": "Style de l'aiguille",
+      "needle_icon": "Icône de l'aiguille",
+      "needle_icon_keep_vertical": "Garder l'icône verticale",
       "add_segment": "Ajouter un segment",
       "edit_segment": "Modifier le segment",
       "segment_list": "Segments",

@@ -6,13 +6,14 @@
 /* History: 27-MAR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 import {Page} from "../code/config-framework";
-import 
-{ 
-  mainConfigSchema, 
-  segmentSettingsConfigSchema, 
-  titleConfigSchema, 
-  entitySettingsConfigSchema, 
-  entityConfigSchema 
+import
+{
+  mainConfigSchema,
+  needleConfigSchema,
+  segmentSettingsConfigSchema,
+  titleConfigSchema,
+  entitySettingsConfigSchema,
+  entityConfigSchema
 } from "./config-schema";
 
 
@@ -59,10 +60,28 @@ export const entitySettingsPage: Page =
 
 
 /*****************************************************************************************************************************/
+/* Purpose: Needle settings page
+/* History: 12-JUL-2025 D.Geisenhoff   Created
+/*****************************************************************************************************************************/
+const needleSettingsPage: Page =
+{
+  title: "needle_settings",
+  sections:
+  [
+    {
+      name: "needle",
+      type: "form",
+      schema: needleConfigSchema,
+    },
+  ]
+}
+
+
+/*****************************************************************************************************************************/
 /* Purpose: Define the sections of the main page
 /* History: 26-MAR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
-export const mainPage: Page = 
+export const mainPage: Page =
 {
   sections:
   [
@@ -82,7 +101,14 @@ export const mainPage: Page =
       type : "form",
       schema: mainConfigSchema,
     },
-    { 
+    {
+      name: "main",
+      type : "menu",
+      title: "needle_settings",
+      icon: "mdi:arrow-up-circle-outline",
+      link: needleSettingsPage,
+    },
+    {
       name: "segment_list",
       type : "element_list",
       title: "segment_list",

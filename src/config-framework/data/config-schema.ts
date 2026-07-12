@@ -168,6 +168,34 @@ export const entityConfigSchema =
 
 
 /*****************************************************************************************************************************/
+/* Purpose: Needle settings config schema
+/* History: 12-JUL-2025 D.Geisenhoff   Created
+/*****************************************************************************************************************************/
+export const needleConfigSchema =
+[
+  {
+    type: "grid",
+    column_min_width: "200px",
+    schema:
+    [
+      {
+        name: "needle_style",
+        selector: { select: { options: ["default", "old", "icon"], mode: "dropdown" } },
+      },
+      {
+        name: "needle_icon",
+        selector: { icon: {} },
+      },
+      {
+        name: "needle_icon_keep_vertical",
+        selector: { boolean: {} },
+      },
+    ],
+  },
+];
+
+
+/*****************************************************************************************************************************/
 /* Purpose: Main page config Schema
 /* History: 23-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/

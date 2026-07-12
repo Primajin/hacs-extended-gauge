@@ -9,10 +9,11 @@ import {
   css,
   html,
   LitElement,
-  svg, 
+  svg,
   PropertyValues
 } from "lit";
 import { customElement, property, query, state } from "lit-element";
+import { NeedleStyle } from "../config-framework/data/config-data";
 
 
 /*****************************************************************************************************************************/
@@ -155,6 +156,9 @@ export class ExtendedGauge extends LitElement
   @property({ attribute: false, type: String }) public valueText?: string;
   @property({ attribute: false }) public locale!: FrontendLocaleData;
   @property({ type: Boolean }) public showNeedle = false;
+  @property({ type: String }) public needleStyle: NeedleStyle = "default";
+  @property({ type: String }) public needleIcon?: string;
+  @property({ type: Boolean }) public needleIconKeepVertical = false;
   @property({ type: Boolean }) public animation = true;
   @property({ type: Array }) public segments?: GaugeSegment[];
   @property({ type: Boolean }) public showSegmentLabels = true;
@@ -326,6 +330,84 @@ export class ExtendedGauge extends LitElement
   }
 
 
+  /*****************************************************************************************************************************/
+  /* Purpose: Render the needle based on the configured needle style
+  /* History: 12-JUL-2025 D.Geisenhoff   Created
+  /*****************************************************************************************************************************/
+  private _renderNeedle()
+  {
+    const animClass = this._updated && this.animation ? `animation` : ``;
+    switch (this.needleStyle)
+    {
+      case "old":
+        // Original HA-style needle: thin triangle pointing from center outward
+        return svg`
+          <path
+            class="needle needle-old ${animClass}"
+            d="M 0 -1.5 L -43 0 L 0 1.5 z"
+            style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
+          </path>
+          <circle class="needle-pivot" cx="0" cy="0" r="3"></circle>
+        `;
+      case "icon":
+        if (this.needleIcon)
+        {
+          // MDI icons have a 24x24 viewbox. Scale to fit within the gauge.
+          const scale = 0.12;
+          const iconSize = 24 * scale; // = 2.88 in SVG units
+          if (this.needleIconKeepVertical)
+          {
+            // Move icon to the arc position but keep it vertical (no rotation)
+            const iconAngleRad = (this._valueAngle * Math.PI) / 180;
+            const iconX = -40 * Math.cos(iconAngleRad) - iconSize / 2;
+            const iconY = -40 * Math.sin(iconAngleRad) - iconSize / 2;
+            return svg`
+              <g class="needle needle-icon ${animClass}">
+                <path
+                  d=${this.needleIcon}
+                  transform="translate(${iconX}, ${iconY}) scale(${scale})"
+                  class="needle-icon-path">
+                </path>
+              </g>
+            `;
+          }
+          else
+          {
+            // Rotate icon with the gauge bearing (icon follows the arc direction)
+            return svg`
+              <g
+                class="needle needle-icon ${animClass}"
+                style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
+                <path
+                  d=${this.needleIcon}
+                  transform="translate(${-43 - iconSize}, ${-iconSize / 2}) scale(${scale})"
+                  class="needle-icon-path">
+                </path>
+              </g>
+            `;
+          }
+        }
+        // Fallback to default if no icon provided
+        return svg`
+          <path
+            class="needle ${animClass}"
+            d="M -25 -2.5 L -47.5 0 L -25 2.5 z"
+            style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
+          </path>
+        `;
+      case "default":
+      default:
+        return svg`
+          <path
+            class="needle ${animClass}"
+            d="M -25 -2.5 L -47.5 0 L -25 2.5 z"
+            style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
+          </path>
+        `;
+    }
+  }
+
+
   /*******************************************************************************************************************************/
   /* Purpose: Render this HTML element
   /* History: 04-APR-2025 D.Geisenhoff  Created
@@ -389,12 +471,7 @@ export class ExtendedGauge extends LitElement
           }
           ${
           this.showNeedle
-            ? svg`
-            <path
-                class="needle ${this._updated && this.animation ? `animation` : ``}"
-                d="M -25 -2.5 L -47.5 0 L -25 2.5 z"
-                style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
-            </path>`
+            ? this._renderNeedle()
             : ``
       }
       ${this._updated = true}
@@ -492,7 +569,23 @@ static styles = css`
     }
 
 
-    .needle 
+    .needle
+    {
+      fill: var(--primary-text-color);
+    }
+
+    .needle-old
+    {
+      fill: var(--primary-text-color);
+      opacity: 0.8;
+    }
+
+    .needle-pivot
+    {
+      fill: var(--primary-text-color);
+    }
+
+    .needle-icon-path
     {
       fill: var(--primary-text-color);
     }
