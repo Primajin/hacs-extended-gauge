@@ -161,7 +161,7 @@ export const entityConfigSchema = [
 /* Purpose: Needle settings config schema
 /* History: 12-JUL-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
-export const needleConfigSchema = [
+export const needleConfigSchema = (needleStyle: string) => [
   {
     type: "grid",
     column_min_width: "200px",
@@ -172,26 +172,32 @@ export const needleConfigSchema = [
           select: { options: ["default", "old", "icon"], mode: "dropdown" },
         },
       },
-      {
-        name: "needle_icon",
-        selector: { icon: {} },
-      },
-      {
-        name: "needle_icon_keep_vertical",
-        selector: { boolean: {} },
-      },
-      {
-        name: "needle_icon_size",
-        selector: { number: { mode: "box", min: 0.5, max: 10, step: 0.5 } },
-      },
-      {
-        name: "needle_icon_color",
-        selector: { color_rgb: {} },
-      },
-      {
-        name: "needle_icon_background_color",
-        selector: { color_rgb: {} },
-      },
+      ...(needleStyle === "icon"
+        ? [
+            {
+              name: "needle_icon",
+              selector: { icon: {} },
+            },
+            {
+              name: "needle_icon_keep_vertical",
+              selector: { boolean: {} },
+            },
+            {
+              name: "needle_icon_size",
+              selector: {
+                number: { mode: "box", min: 0.5, max: 10, step: 0.5 },
+              },
+            },
+            {
+              name: "needle_icon_color",
+              selector: { color_rgb: {} },
+            },
+            {
+              name: "needle_icon_background_color",
+              selector: { color_rgb: {} },
+            },
+          ]
+        : []),
     ],
   },
 ];

@@ -372,7 +372,7 @@ export class ExtendedGaugeCard extends LitElement {
             .needleIcon=${config.main?.needle?.needle_icon}
             .needleIconKeepVertical=${config.main?.needle
               ?.needle_icon_keep_vertical ?? false}
-            .needleIconSize=${config.main?.needle?.needle_icon_size ?? 1}
+            .needleIconSize=${config.main?.needle?.needle_icon_size ?? 2}
             .needleIconColor=${config.main?.needle?.needle_icon_color
               ? rgbToHex(config.main.needle.needle_icon_color)
               : undefined}

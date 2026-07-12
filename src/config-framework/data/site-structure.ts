@@ -62,6 +62,7 @@ const needleSettingsPage: Page = {
       name: "needle",
       type: "form",
       schema: needleConfigSchema,
+      conditionalSchemaField: "needle_style",
     },
   ],
 };
