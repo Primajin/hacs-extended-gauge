@@ -22,7 +22,7 @@
   "homepage": "https://github.com/microteq/extended-gauge#readme",
   "scripts": {
     "build": "rollup -c",
-    "lint": "eslint src/*",
+    "lint": "eslint 'src/**/*.ts'",
     "release": "semantic-release",
     "start": "rollup -wc",
     "watch": "rollup -c --watch",
