@@ -35,33 +35,33 @@ function e(e,t,i,n){var s,o=arguments.length,r=o<3?t:null===n?n=Object.getOwnPro
             d="M -34,-3 L -40,-1 A 1,1,0,0,0,-40,1 L -34,3 A 2,2,0,0,0,-34,-3 Z"
             style=${$e({transform:`rotate(${this._valueAngle}deg)`})}>
           </path>
-        `;case"icon":if(this.needleIcon){const i=10*this.needleIconSize,n=1.5*i,s=null!==(e=this.needleIconColor)&&void 0!==e?e:"var(--primary-text-color)",o=this.needleIconBackgroundColor,r=.6*i;if(this.needleIconKeepVertical){const e=this._valueAngle*Math.PI/180,l=-40*Math.cos(e),a=-40*Math.sin(e);return j`
+        `;case"icon":if(this.needleIcon){const i=14*this.needleIconSize,n=null!==(e=this.needleIconColor)&&void 0!==e?e:"var(--primary-text-color)",s=this.needleIconBackgroundColor,o=.5*i;if(this.needleIconKeepVertical){const e=this._valueAngle*Math.PI/180,r=-40*Math.cos(e),l=-40*Math.sin(e);return j`
               <g class="needle needle-icon ${t}">
-                ${o?j`<circle cx=${l} cy=${a} r=${r} fill=${o} class="needle-icon-bg"/>`:""}
+                ${s?j`<circle cx=${r} cy=${l} r=${o} fill=${s} class="needle-icon-bg"/>`:""}
                 <foreignObject
-                  x=${l-n/2}
-                  y=${a-n/2}
-                  width=${n}
-                  height=${n}>
+                  x=${r-i/2}
+                  y=${l-i/2}
+                  width=${i}
+                  height=${i}>
                   <ha-icon
                     icon=${this.needleIcon}
-                    style="width:${i}px;height:${i}px;color:${s};display:block;margin:auto;">
+                    style="width:100%;height:100%;color:${n};display:block;">
                   </ha-icon>
                 </foreignObject>
               </g>
-            `}{const e=-40-n/2;return j`
+            `}{const e=-40-i/2;return j`
               <g
                 class="needle needle-icon ${t}"
                 style=${$e({transform:`rotate(${this._valueAngle}deg)`})}>
-                ${o?j`<circle cx=${e+n/2} cy=${0} r=${r} fill=${o} class="needle-icon-bg"/>`:""}
+                ${s?j`<circle cx=${e+i/2} cy=${0} r=${o} fill=${s} class="needle-icon-bg"/>`:""}
                 <foreignObject
                   x=${e}
-                  y=${-n/2}
-                  width=${n}
-                  height=${n}>
+                  y=${-i/2}
+                  width=${i}
+                  height=${i}>
                   <ha-icon
                     icon=${this.needleIcon}
-                    style="width:${i}px;height:${i}px;color:${s};display:block;margin:auto;">
+                    style="width:100%;height:100%;color:${n};display:block;">
                   </ha-icon>
                 </foreignObject>
               </g>
