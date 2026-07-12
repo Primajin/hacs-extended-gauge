@@ -140,7 +140,7 @@ export class ExtendedGauge extends LitElement {
   @property({ type: String }) public needleStyle: NeedleStyle = "default";
   @property({ type: String }) public needleIcon?: string;
   @property({ type: Boolean }) public needleIconKeepVertical = false;
-  @property({ type: Number }) public needleIconSize = 2;
+  @property({ type: Number }) public needleIconSize = 1;
   @property({ type: String }) public needleIconColor?: string;
   @property({ type: String }) public needleIconBackgroundColor?: string;
   @property({ type: Boolean }) public animation = true;
@@ -313,14 +313,14 @@ export class ExtendedGauge extends LitElement {
           // Use <ha-icon> inside a <foreignObject> for all icon packs (MDI and custom).
           // HA's <ha-icon> element resolves any registered icon set, so no icon-pack-specific
           // parsing is needed here.
-          // needleIconSize is a multiplier: 2 = default, 1 = smaller, 3 = larger, etc.
-          const scale = 0.12 * this.needleIconSize;
-          const iconSize = 24 * scale;
-          // foreignObject side length – give a little extra room so the icon isn't clipped.
-          const foSize = iconSize * 2;
+          // needleIconSize is a multiplier: 1 = default, 0.5 = half, 2 = double, etc.
+          // Base size of 10 SVG units at size=1 gives a clearly visible icon on the arc.
+          const iconSize = 10 * this.needleIconSize;
+          // foreignObject side length – a little extra room so the icon isn't clipped.
+          const foSize = iconSize * 1.5;
           const iconColor = this.needleIconColor ?? "var(--primary-text-color)";
           const bgColor = this.needleIconBackgroundColor;
-          const bgRadius = foSize * 0.5;
+          const bgRadius = iconSize * 0.6;
 
           if (this.needleIconKeepVertical) {
             // Position the icon on the arc but keep it upright (no rotation).
@@ -341,7 +341,7 @@ export class ExtendedGauge extends LitElement {
                   height=${foSize}>
                   <ha-icon
                     icon=${this.needleIcon}
-                    style="width:${foSize}px;height:${foSize}px;color:${iconColor};display:block;">
+                    style="width:${iconSize}px;height:${iconSize}px;color:${iconColor};display:block;margin:auto;">
                   </ha-icon>
                 </foreignObject>
               </g>
@@ -369,7 +369,7 @@ export class ExtendedGauge extends LitElement {
                   height=${foSize}>
                   <ha-icon
                     icon=${this.needleIcon}
-                    style="width:${foSize}px;height:${foSize}px;color:${iconColor};display:block;">
+                    style="width:${iconSize}px;height:${iconSize}px;color:${iconColor};display:block;margin:auto;">
                   </ha-icon>
                 </foreignObject>
               </g>
