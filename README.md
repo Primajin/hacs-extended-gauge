@@ -38,6 +38,8 @@ The Extended Gauge Card is inspired by the Home Assistant Gauge Card but offers 
 > node utils/scripts/generate-previews.js
 > ```
 
+For a full collection of ready-to-copy YAML configurations (CPU temperature, battery level, AQI, UV index, wind speed, CO₂, and more), see **[docs/examples.md](docs/examples.md)**.
+
 ### Default needle style
 
 ![Default needle](assets/preview-needle-default.svg)

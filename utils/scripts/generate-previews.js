@@ -25,9 +25,9 @@ const path = require('path');
 // Canvas / layout constants
 // ---------------------------------------------------------------------------
 const W   = 240;    // SVG canvas width
-const H   = 100;    // SVG canvas height
+const H   = 115;    // SVG canvas height
 const CX  = 120;    // Gauge pivot X (horizontally centered)
-const CY  = 60;     // Gauge pivot Y (leaves ~8px top padding, ~15px bottom)
+const CY  = 75;     // Gauge pivot Y — balanced: ~28px top padding, ~27px bottom padding
 const R   = 40;     // Gauge arc radius
 
 const OUT_DIR = path.resolve(__dirname, '../../assets');
