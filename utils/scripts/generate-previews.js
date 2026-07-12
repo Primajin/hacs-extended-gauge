@@ -92,6 +92,18 @@ function segmentArcPath(pctLo, pctHi, color) {
   return `<path d="M ${p1.x} ${p1.y} A ${R} ${R} 0 ${large} 1 ${p2.x} ${p2.y}" stroke="${color}" fill="none" stroke-width="15" opacity="0.85"/>`;
 }
 
+/**
+ * Build an SVG arc path for a segment from raw value lo to hi within [min,max].
+ */
+function segmentArcPathV(lo, hi, min, max, color) {
+  const a1 = valueToAngle(lo, min, max);
+  const a2 = valueToAngle(hi, min, max);
+  const p1 = arcPoint(a1);
+  const p2 = arcPoint(a2);
+  const large = (a2 - a1) > 180 ? 1 : 0;
+  return `<path d="M ${p1.x} ${p1.y} A ${R} ${R} 0 ${large} 1 ${p2.x} ${p2.y}" stroke="${color}" fill="none" stroke-width="15" opacity="0.85"/>`;
+}
+
 // ---------------------------------------------------------------------------
 // SVG building blocks
 // ---------------------------------------------------------------------------
@@ -141,6 +153,21 @@ function svgWrap(innerContent, extraRootContent) {
   </g>
   ${extraRootContent}
 </svg>`;
+}
+
+/** Icon needle that stays vertical; icon positioned on the arc at the given angle. */
+function iconNeedleVertical(angleDeg, iconPath, iconColor, bgColor, sizeMult) {
+  sizeMult = sizeMult || 1.5;
+  const scale    = 0.12 * sizeMult;
+  const iconSize = 24 * scale;
+  const bgR      = r2(iconSize * 0.75);
+  const a        = toRad(angleDeg);
+  const icx      = r2(-R * Math.cos(a));
+  const icy      = r2(-R * Math.sin(a));
+  const ix       = r2(icx - iconSize / 2);
+  const iy       = r2(icy - iconSize / 2);
+  const bg       = bgColor ? `<circle cx="${icx}" cy="${icy}" r="${bgR}" fill="${bgColor}" opacity="0.9"/>` : '';
+  return `${bg}<path d="${iconPath}" transform="translate(${ix}, ${iy}) scale(${scale})" fill="${iconColor}"/>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -262,6 +289,173 @@ function previewNoNeedle() {
 // ---------------------------------------------------------------------------
 // Write all files
 // ---------------------------------------------------------------------------
+const EXAMPLE_OUT_DIR = path.resolve(__dirname, '../../assets/examples');
+if (!fs.existsSync(EXAMPLE_OUT_DIR)) fs.mkdirSync(EXAMPLE_OUT_DIR, { recursive: true });
+
+// ---------------------------------------------------------------------------
+// Example renderings (one per docs/examples.md entry)
+// ---------------------------------------------------------------------------
+
+// MDI icon paths (24×24 viewBox) used in previews
+// mdi:white-balance-sunny  — circle + 8 rays
+const MDI_SUN = 'M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2v-2H2v2zm18 0h2v-2h-2v2zM11 2v2h2V2h-2zm0 18v2h2v-2h-2zM5.99 4.58L4.58 5.99l1.41 1.41 1.41-1.41-1.41-1.41zm12.02 12.02l-1.41 1.41 1.41 1.41 1.41-1.41-1.41-1.41zM5.99 19.42l1.41-1.41-1.41-1.41-1.41 1.41 1.41 1.41zm12.02-12.02L19.42 6l-1.41-1.41-1.41 1.41 1.41 1.41z';
+// mdi:arrow-up-bold
+const MDI_ARROW_UP = 'M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z';
+
+/**
+ * Helper: threshold labels outside the arc (root-coordinate labels for value-based scale).
+ * @param {Array<{val,color,label}>} marks
+ * @param {number} min
+ * @param {number} max
+ * @param {number} rOff  radial offset beyond arc radius (default 10)
+ */
+function thresholdLabels(marks, min, max, rOff) {
+  rOff = rOff || 10;
+  return marks.map(({ val, color, label }) => {
+    const a  = toRad(valueToAngle(val, min, max));
+    const lx = r2((R + rOff) * -Math.cos(a) + CX);
+    const ly = r2((R + rOff) * -Math.sin(a) + CY);
+    return `<text x="${lx}" y="${ly}" text-anchor="middle" font-family="sans-serif" font-size="6" fill="${color}">${label}</text>`;
+  }).join('\n  ');
+}
+
+// 1. CPU Temperature  — value 72°C, segments 0-60 green / 60-80 amber / 80-100 red
+function exampleCpuTemp() {
+  const mn = 0, mx = 100, val = 72;
+  const angle = valueToAngle(val, mn, mx);
+  const segs = [
+    segmentArcPathV(0, 60, mn, mx, '#4caf50'),
+    segmentArcPathV(60, 80, mn, mx, '#ff9800'),
+    segmentArcPathV(80, 100, mn, mx, '#f44336'),
+  ];
+  return svgWrap([BG_ARC, ...segs, defaultNeedle(angle), gaugeLabelsCustom('72°C', '0', '100')].join('\n    '));
+}
+
+// 2. Battery  — value 35%, segments 0-20 red / 20-50 orange / 50-100 green, old needle
+function exampleBattery() {
+  const mn = 0, mx = 100, val = 35;
+  const angle = valueToAngle(val, mn, mx);
+  const segs = [
+    segmentArcPathV(0, 20, mn, mx, '#f44336'),
+    segmentArcPathV(20, 50, mn, mx, '#ff9800'),
+    segmentArcPathV(50, 100, mn, mx, '#4caf50'),
+  ];
+  return svgWrap([BG_ARC, ...segs, oldNeedle(angle), gaugeLabels('35%')].join('\n    '));
+}
+
+// 3. AQI — value 120, min=0 max=300, default needle, 5 segments, threshold labels
+function exampleAqi() {
+  const mn = 0, mx = 300, val = 120;
+  const angle = valueToAngle(val, mn, mx);
+  const segs = [
+    segmentArcPathV(0, 50, mn, mx, '#00e400'),
+    segmentArcPathV(50, 100, mn, mx, '#ffff00'),
+    segmentArcPathV(100, 150, mn, mx, '#ff7e00'),
+    segmentArcPathV(150, 200, mn, mx, '#ff0000'),
+    segmentArcPathV(200, 300, mn, mx, '#8f3f97'),
+  ];
+  const labels = thresholdLabels([
+    { val: 50,  color: '#ffff00', label: '50'  },
+    { val: 100, color: '#ff7e00', label: '100' },
+    { val: 150, color: '#ff0000', label: '150' },
+    { val: 200, color: '#8f3f97', label: '200' },
+  ], mn, mx);
+  return svgWrap([BG_ARC, ...segs, defaultNeedle(angle), gaugeLabelsCustom('120', '0', '300')].join('\n    '), labels);
+}
+
+// 4. UV Index — value 7, min=0 max=11, icon needle (sun), 4 segments
+function exampleUvIndex() {
+  const mn = 0, mx = 11, val = 7;
+  const angle = valueToAngle(val, mn, mx);
+  const segs = [
+    segmentArcPathV(0, 3, mn, mx, '#4caf50'),
+    segmentArcPathV(3, 6, mn, mx, '#ffeb3b'),
+    segmentArcPathV(6, 8, mn, mx, '#ff9800'),
+    segmentArcPathV(8, 11, mn, mx, '#f44336'),
+  ];
+  const needle = iconNeedleVertical(angle, MDI_SUN, '#ffd500', '#3c2800', 1.5);
+  return svgWrap([BG_ARC, ...segs, needle, gaugeLabelsCustom('7', '0', '11')].join('\n    '));
+}
+
+// 5. Humidity — value 55%, dial only, 3 segments (no needle)
+function exampleHumidity() {
+  const mn = 0, mx = 100, val = 55;
+  const angle = valueToAngle(val, mn, mx);
+  const segs = [
+    segmentArcPathV(0, 40, mn, mx, '#ff9800'),
+    segmentArcPathV(40, 60, mn, mx, '#4caf50'),
+    segmentArcPathV(60, 100, mn, mx, '#2196f3'),
+  ];
+  // Dial mode: show the coloured fill arc of the active segment colour
+  const dial = dialArcPath(angle, '#4caf50');
+  return svgWrap([BG_ARC, ...segs, dial, gaugeLabels('55%')].join('\n    '));
+}
+
+// 6. Power W→kW — value 3.2kW, min=0 max=10, old needle + dial arc
+function examplePower() {
+  const mn = 0, mx = 10, val = 3.2;
+  const angle = valueToAngle(val, mn, mx);
+  const dial = dialArcPath(angle, '#4caf50');
+  return svgWrap([BG_ARC, dial, oldNeedle(angle), gaugeLabelsCustom('3.2 kW', '0', '10')].join('\n    '));
+}
+
+// 7. Wind Speed — value 45 km/h, min=0 max=120, icon needle (arrow-up vertical), 3 segments
+function exampleWind() {
+  const mn = 0, mx = 120, val = 45;
+  const angle = valueToAngle(val, mn, mx);
+  const segs = [
+    segmentArcPathV(0, 20, mn, mx, '#4caf50'),
+    segmentArcPathV(20, 60, mn, mx, '#ffeb3b'),
+    segmentArcPathV(60, 120, mn, mx, '#f44336'),
+  ];
+  const needle = iconNeedleVertical(angle, MDI_ARROW_UP, '#90caf9', '#0d47a1', 1.5);
+  return svgWrap([BG_ARC, ...segs, needle, gaugeLabelsCustom('45 km/h', '0', '120')].join('\n    '));
+}
+
+// 8. CO₂ — value 950ppm, min=400 max=2000, default needle, 4 segments, labels
+function exampleCo2() {
+  const mn = 400, mx = 2000, val = 950;
+  const angle = valueToAngle(val, mn, mx);
+  const segs = [
+    segmentArcPathV(400, 800, mn, mx, '#4caf50'),
+    segmentArcPathV(800, 1000, mn, mx, '#ffeb3b'),
+    segmentArcPathV(1000, 1500, mn, mx, '#ff9800'),
+    segmentArcPathV(1500, 2000, mn, mx, '#f44336'),
+  ];
+  const labels = thresholdLabels([
+    { val: 800,  color: '#ffeb3b', label: '800'  },
+    { val: 1000, color: '#ff9800', label: '1000' },
+    { val: 1500, color: '#f44336', label: '1500' },
+  ], mn, mx);
+  return svgWrap([BG_ARC, ...segs, defaultNeedle(angle), gaugeLabelsCustom('950 ppm', '400', '2000')].join('\n    '), labels);
+}
+
+// 9. Fridge — value 3.5°C, min=-2 max=10, old needle, 3 segments
+function exampleFridge() {
+  const mn = -2, mx = 10, val = 3.5;
+  const angle = valueToAngle(val, mn, mx);
+  const segs = [
+    segmentArcPathV(-2, 1, mn, mx, '#2196f3'),
+    segmentArcPathV(1, 5, mn, mx, '#4caf50'),
+    segmentArcPathV(5, 10, mn, mx, '#f44336'),
+  ];
+  return svgWrap([BG_ARC, ...segs, oldNeedle(angle), gaugeLabelsCustom('3.5°C', '-2', '10')].join('\n    '));
+}
+
+// 10. Solar — value 2200W, min=0 max=5000, dial only, 3 segments
+function exampleSolar() {
+  const mn = 0, mx = 5000, val = 2200;
+  const angle = valueToAngle(val, mn, mx);
+  const segs = [
+    segmentArcPathV(0, 1000, mn, mx, '#2196f3'),
+    segmentArcPathV(1000, 3000, mn, mx, '#ffeb3b'),
+    segmentArcPathV(3000, 5000, mn, mx, '#ff9800'),
+  ];
+  const dial = dialArcPath(angle, '#ffeb3b');
+  return svgWrap([BG_ARC, ...segs, dial, gaugeLabelsCustom('2200 W', '0', '5000')].join('\n    '));
+}
+
+
 const FILES = {
   'preview-needle-default.svg':     previewNeedleDefault(),
   'preview-needle-default-mid.svg': previewNeedleDefaultMid(),
@@ -281,3 +475,23 @@ for (const [name, content] of Object.entries(FILES)) {
   console.log('Written:', name);
 }
 console.log(`\nAll ${Object.keys(FILES).length} previews written to assets/`);
+
+const EXAMPLE_FILES = {
+  'cpu-temp.svg':   exampleCpuTemp(),
+  'battery.svg':    exampleBattery(),
+  'aqi.svg':        exampleAqi(),
+  'uv-index.svg':   exampleUvIndex(),
+  'humidity.svg':   exampleHumidity(),
+  'power.svg':      examplePower(),
+  'wind.svg':       exampleWind(),
+  'co2.svg':        exampleCo2(),
+  'fridge.svg':     exampleFridge(),
+  'solar.svg':      exampleSolar(),
+};
+
+for (const [name, content] of Object.entries(EXAMPLE_FILES)) {
+  const filePath = path.join(EXAMPLE_OUT_DIR, name);
+  fs.writeFileSync(filePath, content, 'utf8');
+  console.log('Written: examples/' + name);
+}
+console.log(`\nAll ${Object.keys(EXAMPLE_FILES).length} example previews written to assets/examples/`);

@@ -3,12 +3,17 @@
 A collection of ready-to-use YAML configurations showcasing different Extended Gauge Card features.
 Copy any example into your Lovelace dashboard and adjust the `entity` field to match your Home Assistant setup.
 
+> Preview images show a representative value for each configuration.
+> To regenerate them after changes, run `node utils/scripts/generate-previews.js` from the repository root.
+
 ---
 
 ## CPU / SoC Temperature
 
 Shows processor temperature with colour-coded warning zones.
 Green up to 60 °C, amber from 60–80 °C, red above 80 °C.
+
+![CPU Temperature preview](../assets/examples/cpu-temp.svg)
 
 ```yaml
 type: custom:extended-gauge-card
@@ -49,6 +54,8 @@ segment_list:
 
 Uses the original Home Assistant needle style with a colour gradient from red (low) to green (full).
 
+![Battery Level preview](../assets/examples/battery.svg)
+
 ```yaml
 type: custom:extended-gauge-card
 title:
@@ -88,6 +95,8 @@ segment_list:
 
 Follows the standard US AQI colour bands (EPA scale 0–500).
 Shows both the coloured segments and the current AQI value with a needle.
+
+![AQI preview](../assets/examples/aqi.svg)
 
 ```yaml
 type: custom:extended-gauge-card
@@ -139,6 +148,8 @@ segment_list:
 Shows the WHO UV index scale (0–11+) with standard risk-level colours.
 Icon needle doubles as a visual sun symbol.
 
+![UV Index preview](../assets/examples/uv-index.svg)
+
 ```yaml
 type: custom:extended-gauge-card
 title:
@@ -188,6 +199,8 @@ segment_list:
 Highlights the ideal indoor humidity range (40–60 %) in green.
 Uses dial mode (no needle) for a clean, minimal look.
 
+![Humidity preview](../assets/examples/humidity.svg)
+
 ```yaml
 type: custom:extended-gauge-card
 title:
@@ -226,6 +239,8 @@ segment_list:
 Reads a sensor in watts and displays it in kilowatts using the conversion factor.
 Shows both the dial arc and the HA-style needle simultaneously with `show_dial: true`.
 
+![Power preview](../assets/examples/power.svg)
+
 ```yaml
 type: custom:extended-gauge-card
 title:
@@ -251,6 +266,8 @@ main:
 
 Custom range (0–120 km/h), icon needle stays vertical so the compass direction arrow
 always points up regardless of the current speed reading.
+
+![Wind Speed preview](../assets/examples/wind.svg)
 
 ```yaml
 type: custom:extended-gauge-card
@@ -297,6 +314,8 @@ segment_list:
 Monitors CO₂ concentration (ppm) with standard air-quality thresholds.
 Segment labels show the threshold values on the gauge arc.
 
+![CO₂ Level preview](../assets/examples/co2.svg)
+
 ```yaml
 type: custom:extended-gauge-card
 title:
@@ -341,7 +360,9 @@ segment_list:
 ## Refrigerator Temperature
 
 Tight range for food-safety monitoring.
-Shows the safe zone (1–5 °C) in green; values outside appear in red.
+Shows the safe zone (1–5 °C) in green; values outside appear in red or blue.
+
+![Fridge Temperature preview](../assets/examples/fridge.svg)
 
 ```yaml
 type: custom:extended-gauge-card
@@ -382,6 +403,8 @@ segment_list:
 
 Displays current solar generation in watts (0–5000 W).
 Dial-only mode with a blue-to-yellow colour progression via segments.
+
+![Solar Output preview](../assets/examples/solar.svg)
 
 ```yaml
 type: custom:extended-gauge-card
