@@ -1,6 +1,6 @@
 /*****************************************************************************************************************************/
 /* Purpose: Tests for formatNumber utility
-/* History: 12-JUL-2025 D.Geisenhoff   Created
+/* History: 12-JUL-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 import { formatNumber } from "../utils/format";
 import { FrontendLocaleData } from "custom-card-helpers";

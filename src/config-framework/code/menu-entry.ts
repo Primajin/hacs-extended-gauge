@@ -6,7 +6,7 @@ import { fireEvent } from "custom-card-helpers";
 declare global {
   /*****************************************************************************************************************************/
   /* Purpose: Register the 'menu click' event
-  /* History: 24-FEB-2025 D.Geisenhoff   Created
+  /* History: 24-FEB-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   interface HASSDomEvents {
     "microteq-menu-click": Record<string, never>;
@@ -14,7 +14,7 @@ declare global {
 
   /*****************************************************************************************************************************/
   /* Purpose: Assign HTML tag to this class
-  /* History: 24-FEB-2025 D.Geisenhoff   Created
+  /* History: 24-FEB-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   // interface HTMLElementTagNameMap
   // {
@@ -24,7 +24,7 @@ declare global {
 
 /*****************************************************************************************************************************/
 /* Purpose: Menu item on the main configuration page
-/* History: 24-FEB-2025 D.Geisenhoff   Created
+/* History: 24-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 //@customElement("microteq-menu-entry")
 export class MenuEntry extends LitElement {
@@ -36,7 +36,7 @@ export class MenuEntry extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Render a menu item on the main configuration page
-/* History: 24-FEB-2025 D.Geisenhoff   Created
+/* History: 24-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
   protected render(): TemplateResult {
     return html`
@@ -67,7 +67,7 @@ export class MenuEntry extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Focus has changed
-/* History: 24-FEB-2025 D.Geisenhoff   Created
+/* History: 24-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
   private _focusChanged(ev) {
     this.shadowRoot!.querySelector(".top")!.classList.toggle(
@@ -78,7 +78,7 @@ export class MenuEntry extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Sub page link has been klicked
-/* History: 24-FEB-2025 D.Geisenhoff   Created
+/* History: 24-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
   private _menuClicked(): void {
     fireEvent(this, "microteq-menu-click");
@@ -86,7 +86,7 @@ export class MenuEntry extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: CSS styles for this HTML element
-/* History: 24-FEB-2025 D.Geisenhoff   Created
+/* History: 24-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
   static get styles(): CSSResultGroup {
     return css`
@@ -141,7 +141,7 @@ export class MenuEntry extends LitElement {
 
 /*****************************************************************************************************************************/
 /* Purpose: Assign the HTML tag to this class
-/* History: 24-FEB-2025 D.Geisenhoff   Created
+/* History: 24-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 if (!customElements.get("microteq-menu-entry")) {
   customElements.define(`microteq-menu-entry`, MenuEntry);

@@ -16,7 +16,7 @@
 /*     7. renderNeedle dispatch
 /*     8. showNeedle / showDial independence (logic extracted from gauge render())
 /*
-/* History: 13-JUL-2025 D.Geisenhoff   Created
+/* History: 13-JUL-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 
 // ---------------------------------------------------------------------------
@@ -562,7 +562,7 @@ describe("renderNeedle dispatch", () => {
  *
  * IMPORTANT: This is a deliberate, standalone reimplementation of the
  * showNeedle/showDial branching logic found in gauge.ts ExtendedGauge.render()
- * (lines ~416–487 as of 13-JUL-2025).  It is NOT a call into the real
+ * (lines ~416–487 as of 13-JUL-2026).  It is NOT a call into the real
  * component, because gauge.ts uses Lit decorators that cannot run in Node.
  *
  * Consequence: these tests verify the *intended* behaviour.  If the logic in

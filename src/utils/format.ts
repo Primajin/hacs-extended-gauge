@@ -1,12 +1,12 @@
 /*****************************************************************************************************************************/
 /* Purpose: Format values
-/* History: 20-JUN-2025 D.Geisenhoff   Created
+/* History: 20-JUN-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 import { FrontendLocaleData } from "custom-card-helpers";
 
 /*****************************************************************************************************************************/
 /* Purpose: Number format option interface
-/* History: 08-APR-2025 D.Geisenhoff   Created
+/* History: 08-APR-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export interface NumberFormatOptions {
   decimalPlaces?: number;
@@ -16,7 +16,7 @@ export interface NumberFormatOptions {
 
 /*****************************************************************************************************************************/
 /* Purpose: Format a number to a string
-/* History: 20-JUN-2025 D.Geisenhoff   Created
+/* History: 20-JUN-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export const formatNumber = (
   value: number,

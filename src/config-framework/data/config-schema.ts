@@ -16,7 +16,7 @@ import localize from "../../localize/localize";
 
 /*****************************************************************************************************************************/
 /* Purpose: Configuration structure of lovelace caed
-/* History: 15-APR-2025 D.Geisenhoff   Created
+/* History: 15-APR-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 const baseLovelaceCardConfig = object({
   type: string(),
@@ -25,7 +25,7 @@ const baseLovelaceCardConfig = object({
 
 /*****************************************************************************************************************************/
 /* Purpose: Configuration structure for the card.
-/* History: 23-FEB-2025 D.Geisenhoff   Created
+/* History: 23-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -42,7 +42,7 @@ export const cardConfigStruct = assign(
 
 /*****************************************************************************************************************************/
 /* Purpose: Schema for title section HA Form
-/* History: 26-MAR-2025 D.Geisenhoff   Created
+/* History: 26-MAR-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export const titleConfigSchema = [
   {
@@ -53,7 +53,7 @@ export const titleConfigSchema = [
 
 /*****************************************************************************************************************************/
 /* Purpose: Schema for title section HA Form
-/* History: 26-MAR-2025 D.Geisenhoff   Created
+/* History: 26-MAR-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 // export const titleConfigSchema =
 // [
@@ -66,7 +66,7 @@ export const titleConfigSchema = [
 
 /*****************************************************************************************************************************/
 /* Purpose: Schema for the settings section of a HA form for segment settings page
-/* History: 016APR-2025 D.Geisenhoff   Created
+/* History: 016APR-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export const segmentSettingsConfigSchema = [
   {
@@ -99,13 +99,13 @@ export const segmentSettingsConfigSchema = [
 
 /*****************************************************************************************************************************/
 /* Purpose: Schema for title section HA form of segment page
-/* History: 02-APR-2025 D.Geisenhoff   Created
+/* History: 02-APR-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export const segmentConfigSchema = titleConfigSchema;
 
 /*****************************************************************************************************************************/
 /* Purpose: Entity details config schema
-/* History: 23-FEB-2025 D.Geisenhoff   Created
+/* History: 23-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export const entitySettingsConfigSchema = [
   {
@@ -146,7 +146,7 @@ export const entitySettingsConfigSchema = [
 
 /*****************************************************************************************************************************/
 /* Purpose: Sensor entity config Schema
-/* History: 07-APR-2025 D.Geisenhoff   Created
+/* History: 07-APR-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export const entityConfigSchema = [
   {
@@ -159,7 +159,7 @@ export const entityConfigSchema = [
 
 /*****************************************************************************************************************************/
 /* Purpose: Needle settings config schema
-/* History: 12-JUL-2025 D.Geisenhoff   Created
+/* History: 12-JUL-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export const needleConfigSchema = (needleConfig: any) => {
   const needleStyle = needleConfig?.needle_style;
@@ -219,7 +219,7 @@ export const needleConfigSchema = (needleConfig: any) => {
 
 /*****************************************************************************************************************************/
 /* Purpose: Main page config Schema
-/* History: 23-FEB-2025 D.Geisenhoff   Created
+/* History: 23-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export const mainConfigSchema = [
   {

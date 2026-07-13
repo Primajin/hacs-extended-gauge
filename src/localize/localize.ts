@@ -6,7 +6,7 @@
 /*##########################################################################################*/
 /*****************************************************************************************************************************/
 /* Purpose: Licalizing string that are not covered by Home Assistant localization system
-/* History: 20-JUN-2025 D.Geisenhoff   Created
+/* History: 20-JUN-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 import * as en from "./languages/en.json";
 import * as de from "./languages/de.json";
@@ -16,7 +16,7 @@ import * as es from "./languages/es.json";
 
 /*****************************************************************************************************************************/
 /* Purpose: Supported languages
-/* History: 20-JUN-2025 D.Geisenhoff   Created
+/* History: 20-JUN-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 const languages: Record<string, unknown> = {
   en,
@@ -29,7 +29,7 @@ const defaultLang = "en";
 
 /*****************************************************************************************************************************/
 /* Purpose: translate text key into a localized string
-/* History: 20-JUN-2025 D.Geisenhoff   Created
+/* History: 20-JUN-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 function getTranslatedString(key: string, lang: string): string | undefined {
   try {
@@ -46,7 +46,7 @@ function getTranslatedString(key: string, lang: string): string | undefined {
 
 /*****************************************************************************************************************************/
 /* Purpose: Do custom localization of a text key. Take english as default. Return key, if no translation found.
-/* History: 20-JUN-2025 D.Geisenhoff   Created
+/* History: 20-JUN-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export function setupCustomlocalize(key: string) {
   const lang = (localStorage.getItem("selectedLanguage") || "en")
@@ -60,6 +60,6 @@ export function setupCustomlocalize(key: string) {
 
 /*****************************************************************************************************************************/
 /* Purpose: SetupCustomLocalize is default function of this file.
-/* History: 20-JUN-2025 D.Geisenhoff   Created
+/* History: 20-JUN-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export default setupCustomlocalize;

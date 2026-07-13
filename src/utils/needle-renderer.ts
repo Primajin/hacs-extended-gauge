@@ -17,7 +17,7 @@
 /*   The fix is to pass the colour through the `style` property (via styleMap) so the
 /*   inline style always wins over the class rule.
 /*
-/* History: 13-JUL-2025 D.Geisenhoff   Created
+/* History: 13-JUL-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 
 import { svg } from "lit";
@@ -54,7 +54,7 @@ export interface NeedleRenderOptions {
 /* Purpose: Render the default arrow needle.
 /*          Path: a simple left-pointing triangle centred on the arc tip at (-40, 0) in
 /*          gauge coordinates, rotated to the current value angle.
-/* History: 13-JUL-2025 D.Geisenhoff   Created
+/* History: 13-JUL-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export function renderDefaultNeedle(
   opts: Pick<NeedleRenderOptions, "valueAngle" | "animate">
@@ -71,7 +71,7 @@ export function renderDefaultNeedle(
 
 /*****************************************************************************************************************************/
 /* Purpose: Render the classic HA-style needle (from home-assistant/frontend ha-gauge.ts).
-/* History: 13-JUL-2025 D.Geisenhoff   Created
+/* History: 13-JUL-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export function renderClassicNeedle(
   opts: Pick<NeedleRenderOptions, "valueAngle" | "animate">
@@ -94,7 +94,7 @@ export function renderClassicNeedle(
 /*          BUG-1 fix: the fill colour is applied via `styleMap` (inline style) so it
 /*          always overrides the `.needle-icon-path` CSS class rule.
 /*
-/* History: 13-JUL-2025 D.Geisenhoff   Created
+/* History: 13-JUL-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export function renderIconNeedle(
   opts: NeedleRenderOptions
@@ -171,7 +171,7 @@ export function renderIconNeedle(
 
 /*****************************************************************************************************************************/
 /* Purpose: Main dispatch function – choose the correct needle renderer based on style.
-/* History: 13-JUL-2025 D.Geisenhoff   Created
+/* History: 13-JUL-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export function renderNeedle(
   opts: NeedleRenderOptions

@@ -1,6 +1,6 @@
 /*****************************************************************************************************************************/
 /* Purpose: Convert array of RGB to hex string
-/* History: 20-MAR-2025 D.Geisenhoff   Created
+/* History: 20-MAR-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export const rgbToHex = (colorList: number[]): string => {
   if (!colorList) return "";
@@ -11,7 +11,7 @@ export const rgbToHex = (colorList: number[]): string => {
 
 /*****************************************************************************************************************************/
 /* Purpose: Convert hex strirng to array of RGB
-/* History: 20-MAR-2025 D.Geisenhoff   Created
+/* History: 20-MAR-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export const hexToRgb = (color: string): [number, number, number] | null => {
   color = color.trim();

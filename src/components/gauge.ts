@@ -1,6 +1,6 @@
 /*****************************************************************************************************************************/
 /* Purpose: Gauge component, based on HA-Gauge
-/* History: 10-MAR-2025 D. Geisenhoff   Created
+/* History: 10-MAR-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 import { styleMap } from "lit/directives/style-map.js";
 import { formatNumber, NumberFormatOptions } from "../utils/format";
@@ -21,7 +21,7 @@ export { normalizeValue, getValueInPercentage, getAngle };
 
 /*****************************************************************************************************************************/
 /* Purpose: Interface for demo timer management
-/* History: 26-JUN-2025 D. Geisenhoff   Created
+/* History: 26-JUN-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 interface DemoTimerManager {
   timerId: number | null;
@@ -35,7 +35,7 @@ interface DemoTimerManager {
 
 /*****************************************************************************************************************************/
 /* Purpose: Singleton for demo timer management
-/* History: 26-JUN-2025 D. Geisenhoff   Created
+/* History: 26-JUN-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 export const DemoTimerManager: DemoTimerManager = {
   timerId: null,
@@ -75,7 +75,7 @@ export const DemoTimerManager: DemoTimerManager = {
 declare global {
   /*****************************************************************************************************************************/
   /* Purpose: Assign HTML tag to this class
-  /* History: 24-FEB-2025 D.Geisenhoff   Created
+  /* History: 24-FEB-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   interface HTMLElementTagNameMap {
     "extended-gauge": ExtendedGauge;
@@ -89,7 +89,7 @@ declare global {
 /*            color:            Color of segment range (string format i.e. #00ff00)
 /*            valueReplacement: A string that replaces the displayed value, when the value is inside the selected range.
 /*            valueReplacementOutOfRange: A string that replaces the displayed value, when the value is outside the selected range.
-/* History:   04-JUL-2025 D.Geisenhoff   Created
+/* History:   04-JUL-2025 J.Hell   Created
 /******************************************************************************************************************************************/
 export interface GaugeSegment {
   lower?: number;
@@ -121,7 +121,7 @@ export interface GaugeSegment {
 /*                                and an optional value replacement label, which replaces the value, if it is in the segment 
 /*                                range (see GaugeSegment).
 /*          showSegmentLabels:    If true, show the labes of the lower and upper bounds of each segment, else hide them.
-/* History: 24-FEB-2025 D.Geisenhoff   Created
+/* History: 24-FEB-2025 J.Hell   Created
 /******************************************************************************************************************************************/
 export class ExtendedGauge extends LitElement {
   @property({ type: Number }) public min = 0;
@@ -155,7 +155,7 @@ export class ExtendedGauge extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Constructor
-  /* History: 05-APR-2025 D.Geisenhoff   Created
+  /* History: 05-APR-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   public connectedCallback() {
     super.connectedCallback();
@@ -170,7 +170,7 @@ export class ExtendedGauge extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: If lower > upper, set lower to upper, if lower is empty, set to min, if upper is empty, set to max.
-  /* History: 24-FEB-2025 D.Geisenhoff   Created
+  /* History: 24-FEB-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   private _normalizeSegments() {
     if (this.segments) {
@@ -184,14 +184,14 @@ export class ExtendedGauge extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Keep value in range of defined min and max
-  /* History: 24-FEB-2025 D.Geisenhoff   Created
+  /* History: 24-FEB-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   private _normalizeValue = (value: number, min: number, max: number): number =>
     normalizeValue(value, min, max);
 
   /*****************************************************************************************************************************/
   /* Purpose: Get percentage of value
-  /* History: 04-APR-2025 D.Geisenhoff   Created
+  /* History: 04-APR-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   private _getValueInPercentage = (
     value: number,
@@ -201,14 +201,14 @@ export class ExtendedGauge extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Compute angle in a percentage of 180° depending on value
-  /* History: 04-APR-2025 D.Geisenhoff   Created
+  /* History: 04-APR-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   private _getAngle = (value: number, min: number, max: number) =>
     getAngle(value, min, max);
 
   /*****************************************************************************************************************************/
   /* Purpose: Compute lower angle 
-  /* History: 04-APR-2025 D.Geisenhoff   Created
+  /* History: 04-APR-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   private _getLowerAngle = (value: number, min: number, max: number) => {
     if (isNaN(value)) value = min;
@@ -217,7 +217,7 @@ export class ExtendedGauge extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Compute lower angle 
-  /* History: 04-APR-2025 D.Geisenhoff   Created
+  /* History: 04-APR-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   private _getUpperAngle = (value: number, min: number, max: number) => {
     if (isNaN(value)) value = max;
@@ -228,7 +228,7 @@ export class ExtendedGauge extends LitElement {
   /* Purpose: LitElement callback. Called after the element has updated its properties and rendered. It runs each time the 
   /*          component updates, unless the update was prevented. Called after the first render (firstUpdated()) and on every 
   /*          subsequent update
-  /* History: 18-FEB-2025 D.Geisenhoff  Created
+  /* History: 18-FEB-2025 J.Hell  Created
   /*****************************************************************************************************************************/
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
@@ -255,7 +255,7 @@ export class ExtendedGauge extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Set the viewbox of the SVG containing the value to perfectly fit the text. That way it will auto-scale correctly
-  /* History: 24-FEB-2025 D.Geisenhoff   Created
+  /* History: 24-FEB-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   private _rescaleSvgText(className: string) {
     const svgRoot = this.shadowRoot!.querySelector(`.${className}`)!;
@@ -268,7 +268,7 @@ export class ExtendedGauge extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Return the value text of the current segment, to be displayed instead of the effective value
-  /* History: 24-FEB-2025 D.Geisenhoff   Created
+  /* History: 24-FEB-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   private _getSegmentValueReplacement(): string | undefined {
     if (this.segments) {
@@ -303,8 +303,8 @@ export class ExtendedGauge extends LitElement {
   /*          style) inside needle-renderer.ts, ensuring it wins over the CSS class
   /*          `.needle-icon-path { fill: var(--primary-text-color) }`.
   /*
-  /* History: 12-JUL-2025 D.Geisenhoff   Created
-  /*          13-JUL-2025 D.Geisenhoff   Refactored to delegate to needle-renderer.ts
+  /* History: 12-JUL-2025 J.Hell   Created
+  /*          13-JUL-2025 J.Hell   Refactored to delegate to needle-renderer.ts
   /*****************************************************************************************************************************/
   private _renderNeedle() {
     return renderNeedle({
@@ -322,7 +322,7 @@ export class ExtendedGauge extends LitElement {
 
   /*******************************************************************************************************************************/
   /* Purpose: Render this HTML element
-  /* History: 04-APR-2025 D.Geisenhoff  Created
+  /* History: 04-APR-2025 J.Hell  Created
   /*                                    Animate needle only after first render and if animation property is true
   /*******************************************************************************************************************************/
   protected render() {
@@ -514,7 +514,7 @@ export class ExtendedGauge extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Styles of this HTML element
-/* History: 24-FEB-2025 D.Geisenhoff   Created
+/* History: 24-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
   static styles = css`
     :host {
@@ -640,7 +640,7 @@ export class ExtendedGauge extends LitElement {
 
 /*****************************************************************************************************************************/
 /* Purpose: Assign the HTML tag to this class
-/* History: 24-FEB-2025 D.Geisenhoff   Created
+/* History: 24-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 if (!customElements.get("microteq-extended-gauge")) {
   customElements.define(`microteq-extended-gauge`, ExtendedGauge);

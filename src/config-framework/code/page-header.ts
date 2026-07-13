@@ -6,7 +6,7 @@ import { customElement, property, query, state } from "lit-element";
 declare global {
   /*****************************************************************************************************************************/
   /* Purpose: Declare the 'go back' event
-  /* History: 24-FEB-2025 D.Geisenhoff   Created
+  /* History: 24-FEB-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   interface HASSDomEvents {
     "microteq-go-back": undefined;
@@ -14,7 +14,7 @@ declare global {
 
   /*****************************************************************************************************************************/
   /* Purpose: Assign the HTML tag to this class
-  /* History: 24-FEB-2025 D.Geisenhoff   Created
+  /* History: 24-FEB-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   // interface HTMLElementTagNameMap
   // {
@@ -24,7 +24,7 @@ declare global {
 
 /*****************************************************************************************************************************/
 /* Purpose: Header section of a configuration page
-/* History: 24-FEB-2025 D.Geisenhoff   Created
+/* History: 24-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 //@customElement("extended-gauge-card-page-header")
 export class PageHeader extends LitElement {
@@ -32,7 +32,7 @@ export class PageHeader extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Back button has been clicked
-  /* History: 24-FEB-2025 D.Geisenhoff   Created
+  /* History: 24-FEB-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   private _goBack(): void {
     fireEvent(this, "microteq-go-back");
@@ -40,7 +40,7 @@ export class PageHeader extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Render the current HTML element
-  /* History: 02-APR-2025 D.Geisenhoff   Created
+  /* History: 02-APR-2025 J.Hell   Created
   /*****************************************************************************************************************************/
   protected render(): TemplateResult {
     return html`
@@ -60,7 +60,7 @@ export class PageHeader extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Styles of this HTML element
-/* History: 24-FEB-2025 D.Geisenhoff   Created
+/* History: 24-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
   static get styles(): CSSResultGroup {
     return css`
@@ -83,7 +83,7 @@ export class PageHeader extends LitElement {
 
 /*****************************************************************************************************************************/
 /* Purpose: Assign the HTML tag to this class
-/* History: 24-FEB-2025 D.Geisenhoff   Created
+/* History: 24-FEB-2025 J.Hell   Created
 /*****************************************************************************************************************************/
 if (!customElements.get("microteq-page-header")) {
   customElements.define(`microteq-page-header`, PageHeader);
