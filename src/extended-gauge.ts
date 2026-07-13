@@ -5,6 +5,7 @@ import {
   ExtendedGaugeConfigData,
   SegmentPageConfigData,
   SegmentSettingsConfigData,
+  DisplayMode,
 } from "./config-framework/data/config-data";
 import { styles } from "./style";
 import { getDefaultConfig } from "./utils/get-default-config";
@@ -325,6 +326,29 @@ export class ExtendedGaugeCard extends LitElement {
   };
 
   /*******************************************************************************************************************************/
+  /* Purpose: Resolve display_mode to individual flags consumed by the gauge component.
+  /*          gauge_and_needle : full arc with segments + needle
+  /*          dial_only        : filled dial arc, no segments, no needle
+  /*          dial_and_needle  : filled dial arc + needle, no segments
+  /* History: 13-JUL-2025 D.Geisenhoff  Created
+  /*******************************************************************************************************************************/
+  private _resolveDisplayMode(mode: DisplayMode | undefined): {
+    showNeedle: boolean;
+    showDial: boolean;
+    showSegments: boolean;
+  } {
+    switch (mode) {
+      case "dial_only":
+        return { showNeedle: false, showDial: true, showSegments: false };
+      case "dial_and_needle":
+        return { showNeedle: true, showDial: true, showSegments: false };
+      case "gauge_and_needle":
+      default:
+        return { showNeedle: true, showDial: false, showSegments: true };
+    }
+  }
+
+  /*******************************************************************************************************************************/
   /* Purpose: Render the frontend card
   /* History: 17-FEB-2025 D.Geisenhoff  Created
   /*******************************************************************************************************************************/
@@ -366,8 +390,12 @@ export class ExtendedGaugeCard extends LitElement {
                 : config.entity?.entity
               : undefined}"
             .unitOfMeasure=${config.entity?.settings?.unit_of_measurement ?? ""}
-            .showNeedle=${config.main?.show_needle}
-            .showDial=${config.main?.show_dial ?? true}
+            .showNeedle=${this._resolveDisplayMode(config.main?.display_mode)
+              .showNeedle}
+            .showDial=${this._resolveDisplayMode(config.main?.display_mode)
+              .showDial}
+            .showSegments=${this._resolveDisplayMode(config.main?.display_mode)
+              .showSegments}
             .needleStyle=${config.main?.needle?.needle_style ?? "default"}
             .needleIcon=${config.main?.needle?.needle_icon}
             .needleIconKeepVertical=${config.main?.needle

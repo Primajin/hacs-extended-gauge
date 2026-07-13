@@ -247,12 +247,17 @@ export const mainConfigSchema = [
         selector: { color_rgb: {} },
       },
       {
-        name: "show_needle",
-        selector: { boolean: {} },
-      },
-      {
-        name: "show_dial",
-        selector: { boolean: {} },
+        name: "display_mode",
+        selector: {
+          select: {
+            options: [
+              { value: "gauge_and_needle", label: "Full gauge with needle" },
+              { value: "dial_only", label: "Dial only" },
+              { value: "dial_and_needle", label: "Dial with needle" },
+            ],
+            mode: "dropdown",
+          },
+        },
       },
       {
         name: "show_entity_name",

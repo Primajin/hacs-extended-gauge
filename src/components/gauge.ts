@@ -139,6 +139,7 @@ export class ExtendedGauge extends LitElement {
   @property({ attribute: false }) public locale!: FrontendLocaleData;
   @property({ type: Boolean }) public showNeedle = false;
   @property({ type: Boolean }) public showDial = false;
+  @property({ type: Boolean }) public showSegments = false;
   @property({ type: String }) public needleStyle: NeedleStyle = "default";
   @property({ type: String }) public needleIcon?: string;
   @property({ type: Boolean }) public needleIconKeepVertical = false;
@@ -316,7 +317,7 @@ export class ExtendedGauge extends LitElement {
     const labelsFormatOptions = { ...this.formatOptions };
     labelsFormatOptions.thousandSeparator = "";
     let gaugeValueColor = this.gaugeInfoColor;
-    if (this.segments && !this.showNeedle) {
+    if (this.segments && !this.showSegments) {
       // set color if gauge to color of segment, where the current value is in
       this.segments
         .sort((a, b) => a.lower! - b.lower!)
@@ -333,7 +334,7 @@ export class ExtendedGauge extends LitElement {
         <path
           style =${styleMap({
             stroke: `${
-              this.segments && this.showNeedle
+              this.segments && this.showSegments
                 ? this.gaugeInfoColor
                 : this.gaugeBackgroundColor
             }`,
@@ -342,7 +343,7 @@ export class ExtendedGauge extends LitElement {
           d="M -40 0 A 40 40 0 0 1 40 0">
         </path>
         ${
-          this.segments && this.showNeedle
+          this.segments && this.showSegments
             ? this.segments
                 .sort((a, b) => a.lower! - b.lower!)
                 .map((segment) => {

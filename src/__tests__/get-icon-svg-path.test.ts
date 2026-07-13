@@ -35,7 +35,7 @@ describe("getIconSvgPath – strategy 1: window.customIconsets", () => {
     expect(result).toBe("M10,10 L20,20");
   });
 
-  it("resolves a custom icon set (e.g. hacs:hacs)", async () => {
+  it("resolves a custom icon set (e.g. hacs:hacs) via customIconsets", async () => {
     (global as any).window = {
       customIconsets: {
         hacs: jest.fn().mockResolvedValue({ path: "M0 0 L24 24" }),
@@ -43,6 +43,29 @@ describe("getIconSvgPath – strategy 1: window.customIconsets", () => {
     };
     const result = await getIconSvgPath("hacs:hacs");
     expect(result).toBe("M0 0 L24 24");
+  });
+
+  it("resolves a custom icon set via window.customIcons (strategy 1b)", async () => {
+    (global as any).window = {
+      customIcons: {
+        hacs: { getIcon: jest.fn().mockResolvedValue({ path: "M5 5 L20 20" }) },
+      },
+    };
+    const result = await getIconSvgPath("hacs:hacs");
+    expect(result).toBe("M5 5 L20 20");
+  });
+
+  it("falls back to customIcons when customIconsets has no resolver for the set", async () => {
+    (global as any).window = {
+      customIconsets: {},
+      customIcons: {
+        myicons: {
+          getIcon: jest.fn().mockResolvedValue({ path: "M1 1 L5 5" }),
+        },
+      },
+    };
+    const result = await getIconSvgPath("myicons:star");
+    expect(result).toBe("M1 1 L5 5");
   });
 
   it("passes the correct icon name (without the set prefix) to the resolver", async () => {
@@ -94,12 +117,13 @@ describe("getIconSvgPath – strategy 1: window.customIconsets", () => {
     expect(resolver).toHaveBeenCalledTimes(1);
   });
 
-  it("caches null results so the resolver is not retried for failed icons", async () => {
+  it("does not cache null results so failed icons can be retried", async () => {
     const resolver = jest.fn().mockResolvedValue(null);
     (global as any).window = { customIconsets: { mdi: resolver } };
     await getIconSvgPath("mdi:will-fail");
     await getIconSvgPath("mdi:will-fail");
-    expect(resolver).toHaveBeenCalledTimes(1);
+    // Resolver is called again because null is not cached.
+    expect(resolver).toHaveBeenCalledTimes(2);
   });
 
   it("does not confuse different icons in the cache", async () => {
