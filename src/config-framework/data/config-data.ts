@@ -55,6 +55,13 @@ interface EntityPageConfigData {
 /*****************************************************************************************************************************/
 export type NeedleStyle = "default" | "classic" | "icon";
 
+/** Controls which gauge elements are rendered.
+ *  - gauge_and_needle : full arc with coloured segments + needle
+ *  - dial_only        : filled arc indicator, no needle, no segments
+ *  - dial_and_needle  : filled arc indicator + needle, no segments
+ */
+export type DisplayMode = "gauge_and_needle" | "dial_only" | "dial_and_needle";
+
 export interface NeedleConfigData {
   needle_style?: NeedleStyle;
   needle_icon?: string;
@@ -74,8 +81,7 @@ interface MainConfigData {
   max_value?: number;
   color_value?: any;
   color_background?: any;
-  show_needle?: boolean;
-  show_dial?: boolean;
+  display_mode?: DisplayMode;
   needle?: NeedleConfigData;
   show_entity_name?: boolean;
   show_min_max_values?: boolean;

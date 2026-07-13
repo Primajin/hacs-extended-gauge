@@ -7,20 +7,41 @@ export async function getIconSvgPath(icon: string): Promise<string | null> {
   }
 
   try {
-    // Strategy 1: use window.customIconsets if available (covers MDI + all custom sets)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const customIconsets = (window as any).customIconsets as
-      | Record<string, (name: string) => Promise<{ path?: string } | null>>
-      | undefined;
+    const colonIndex = icon.indexOf(":");
+    if (colonIndex !== -1) {
+      const setName = icon.slice(0, colonIndex);
+      const iconName = icon.slice(colonIndex + 1);
 
-    if (customIconsets) {
-      const colonIndex = icon.indexOf(":");
-      if (colonIndex !== -1) {
-        const setName = icon.slice(0, colonIndex);
-        const iconName = icon.slice(colonIndex + 1);
+      // Strategy 1a: use window.customIconsets if available (covers MDI + all custom sets)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const customIconsets = (window as any).customIconsets as
+        | Record<string, (name: string) => Promise<{ path?: string } | null>>
+        | undefined;
+
+      if (customIconsets) {
         const resolver = customIconsets[setName];
         if (typeof resolver === "function") {
           const result = await resolver(iconName);
+          if (result?.path) {
+            _cache.set(icon, result.path);
+            return result.path;
+          }
+        }
+      }
+
+      // Strategy 1b: use window.customIcons (alternative HA icon registration API)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const customIcons = (window as any).customIcons as
+        | Record<
+            string,
+            { getIcon?: (name: string) => Promise<{ path?: string } | null> }
+          >
+        | undefined;
+
+      if (customIcons) {
+        const iconSet = customIcons[setName];
+        if (iconSet && typeof iconSet.getIcon === "function") {
+          const result = await iconSet.getIcon(iconName);
           if (result?.path) {
             _cache.set(icon, result.path);
             return result.path;
@@ -33,10 +54,13 @@ export async function getIconSvgPath(icon: string): Promise<string | null> {
     // then read the path from its shadow DOM.  This works for every icon set
     // that HA supports, including ones not exposed via customIconsets.
     const path = await _resolveViaHaIconElement(icon);
-    _cache.set(icon, path);
+    // Only cache successful resolutions; null results may succeed on retry
+    // once custom icon sets (e.g. HACS) have finished loading.
+    if (path !== null) {
+      _cache.set(icon, path);
+    }
     return path;
   } catch {
-    _cache.set(icon, null);
     return null;
   }
 }
@@ -71,15 +95,44 @@ async function _resolveViaHaIconElement(icon: string): Promise<string | null> {
     const shadow = el.shadowRoot;
     if (!shadow) return null;
 
-    // Try direct <path> inside shadow root (ha-svg-icon pattern).
+    // Try direct <path> inside shadow root.
     let pathEl = shadow.querySelector("path");
-    if (!pathEl) {
-      // Some versions nest inside ha-svg-icon → shadow → svg → path
-      const svgIconEl = shadow.querySelector("ha-svg-icon");
-      pathEl = svgIconEl?.shadowRoot?.querySelector("path") ?? null;
+    if (pathEl?.getAttribute("d")) {
+      return pathEl.getAttribute("d");
     }
 
-    return pathEl?.getAttribute("d") ?? null;
+    // Some versions nest inside ha-svg-icon → shadow → svg → path
+    const svgIconEl = shadow.querySelector("ha-svg-icon");
+    if (svgIconEl) {
+      pathEl = svgIconEl.shadowRoot?.querySelector("path") ?? null;
+      if (pathEl?.getAttribute("d")) {
+        return pathEl.getAttribute("d");
+      }
+    }
+
+    // Some custom icon sets render via a nested ha-icon (e.g. wrappers).
+    const nestedHaIcon = shadow.querySelector("ha-icon") as
+      | (HTMLElement & { updateComplete?: Promise<unknown> })
+      | null;
+    if (nestedHaIcon) {
+      if (
+        typeof nestedHaIcon.updateComplete === "object" &&
+        nestedHaIcon.updateComplete
+      ) {
+        await nestedHaIcon.updateComplete;
+      }
+      pathEl =
+        nestedHaIcon.shadowRoot?.querySelector("path") ??
+        nestedHaIcon.shadowRoot
+          ?.querySelector("ha-svg-icon")
+          ?.shadowRoot?.querySelector("path") ??
+        null;
+      if (pathEl?.getAttribute("d")) {
+        return pathEl.getAttribute("d");
+      }
+    }
+
+    return null;
   } finally {
     document.body.removeChild(el);
   }
