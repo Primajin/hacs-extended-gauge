@@ -53,7 +53,7 @@ interface EntityPageConfigData {
 /* Purpose: Needle style configuration
 /* History: 12-JUL-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
-export type NeedleStyle = "default" | "old" | "icon";
+export type NeedleStyle = "default" | "classic" | "icon";
 
 export interface NeedleConfigData {
   needle_style?: NeedleStyle;

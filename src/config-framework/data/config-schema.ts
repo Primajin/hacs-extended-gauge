@@ -172,7 +172,10 @@ export const needleConfigSchema = (needleConfig: any) => {
         {
           name: "needle_style",
           selector: {
-            select: { options: ["default", "old", "icon"], mode: "dropdown" },
+            select: {
+              options: ["default", "classic", "icon"],
+              mode: "dropdown",
+            },
           },
         },
         ...(needleStyle === "icon"
@@ -188,7 +191,7 @@ export const needleConfigSchema = (needleConfig: any) => {
               {
                 name: "needle_icon_size",
                 selector: {
-                  number: { mode: "box", min: 0.5, max: 10, step: 0.5 },
+                  number: { mode: "box", min: 0.1, max: 10, step: 0.1 },
                 },
               },
               {
