@@ -559,7 +559,16 @@ describe("renderNeedle dispatch", () => {
 
 /**
  * Reproduces the gauge render() logic for computing display state.
- * This is kept in sync with gauge.ts so the tests catch regressions.
+ *
+ * IMPORTANT: This is a deliberate, standalone reimplementation of the
+ * showNeedle/showDial branching logic found in gauge.ts ExtendedGauge.render()
+ * (lines ~416–487 as of 13-JUL-2025).  It is NOT a call into the real
+ * component, because gauge.ts uses Lit decorators that cannot run in Node.
+ *
+ * Consequence: these tests verify the *intended* behaviour.  If the logic in
+ * gauge.ts is changed you MUST update this helper to match, otherwise the tests
+ * will silently diverge.  When editing gauge.ts, search for "showNeedle" and
+ * compare the branching conditions to this function.
  */
 function deriveGaugeState(opts: {
   showNeedle: boolean;
