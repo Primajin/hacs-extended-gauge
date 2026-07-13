@@ -19,7 +19,7 @@ declare global {
 
 /*****************************************************************************************************************************/
 /* Purpose: Extended gauge editor class
-/* History: 22-FEB-2025 D. Geisenhoff   Created
+/* History: 22-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 @customElement("extended-gauge-ui-editor")
 export class ExtendedGaugeUiEditor extends ConfigFramework {

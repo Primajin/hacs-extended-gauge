@@ -26,7 +26,7 @@ registerCustomCard({
 
 /*****************************************************************************************************************************/
 /* Purpose: Main display element of the custom card (extended gauge card)
-/* History: 18-FEB-2025 D. Geisenhoff   Created
+/* History: 18-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 @customElement("extended-gauge-card")
 export class ExtendedGaugeCard extends LitElement {
@@ -70,7 +70,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: The grid options of your card. Home Assistant uses this to set the card size in sections view.
-  /* History: 27-JUN-2025 D. Geisenhoff   Created
+  /* History: 27-JUN-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   getGridOptions() {
     return {
@@ -81,7 +81,7 @@ export class ExtendedGaugeCard extends LitElement {
   /*****************************************************************************************************************************/
   /* Purpose: The height of your card. Home Assistant uses this to automatically distribute all cards over the available columns 
   /*          in masonry view.
-  /* History: 18-FEB-2025 D. Geisenhoff   Created
+  /* History: 18-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public getCardSize(): Promise<number> | number {
     return 3;
@@ -99,7 +99,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Get UI editor
-  /* History: 18-FEB-2025 D. Geisenhoff   Created
+  /* History: 18-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("./ui-editor/ui-editor");
@@ -108,7 +108,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Get default values for configuration
-  /* History: 18-FEB-2025 D. Geisenhoff   Created
+  /* History: 18-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public static getStubConfig(hass: HomeAssistant): object {
     return getDefaultConfig(hass);

@@ -1,6 +1,6 @@
 /*****************************************************************************************************************************/
 /* Purpose: Gauge component, based on HA-Gauge
-/* History: 10-MAR-2025 D. Geisenhoff   Created
+/* History: 10-MAR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 import { styleMap } from "lit/directives/style-map.js";
 import { formatNumber, NumberFormatOptions } from "../utils/format";
@@ -14,13 +14,14 @@ import {
   getAngle,
 } from "../utils/gauge-math";
 import { getIconSvgPath } from "../utils/get-icon-svg-path";
+import { renderNeedle } from "../utils/needle-renderer";
 
 // Re-export for consumers that import directly from this file.
 export { normalizeValue, getValueInPercentage, getAngle };
 
 /*****************************************************************************************************************************/
 /* Purpose: Interface for demo timer management
-/* History: 26-JUN-2025 D. Geisenhoff   Created
+/* History: 26-JUN-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 interface DemoTimerManager {
   timerId: number | null;
@@ -34,7 +35,7 @@ interface DemoTimerManager {
 
 /*****************************************************************************************************************************/
 /* Purpose: Singleton for demo timer management
-/* History: 26-JUN-2025 D. Geisenhoff   Created
+/* History: 26-JUN-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 export const DemoTimerManager: DemoTimerManager = {
   timerId: null,
@@ -291,116 +292,18 @@ export class ExtendedGauge extends LitElement {
     return "";
   }
 
-  /*****************************************************************************************************************************/
-  /* Purpose: Render the default arrow needle (shared helper used by "default" style and as fallback)
-  /* History: 12-JUL-2025 D.Geisenhoff   Created
-  /*****************************************************************************************************************************/
-  private _renderDefaultNeedle(animClass: string) {
-    return svg`
-      <path
-        class="needle ${animClass}"
-        d="M -25 -2.5 L -47.5 0 L -25 2.5 z"
-        style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
-      </path>
-    `;
-  }
-
-  /*****************************************************************************************************************************/
-  /* Purpose: Render the needle based on the configured needle style.
-  /*          The gauge arc spans 0° (left, value=min) to 180° (right, value=max) through the top at 90°.
-  /*          CSS rotate(θdeg) applied to a left-pointing element and Math.cos/sin(θ) both use the same
-  /*          angular convention for this gauge, so arc positions are consistent between methods.
-  /* History: 12-JUL-2025 D.Geisenhoff   Created
-  /*****************************************************************************************************************************/
   private _renderNeedle() {
-    const animClass = this._updated && this.animation ? `animation` : ``;
-    switch (this.needleStyle) {
-      case "classic":
-        // Original HA-style needle path from home-assistant/frontend ha-gauge.ts
-        return svg`
-          <path
-            class="needle needle-classic ${animClass}"
-            d="M -34,-3 L -40,-1 A 1,1,0,0,0,-40,1 L -34,3 A 2,2,0,0,0,-34,-3 Z"
-            style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
-          </path>
-        `;
-      case "icon":
-        if (this.needleIcon) {
-          // Render the icon as a native SVG <path> using resolved path data from the icon set.
-          // This avoids <foreignObject>/<ha-icon> which has well-known clipping/sizing issues.
-          //
-          // All HA icon SVGs use a 0 0 24 24 viewBox.  We scale and translate the path so
-          // the icon is centered on the arc tip, sized to foSize SVG units.
-          //
-          // needleIconSize is a multiplier: 1 = 7 SVG units (arc radius is 40 units).
-          const foSize = 7 * this.needleIconSize;
-          const scale = foSize / 24;
-          const iconColor = this.needleIconColor ?? "var(--primary-text-color)";
-          const bgColor = this.needleIconBackgroundColor;
-          const bgRadius = foSize * 0.5;
-
-          // Fallback arrow while the path is still loading.
-          const iconPath = this._needleIconPath;
-          if (!iconPath) {
-            return this._renderDefaultNeedle(animClass);
-          }
-
-          if (this.needleIconKeepVertical) {
-            // Position on the arc but keep the icon upright (no gauge rotation).
-            const iconAngleRad = (this._valueAngle * Math.PI) / 180;
-            const cx = -40 * Math.cos(iconAngleRad);
-            const cy = -40 * Math.sin(iconAngleRad);
-            // Translate so the center of the 24×24 icon lands on (cx, cy).
-            const tx = cx - foSize / 2;
-            const ty = cy - foSize / 2;
-            return svg`
-              <g class="needle needle-icon ${animClass}">
-                ${
-                  bgColor
-                    ? svg`<circle cx=${cx} cy=${cy} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
-                    : ``
-                }
-                <path
-                  class="needle-icon-path"
-                  d=${iconPath}
-                  transform="translate(${tx} ${ty}) scale(${scale})"
-                  fill=${iconColor}
-                  style="pointer-events:none;">
-                </path>
-              </g>
-            `;
-          } else {
-            // Rotate with the gauge; arc tip is always at (-40, 0) in rotated space.
-            const tx = -40 - foSize / 2;
-            const ty = -foSize / 2;
-            return svg`
-              <g
-                class="needle needle-icon ${animClass}"
-                style=${styleMap({
-                  transform: `rotate(${this._valueAngle}deg)`,
-                })}>
-                ${
-                  bgColor
-                    ? svg`<circle cx=${-40} cy=${0} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
-                    : ``
-                }
-                <path
-                  class="needle-icon-path"
-                  d=${iconPath}
-                  transform="translate(${tx} ${ty}) scale(${scale})"
-                  fill=${iconColor}
-                  style="pointer-events:none;">
-                </path>
-              </g>
-            `;
-          }
-        }
-        // Fallback to default needle if no icon is configured.
-        return this._renderDefaultNeedle(animClass);
-      case "default":
-      default:
-        return this._renderDefaultNeedle(animClass);
-    }
+    return renderNeedle({
+      needleStyle: this.needleStyle,
+      needleIcon: this.needleIcon,
+      needleIconPath: this._needleIconPath,
+      needleIconKeepVertical: this.needleIconKeepVertical,
+      needleIconSize: this.needleIconSize,
+      needleIconColor: this.needleIconColor,
+      needleIconBackgroundColor: this.needleIconBackgroundColor,
+      valueAngle: this._valueAngle,
+      animate: this._updated && this.animation,
+    });
   }
 
   /*******************************************************************************************************************************/

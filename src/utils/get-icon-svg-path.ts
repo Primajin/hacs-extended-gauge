@@ -1,31 +1,6 @@
-/*****************************************************************************************************************************/
-/* Purpose: Resolve any Home Assistant icon (MDI or custom icon set) to its raw SVG path string.
-/*          This avoids the use of <foreignObject>/<ha-icon> inside SVG, which has well-known
-/*          browser issues with clipping, sizing and visibility.
-/*
-/* How it works:
-/*   HA registers icon sets in two places:
-/*     1. window.customIconsets  – a map of  setName → async (iconName) => { path, ... }
-/*     2. The built-in MDI set, exposed via the same customIconsets mechanism under the key "mdi".
-/*
-/*   We create a throwaway <ha-icon> element, wait for it to render, then read the SVG path
-/*   from its shadow DOM.  The <ha-icon> custom element guarantees the icon is resolved
-/*   (including lazy-loaded custom sets) before it renders, so this is the most robust approach.
-/*
-/* Returns: the SVG path "d" attribute string, or null if the icon could not be resolved.
-/*
-/* History: 13-JUL-2025 D. Geisenhoff   Created
-/*****************************************************************************************************************************/
-
 /** Cache so we only resolve each icon once per session. */
 const _cache = new Map<string, string | null>();
 
-/*****************************************************************************************************************************/
-/* Purpose: Return the SVG path data for the given HA icon string (e.g. "mdi:home").
-/*          The result is cached so repeated calls are synchronous-equivalent after the first
-/*          resolution.
-/* History: 13-JUL-2025 D. Geisenhoff   Created
-/*****************************************************************************************************************************/
 export async function getIconSvgPath(icon: string): Promise<string | null> {
   if (_cache.has(icon)) {
     return _cache.get(icon) ?? null;
@@ -66,11 +41,6 @@ export async function getIconSvgPath(icon: string): Promise<string | null> {
   }
 }
 
-/*****************************************************************************************************************************/
-/* Purpose: Create a hidden <ha-icon> element, wait for it to render, then extract the SVG
-/*          path "d" attribute from its shadow DOM.
-/* History: 13-JUL-2025 D. Geisenhoff   Created
-/*****************************************************************************************************************************/
 async function _resolveViaHaIconElement(icon: string): Promise<string | null> {
   // Only works in a browser context where <ha-icon> is registered.
   if (typeof customElements === "undefined") return null;
