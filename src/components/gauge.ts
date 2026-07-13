@@ -327,9 +327,9 @@ export class ExtendedGauge extends LitElement {
             const iconAngleRad = (this._valueAngle * Math.PI) / 180;
             const cx = -40 * Math.cos(iconAngleRad);
             const cy = -40 * Math.sin(iconAngleRad);
-            // Use a 2x foreignObject centered on the arc point so sub-pixel rounding
-            // never shifts the icon away from the background circle.
-            const foOuter = foSize * 2;
+            // Size the foreignObject exactly to foSize and center it on the arc point.
+            // ha-icon fills 100%/100% as a block element so the shadow-DOM SVG scales
+            // correctly without any baseline / inline offset.
             return svg`
               <g class="needle needle-icon ${animClass}">
                 ${
@@ -338,25 +338,21 @@ export class ExtendedGauge extends LitElement {
                     : ``
                 }
                 <foreignObject
-                  x=${cx - foOuter / 2}
-                  y=${cy - foOuter / 2}
-                  width=${foOuter}
-                  height=${foOuter}
-                  overflow="visible">
+                  x=${cx - foSize / 2}
+                  y=${cy - foSize / 2}
+                  width=${foSize}
+                  height=${foSize}>
                   <ha-icon
                     icon=${this.needleIcon}
-                    style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;height:50%;color:${iconColor};display:block;--mdc-icon-size:100%;">
+                    style="display:block;width:100%;height:100%;color:${iconColor};--mdc-icon-size:100%;">
                   </ha-icon>
                 </foreignObject>
               </g>
             `;
           } else {
             // Rotate the icon with the gauge bearing (icon follows the arc direction).
-            const iconX = -40 - foSize / 2;
-            // Use a 2x foreignObject centered on the arc point so sub-pixel rounding
-            // never shifts the icon away from the background circle.
-            const foOuter = foSize * 2;
-            const cx = iconX + foSize / 2;
+            // The arc tip is always at (-40, 0) in the rotated coordinate space.
+            // Size the foreignObject exactly to foSize and center it on that arc tip.
             return svg`
               <g
                 class="needle needle-icon ${animClass}"
@@ -365,18 +361,17 @@ export class ExtendedGauge extends LitElement {
                 })}>
                 ${
                   bgColor
-                    ? svg`<circle cx=${cx} cy=${0} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
+                    ? svg`<circle cx=${-40} cy=${0} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
                     : ``
                 }
                 <foreignObject
-                  x=${cx - foOuter / 2}
-                  y=${-foOuter / 2}
-                  width=${foOuter}
-                  height=${foOuter}
-                  overflow="visible">
+                  x=${-40 - foSize / 2}
+                  y=${-foSize / 2}
+                  width=${foSize}
+                  height=${foSize}>
                   <ha-icon
                     icon=${this.needleIcon}
-                    style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;height:50%;color:${iconColor};display:block;--mdc-icon-size:100%;">
+                    style="display:block;width:100%;height:100%;color:${iconColor};--mdc-icon-size:100%;">
                   </ha-icon>
                 </foreignObject>
               </g>
