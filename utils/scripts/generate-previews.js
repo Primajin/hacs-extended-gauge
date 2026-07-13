@@ -157,12 +157,12 @@ function svgWrap(innerContent, extraRootContent) {
 
 /**
  * Icon needle that stays vertical; icon positioned on the arc at the given angle.
- * Matches gauge.ts: foSize = 14 * sizeMult, bgRadius = foSize * 0.5.
+ * Matches gauge.ts: foSize = 7 * sizeMult, bgRadius = foSize * 0.5.
  * The MDI path is on a 24×24 viewBox; scale = foSize/24 maps it into SVG units.
  */
 function iconNeedleVertical(angleDeg, iconPath, iconColor, bgColor, sizeMult) {
   sizeMult = sizeMult || 1;
-  const foSize   = 14 * sizeMult;           // foreignObject side length in SVG units
+  const foSize   = 7 * sizeMult;            // foreignObject side length in SVG units (matches gauge.ts)
   const scale    = r2(foSize / 24);         // map 24×24 MDI viewBox → foSize × foSize
   const bgR      = r2(foSize * 0.5);
   const a        = toRad(angleDeg);
@@ -219,22 +219,21 @@ function previewNeedleOldMid() {
 
 function previewNeedleIconRotate() {
   // Chevron icon rotated with gauge (sizeMult=1 default)
-  // Matches gauge.ts: foSize = 14 * sizeMult, iconX = -40 - foSize/2
-  const foSize = 14;                      // 14 SVG units at sizeMult=1
+  // Matches gauge.ts: foSize = 7 * sizeMult; foreignObject centered on arc tip (-40, 0)
+  const foSize = 7;                       // 7 SVG units at sizeMult=1
   const scale  = r2(foSize / 24);         // map 24×24 MDI viewBox → foSize × foSize
-  const iconX  = r2(-40 - foSize / 2);    // -47 SVG units
-  const iconY  = r2(-foSize / 2);
+  const foX    = r2(-40 - foSize / 2);    // foreignObject x (centered on arc tip)
+  const foY    = r2(-foSize / 2);         // foreignObject y (centered on arc tip)
   const bgR    = r2(foSize * 0.5);
-  const bgCX   = r2(iconX + foSize / 2);  // -40 (arc tip)
   // mdi:chevron-down approximate path (24×24 viewBox)
   const chevron = 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z';
-  const content = `<g transform="rotate(${ANGLE_25})"><circle cx="${bgCX}" cy="0" r="${bgR}" fill="#2a5c8f" opacity="0.9"/><path d="${chevron}" transform="translate(${iconX}, ${iconY}) scale(${scale})" fill="#5bc8ff"/></g>`;
+  const content = `<g transform="rotate(${ANGLE_25})"><circle cx="-40" cy="0" r="${bgR}" fill="#2a5c8f" opacity="0.9"/><path d="${chevron}" transform="translate(${foX}, ${foY}) scale(${scale})" fill="#5bc8ff"/></g>`;
   return svgWrap([BG_ARC, content, gaugeLabels('25%')].join('\n    '));
 }
 
 function previewNeedleIconVertical() {
-  // Matches gauge.ts keepVertical=true path: foSize = 14 * sizeMult
-  const foSize = 14;
+  // Matches gauge.ts keepVertical=true path: foSize = 7 * sizeMult
+  const foSize = 7;
   const scale  = r2(foSize / 24);
   const bgR    = r2(foSize * 0.5);
   const a      = toRad(ANGLE_25);
