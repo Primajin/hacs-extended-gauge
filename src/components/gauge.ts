@@ -299,11 +299,11 @@ export class ExtendedGauge extends LitElement {
   private _renderNeedle() {
     const animClass = this._updated && this.animation ? `animation` : ``;
     switch (this.needleStyle) {
-      case "old":
+      case "classic":
         // Original HA-style needle path from home-assistant/frontend ha-gauge.ts
         return svg`
           <path
-            class="needle needle-old ${animClass}"
+            class="needle needle-classic ${animClass}"
             d="M -34,-3 L -40,-1 A 1,1,0,0,0,-40,1 L -34,3 A 2,2,0,0,0,-34,-3 Z"
             style=${styleMap({ transform: `rotate(${this._valueAngle}deg)` })}>
           </path>
@@ -314,10 +314,10 @@ export class ExtendedGauge extends LitElement {
           // HA's <ha-icon> element resolves any registered icon set, so no icon-pack-specific
           // parsing is needed here.
           // needleIconSize is a multiplier: 1 = default, 0.5 = half, 2 = double, etc.
-          // Base foreignObject size of 14 SVG units at size=1 (arc radius is 40 units).
+          // Base foreignObject size of 7 SVG units at size=1 (arc radius is 40 units).
           // ha-icon is sized 100%/100% of the foreignObject so it scales correctly with
           // the card width regardless of CSS pixel density.
-          const foSize = 14 * this.needleIconSize;
+          const foSize = 7 * this.needleIconSize;
           const iconColor = this.needleIconColor ?? "var(--primary-text-color)";
           const bgColor = this.needleIconBackgroundColor;
           const bgRadius = foSize * 0.5;
@@ -327,6 +327,9 @@ export class ExtendedGauge extends LitElement {
             const iconAngleRad = (this._valueAngle * Math.PI) / 180;
             const cx = -40 * Math.cos(iconAngleRad);
             const cy = -40 * Math.sin(iconAngleRad);
+            // Use a 2x foreignObject centered on the arc point so sub-pixel rounding
+            // never shifts the icon away from the background circle.
+            const foOuter = foSize * 2;
             return svg`
               <g class="needle needle-icon ${animClass}">
                 ${
@@ -335,14 +338,14 @@ export class ExtendedGauge extends LitElement {
                     : ``
                 }
                 <foreignObject
-                  x=${cx - foSize / 2}
-                  y=${cy - foSize / 2}
-                  width=${foSize}
-                  height=${foSize}
+                  x=${cx - foOuter / 2}
+                  y=${cy - foOuter / 2}
+                  width=${foOuter}
+                  height=${foOuter}
                   overflow="visible">
                   <ha-icon
                     icon=${this.needleIcon}
-                    style="width:100%;height:100%;color:${iconColor};display:block;--mdc-icon-size:100%;">
+                    style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;height:50%;color:${iconColor};display:block;--mdc-icon-size:100%;">
                   </ha-icon>
                 </foreignObject>
               </g>
@@ -350,6 +353,10 @@ export class ExtendedGauge extends LitElement {
           } else {
             // Rotate the icon with the gauge bearing (icon follows the arc direction).
             const iconX = -40 - foSize / 2;
+            // Use a 2x foreignObject centered on the arc point so sub-pixel rounding
+            // never shifts the icon away from the background circle.
+            const foOuter = foSize * 2;
+            const cx = iconX + foSize / 2;
             return svg`
               <g
                 class="needle needle-icon ${animClass}"
@@ -358,20 +365,18 @@ export class ExtendedGauge extends LitElement {
                 })}>
                 ${
                   bgColor
-                    ? svg`<circle cx=${
-                        iconX + foSize / 2
-                      } cy=${0} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
+                    ? svg`<circle cx=${cx} cy=${0} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
                     : ``
                 }
                 <foreignObject
-                  x=${iconX}
-                  y=${-foSize / 2}
-                  width=${foSize}
-                  height=${foSize}
+                  x=${cx - foOuter / 2}
+                  y=${-foOuter / 2}
+                  width=${foOuter}
+                  height=${foOuter}
                   overflow="visible">
                   <ha-icon
                     icon=${this.needleIcon}
-                    style="width:100%;height:100%;color:${iconColor};display:block;--mdc-icon-size:100%;">
+                    style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;height:50%;color:${iconColor};display:block;--mdc-icon-size:100%;">
                   </ha-icon>
                 </foreignObject>
               </g>
@@ -596,7 +601,7 @@ export class ExtendedGauge extends LitElement {
       fill: var(--primary-text-color);
     }
 
-    .needle-old {
+    .needle-classic {
       fill: var(--primary-text-color);
       stroke: var(--card-background-color);
       stroke-width: 1;
