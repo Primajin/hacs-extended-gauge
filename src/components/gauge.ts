@@ -338,10 +338,11 @@ export class ExtendedGauge extends LitElement {
                   x=${cx - foSize / 2}
                   y=${cy - foSize / 2}
                   width=${foSize}
-                  height=${foSize}>
+                  height=${foSize}
+                  overflow="visible">
                   <ha-icon
                     icon=${this.needleIcon}
-                    style="width:100%;height:100%;color:${iconColor};display:block;">
+                    style="width:100%;height:100%;color:${iconColor};display:block;--mdc-icon-size:100%;">
                   </ha-icon>
                 </foreignObject>
               </g>
@@ -366,10 +367,11 @@ export class ExtendedGauge extends LitElement {
                   x=${iconX}
                   y=${-foSize / 2}
                   width=${foSize}
-                  height=${foSize}>
+                  height=${foSize}
+                  overflow="visible">
                   <ha-icon
                     icon=${this.needleIcon}
-                    style="width:100%;height:100%;color:${iconColor};display:block;">
+                    style="width:100%;height:100%;color:${iconColor};display:block;--mdc-icon-size:100%;">
                   </ha-icon>
                 </foreignObject>
               </g>
@@ -406,7 +408,7 @@ export class ExtendedGauge extends LitElement {
     const dialVisible = this.showDial;
     return html`
       <div class="gauge-container">
-      <svg viewBox="-50 -50 130 55" class="gauge">
+      <svg viewBox="-50 -50 130 55" class="gauge" style="overflow:visible;">
       <g transform="translate(15 5)">
         <path
           style =${styleMap({
