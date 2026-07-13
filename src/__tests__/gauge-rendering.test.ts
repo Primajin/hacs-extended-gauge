@@ -1,24 +1,3 @@
-/*****************************************************************************************************************************/
-/* Purpose: Tests for the needle-renderer pure helpers and gauge rendering logic.
-/*
-/* Testing strategy:
-/*   All needle rendering is now delegated to pure functions in needle-renderer.ts
-/*   (no Lit decorators, no browser lifecycle).  This file tests those functions
-/*   directly from Jest without requiring a DOM.
-/*
-/*   Scenarios covered:
-/*     1. normalizeValue / getValueInPercentage / getAngle  (gauge-math)
-/*     2. GaugeSegment interface shape
-/*     3. renderDefaultNeedle
-/*     4. renderClassicNeedle
-/*     5. renderIconNeedle — no icon, path loading, resolved path
-/*     6. BUG-1: icon colour applied via inline style (not bare fill= attribute)
-/*     7. renderNeedle dispatch
-/*     8. showNeedle / showDial independence (logic extracted from gauge render())
-/*
-/* History: 13-JUL-2026 J.Hell   Created
-/*****************************************************************************************************************************/
-
 // ---------------------------------------------------------------------------
 // Mocks — hoisted; must not reference out-of-scope variables.
 // We use a "mock"-prefixed name so Jest allows it inside the factory.

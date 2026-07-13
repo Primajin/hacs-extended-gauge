@@ -1,8 +1,3 @@
-/*****************************************************************************************************************************/
-/* Purpose: Tests for getIconSvgPath utility
-/* History: 13-JUL-2026 J.Hell   Created
-/*****************************************************************************************************************************/
-
 /**
  * getIconSvgPath resolves icon names to raw SVG path strings.
  * It supports two strategies:

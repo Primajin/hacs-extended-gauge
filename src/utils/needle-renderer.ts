@@ -1,31 +1,6 @@
-/*****************************************************************************************************************************/
-/* Purpose: Pure needle-rendering helpers, extracted from gauge.ts for testability.
-/*
-/*          The ExtendedGauge component delegates all needle SVG generation to these
-/*          functions.  Because they have no Lit decorators or lifecycle dependencies
-/*          they can be unit-tested in a Node / Jest environment without a DOM.
-/*
-/* Needle styles:
-/*   "default"  – simple arrow (≈ HA gauge default)
-/*   "classic"  – original HA-style blunt needle from ha-gauge.ts
-/*   "icon"     – user-supplied MDI / custom-set icon rendered as a native SVG path
-/*
-/* Icon colour note (BUG-1):
-/*   The CSS class `.needle-icon-path` sets `fill: var(--primary-text-color)`.  A CSS
-/*   class rule has higher specificity than an SVG presentation attribute (`fill="…"`),
-/*   so setting `fill` as a bare attribute is silently ignored when the class is present.
-/*   The fix is to pass the colour through the `style` property (via styleMap) so the
-/*   inline style always wins over the class rule.
-/*
-/* History: 13-JUL-2026 J.Hell   Created
-/*****************************************************************************************************************************/
-
 import { svg } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
 
-/*****************************************************************************************************************************/
-/* Purpose: All data the needle renderers need from the gauge component.
-/*****************************************************************************************************************************/
 export interface NeedleRenderOptions {
   /** Needle style: "default" | "classic" | "icon" */
   needleStyle: string;
@@ -50,12 +25,6 @@ export interface NeedleRenderOptions {
   animate: boolean;
 }
 
-/*****************************************************************************************************************************/
-/* Purpose: Render the default arrow needle.
-/*          Path: a simple left-pointing triangle centred on the arc tip at (-40, 0) in
-/*          gauge coordinates, rotated to the current value angle.
-/* History: 13-JUL-2026 J.Hell   Created
-/*****************************************************************************************************************************/
 export function renderDefaultNeedle(
   opts: Pick<NeedleRenderOptions, "valueAngle" | "animate">
 ) {
@@ -69,10 +38,6 @@ export function renderDefaultNeedle(
   `;
 }
 
-/*****************************************************************************************************************************/
-/* Purpose: Render the classic HA-style needle (from home-assistant/frontend ha-gauge.ts).
-/* History: 13-JUL-2026 J.Hell   Created
-/*****************************************************************************************************************************/
 export function renderClassicNeedle(
   opts: Pick<NeedleRenderOptions, "valueAngle" | "animate">
 ) {
@@ -86,16 +51,6 @@ export function renderClassicNeedle(
   `;
 }
 
-/*****************************************************************************************************************************/
-/* Purpose: Render the icon needle.
-/*          All HA icon SVGs use a 0 0 24 24 viewBox.  We scale and translate the path
-/*          so the icon is centred on the arc tip, sized to `foSize` SVG units.
-/*
-/*          BUG-1 fix: the fill colour is applied via `styleMap` (inline style) so it
-/*          always overrides the `.needle-icon-path` CSS class rule.
-/*
-/* History: 13-JUL-2026 J.Hell   Created
-/*****************************************************************************************************************************/
 export function renderIconNeedle(
   opts: NeedleRenderOptions
 ): ReturnType<typeof svg> {
@@ -169,10 +124,6 @@ export function renderIconNeedle(
   }
 }
 
-/*****************************************************************************************************************************/
-/* Purpose: Main dispatch function – choose the correct needle renderer based on style.
-/* History: 13-JUL-2026 J.Hell   Created
-/*****************************************************************************************************************************/
 export function renderNeedle(
   opts: NeedleRenderOptions
 ): ReturnType<typeof svg> {

@@ -292,20 +292,6 @@ export class ExtendedGauge extends LitElement {
     return "";
   }
 
-  /*****************************************************************************************************************************/
-  /* Purpose: Render the needle by delegating to the pure needle-renderer helpers.
-  /*
-  /*          All needle SVG logic lives in src/utils/needle-renderer.ts so it can
-  /*          be unit-tested without a DOM or Lit lifecycle.  This method simply
-  /*          assembles the options object and calls renderNeedle().
-  /*
-  /*          BUG-1 fix (icon colour): the colour is now passed via styleMap (inline
-  /*          style) inside needle-renderer.ts, ensuring it wins over the CSS class
-  /*          `.needle-icon-path { fill: var(--primary-text-color) }`.
-  /*
-  /* History: 12-JUL-2026 J.Hell   Created
-  /*          13-JUL-2026 J.Hell   Refactored to delegate to needle-renderer.ts
-  /*****************************************************************************************************************************/
   private _renderNeedle() {
     return renderNeedle({
       needleStyle: this.needleStyle,
