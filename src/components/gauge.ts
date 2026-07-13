@@ -13,6 +13,7 @@ import {
   getValueInPercentage,
   getAngle,
 } from "../utils/gauge-math";
+import { getIconSvgPath } from "../utils/get-icon-svg-path";
 
 // Re-export for consumers that import directly from this file.
 export { normalizeValue, getValueInPercentage, getAngle };
@@ -149,6 +150,7 @@ export class ExtendedGauge extends LitElement {
   @state() private _valueAngle = 0;
   @state() private _updated = false;
   @state() private _segment_value_replacement? = "";
+  @state() private _needleIconPath: string | null = null;
 
   /*****************************************************************************************************************************/
   /* Purpose: Constructor
@@ -157,6 +159,12 @@ export class ExtendedGauge extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     this._valueAngle = this._getAngle(this.value, this.min, this.max);
+    // Resolve icon path on mount if an icon is already configured.
+    if (this.needleIcon) {
+      getIconSvgPath(this.needleIcon).then((path) => {
+        this._needleIconPath = path;
+      });
+    }
   }
 
   /*****************************************************************************************************************************/
@@ -227,13 +235,21 @@ export class ExtendedGauge extends LitElement {
       !changedProperties.has("value") &&
       !changedProperties.has("valueText") &&
       !changedProperties.has("unit_of_measure") &&
-      !changedProperties.has("_segment_value_replacement")
+      !changedProperties.has("_segment_value_replacement") &&
+      !changedProperties.has("needleIcon")
     ) {
       return;
     }
     this._valueAngle = this._getAngle(this.value, this.min, this.max);
     this._segment_value_replacement = this._getSegmentValueReplacement();
     this._rescaleSvgText("text");
+    // Resolve the icon SVG path whenever the icon changes.
+    if (changedProperties.has("needleIcon") && this.needleIcon) {
+      this._needleIconPath = null;
+      getIconSvgPath(this.needleIcon).then((path) => {
+        this._needleIconPath = path;
+      });
+    }
   }
 
   /*****************************************************************************************************************************/
@@ -310,26 +326,33 @@ export class ExtendedGauge extends LitElement {
         `;
       case "icon":
         if (this.needleIcon) {
-          // Use <ha-icon> inside a <foreignObject> for all icon packs (MDI and custom).
-          // HA's <ha-icon> element resolves any registered icon set, so no icon-pack-specific
-          // parsing is needed here.
-          // needleIconSize is a multiplier: 1 = default, 0.5 = half, 2 = double, etc.
-          // Base foreignObject size of 7 SVG units at size=1 (arc radius is 40 units).
-          // ha-icon is sized 100%/100% of the foreignObject so it scales correctly with
-          // the card width regardless of CSS pixel density.
+          // Render the icon as a native SVG <path> using resolved path data from the icon set.
+          // This avoids <foreignObject>/<ha-icon> which has well-known clipping/sizing issues.
+          //
+          // All HA icon SVGs use a 0 0 24 24 viewBox.  We scale and translate the path so
+          // the icon is centered on the arc tip, sized to foSize SVG units.
+          //
+          // needleIconSize is a multiplier: 1 = 7 SVG units (arc radius is 40 units).
           const foSize = 7 * this.needleIconSize;
+          const scale = foSize / 24;
           const iconColor = this.needleIconColor ?? "var(--primary-text-color)";
           const bgColor = this.needleIconBackgroundColor;
           const bgRadius = foSize * 0.5;
 
+          // Fallback arrow while the path is still loading.
+          const iconPath = this._needleIconPath;
+          if (!iconPath) {
+            return this._renderDefaultNeedle(animClass);
+          }
+
           if (this.needleIconKeepVertical) {
-            // Position the icon on the arc but keep it upright (no rotation).
+            // Position on the arc but keep the icon upright (no gauge rotation).
             const iconAngleRad = (this._valueAngle * Math.PI) / 180;
             const cx = -40 * Math.cos(iconAngleRad);
             const cy = -40 * Math.sin(iconAngleRad);
-            // Size the foreignObject exactly to foSize and center it on the arc point.
-            // ha-icon fills 100%/100% as a block element so the shadow-DOM SVG scales
-            // correctly without any baseline / inline offset.
+            // Translate so the center of the 24×24 icon lands on (cx, cy).
+            const tx = cx - foSize / 2;
+            const ty = cy - foSize / 2;
             return svg`
               <g class="needle needle-icon ${animClass}">
                 ${
@@ -337,22 +360,19 @@ export class ExtendedGauge extends LitElement {
                     ? svg`<circle cx=${cx} cy=${cy} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
                     : ``
                 }
-                <foreignObject
-                  x=${cx - foSize / 2}
-                  y=${cy - foSize / 2}
-                  width=${foSize}
-                  height=${foSize}>
-                  <ha-icon
-                    icon=${this.needleIcon}
-                    style="display:block;width:100%;height:100%;color:${iconColor};--mdc-icon-size:100%;">
-                  </ha-icon>
-                </foreignObject>
+                <path
+                  class="needle-icon-path"
+                  d=${iconPath}
+                  transform="translate(${tx} ${ty}) scale(${scale})"
+                  fill=${iconColor}
+                  style="pointer-events:none;">
+                </path>
               </g>
             `;
           } else {
-            // Rotate the icon with the gauge bearing (icon follows the arc direction).
-            // The arc tip is always at (-40, 0) in the rotated coordinate space.
-            // Size the foreignObject exactly to foSize and center it on that arc tip.
+            // Rotate with the gauge; arc tip is always at (-40, 0) in rotated space.
+            const tx = -40 - foSize / 2;
+            const ty = -foSize / 2;
             return svg`
               <g
                 class="needle needle-icon ${animClass}"
@@ -364,16 +384,13 @@ export class ExtendedGauge extends LitElement {
                     ? svg`<circle cx=${-40} cy=${0} r=${bgRadius} fill=${bgColor} class="needle-icon-bg"/>`
                     : ``
                 }
-                <foreignObject
-                  x=${-40 - foSize / 2}
-                  y=${-foSize / 2}
-                  width=${foSize}
-                  height=${foSize}>
-                  <ha-icon
-                    icon=${this.needleIcon}
-                    style="display:block;width:100%;height:100%;color:${iconColor};--mdc-icon-size:100%;">
-                  </ha-icon>
-                </foreignObject>
+                <path
+                  class="needle-icon-path"
+                  d=${iconPath}
+                  transform="translate(${tx} ${ty}) scale(${scale})"
+                  fill=${iconColor}
+                  style="pointer-events:none;">
+                </path>
               </g>
             `;
           }
