@@ -9,7 +9,7 @@ import { mainPage } from "../config-framework/data/site-structure";
 
 /*****************************************************************************************************************************/
 /* Purpose: Assign HTML tag to this class
-/* History: 24-FEB-2025 J.Hell   Created
+/* History: 24-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 declare global {
   interface HTMLElementTagNameMap {
@@ -19,13 +19,13 @@ declare global {
 
 /*****************************************************************************************************************************/
 /* Purpose: Extended gauge editor class
-/* History: 22-FEB-2025 J.Hell   Created
+/* History: 22-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 @customElement("extended-gauge-ui-editor")
 export class ExtendedGaugeUiEditor extends ConfigFramework {
   /*****************************************************************************************************************************/
   /* Purpose: Set site structure in constructor
-  /* History: 24-APR-2025 J.Hell   Created
+  /* History: 24-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   constructor() {
     super(mainPage);
@@ -33,7 +33,7 @@ export class ExtendedGaugeUiEditor extends ConfigFramework {
 
   /*****************************************************************************************************************************/
   /* Purpose: Autofill other fields of current form or set defaults
-  /* History: 01-APR-2025 J.Hell   Created
+  /* History: 01-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected override valueChanged(
     pageName: string,
@@ -99,7 +99,7 @@ export class ExtendedGaugeUiEditor extends ConfigFramework {
 
   /*****************************************************************************************************************************/
   /* Purpose: Set defaults for fields of page, when a list element is added to the list
-  /* History: 17-APR-2025 J.Hell   Created
+  /* History: 17-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected override listElementAdded(pageName: string, configData: any): any {
     let newConfigData = configData;
@@ -124,7 +124,7 @@ export class ExtendedGaugeUiEditor extends ConfigFramework {
 
   /*****************************************************************************************************************************/
   /* Purpose: Validate the form section
-  /* History: 07-APR-2025 J.Hell   Created
+  /* History: 07-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected override validateForm(
     pageName: string,
@@ -159,14 +159,14 @@ export class ExtendedGaugeUiEditor extends ConfigFramework {
 
   /*****************************************************************************************************************************/
   /* Purpose: Generate localized texts for labels, etc.
-  /* History: 24-FEB-2025 J.Hell   Created
+  /* History: 24-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected override localizeText = (text: string) =>
     localize(`editor.${text}`);
 
   /*****************************************************************************************************************************/
   /* Purpose: Generate localized texts for errors
-  /* History: 24-FEB-2025 J.Hell   Created
+  /* History: 24-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected override localizeError = (schema: any) =>
     localize(`error.${schema}`);

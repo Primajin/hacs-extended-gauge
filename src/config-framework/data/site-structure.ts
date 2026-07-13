@@ -3,7 +3,7 @@
 /*          data structure of the configuration data. The name of the page must be the same name as the page config data object. 
 /*          The name of the page section object must be the same name as the corresponding config data object. If you create a
 /*          page section with no data, you can give it any name and just not define a corresponding config data object.
-/* History: 27-MAR-2025 J.Hell   Created
+/* History: 27-MAR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 import { Page } from "../code/config-framework";
 import {
@@ -17,7 +17,7 @@ import {
 
 /*****************************************************************************************************************************/
 /* Purpose: Event page
-/* History: 26-MAR-2025 J.Hell   Created
+/* History: 26-MAR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 const segmentSettingsPage: Page = {
   title: "edit_segment",
@@ -38,7 +38,7 @@ const segmentSettingsPage: Page = {
 
 /*****************************************************************************************************************************/
 /* Purpose: Main page
-/* History: 26-MAR-2025 J.Hell   Created
+/* History: 26-MAR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 export const entitySettingsPage: Page = {
   title: "entity_settings",
@@ -53,7 +53,7 @@ export const entitySettingsPage: Page = {
 
 /*****************************************************************************************************************************/
 /* Purpose: Needle settings page
-/* History: 12-JUL-2025 J.Hell   Created
+/* History: 12-JUL-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 const needleSettingsPage: Page = {
   title: "needle_settings",
@@ -69,7 +69,7 @@ const needleSettingsPage: Page = {
 
 /*****************************************************************************************************************************/
 /* Purpose: Define the sections of the main page
-/* History: 26-MAR-2025 J.Hell   Created
+/* History: 26-MAR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 export const mainPage: Page = {
   sections: [

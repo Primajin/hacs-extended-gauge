@@ -6,7 +6,7 @@ interface RegisterCardParams {
 
 /*****************************************************************************************************************************/
 /* Purpose: Register custom card in Home assistant
-/* History: 28-MAY-2025 J.Hell   Created
+/* History: 28-MAY-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 export function registerCustomCard(params: RegisterCardParams) {
   const windowWithCards = window as unknown as Window & {

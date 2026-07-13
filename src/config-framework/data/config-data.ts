@@ -2,7 +2,7 @@ import { LovelaceCardConfig } from "custom-card-helpers";
 
 /*****************************************************************************************************************************/
 /* Purpose: Title configuration
-/* History: 19-FEB-2025 J.Hell   Created
+/* History: 19-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 export interface TitleConfigData {
   title: string;
@@ -10,7 +10,7 @@ export interface TitleConfigData {
 
 /*****************************************************************************************************************************/
 /* Purpose: Event action configuration data
-/* History: 19-FEB-2025 J.Hell   Created
+/* History: 19-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 export interface SegmentSettingsConfigData {
   segment_lower?: number;
@@ -21,7 +21,7 @@ export interface SegmentSettingsConfigData {
 
 /*****************************************************************************************************************************/
 /* Purpose: Event page configuration
-/* History: 19-FEB-2025 J.Hell   Created
+/* History: 19-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 export interface SegmentPageConfigData {
   id: number;
@@ -31,7 +31,7 @@ export interface SegmentPageConfigData {
 
 /*****************************************************************************************************************************/
 /* Purpose: Sensor details page configuration
-/* History: 19-FEB-2025 J.Hell   Created
+/* History: 19-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 interface EntitySettingsConfigData {
   name?: string;
@@ -51,7 +51,7 @@ interface EntityPageConfigData {
 
 /*****************************************************************************************************************************/
 /* Purpose: Needle style configuration
-/* History: 12-JUL-2025 J.Hell   Created
+/* History: 12-JUL-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 export type NeedleStyle = "default" | "classic" | "icon";
 
@@ -67,7 +67,7 @@ export interface NeedleConfigData {
 
 /*****************************************************************************************************************************/
 /* Purpose: General settings configuration
-/* History: 19-FEB-2025 J.Hell   Created
+/* History: 19-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 interface MainConfigData {
   min_value?: number;
@@ -84,7 +84,7 @@ interface MainConfigData {
 
 /*****************************************************************************************************************************/
 /* Purpose: Config data structure
-/* History: 19-FEB-2025 J.Hell   Created
+/* History: 19-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 export interface ExtendedGaugeConfigData extends LovelaceCardConfig {
   title?: TitleConfigData;

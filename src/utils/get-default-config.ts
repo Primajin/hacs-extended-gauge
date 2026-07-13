@@ -1,6 +1,6 @@
 /*****************************************************************************************************************************/
 /* Purpose: Default configurations
-/* History: 20-JUN-2025 J.Hell  Created
+/* History: 20-JUN-2025 D.Geisenhoff  Created
 /*****************************************************************************************************************************/
 import { HomeAssistant } from "custom-card-helpers";
 import { hexToRgb } from "./convertColor";
@@ -10,7 +10,7 @@ export const defaultValues = {};
 
 /*****************************************************************************************************************************/
 /* Purpose: Get default configuration
-/* History: 25-FEB-2025 J.Hell  Created
+/* History: 25-FEB-2025 D.Geisenhoff  Created
 /*****************************************************************************************************************************/
 export function getDefaultConfig(_hass: HomeAssistant): object {
   const rootStyles = getComputedStyle(document.documentElement);

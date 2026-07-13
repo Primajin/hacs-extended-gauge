@@ -16,7 +16,7 @@ import { registerCustomCard } from "./utils/register-custom-card";
 
 /*****************************************************************************************************************************/
 /* Purpose: Register the custom card in home assistant
-/* History: 18-FEB-2025 J.Hell   Created
+/* History: 18-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 registerCustomCard({
   type: "extended-gauge-card",
@@ -26,7 +26,7 @@ registerCustomCard({
 
 /*****************************************************************************************************************************/
 /* Purpose: Main display element of the custom card (extended gauge card)
-/* History: 18-FEB-2025 J.Hell   Created
+/* History: 18-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 @customElement("extended-gauge-card")
 export class ExtendedGaugeCard extends LitElement {
@@ -40,7 +40,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Constructor
-  /* History: 18-MAR-2025 J.Hell   Created
+  /* History: 18-MAR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public connectedCallback() {
     super.connectedCallback();
@@ -61,7 +61,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Called when card unloads from DOM
-  /* History: 26-JUN-2025 J.Hell   Created
+  /* History: 26-JUN-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -70,7 +70,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: The grid options of your card. Home Assistant uses this to set the card size in sections view.
-  /* History: 27-JUN-2025 J.Hell   Created
+  /* History: 27-JUN-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   getGridOptions() {
     return {
@@ -81,7 +81,7 @@ export class ExtendedGaugeCard extends LitElement {
   /*****************************************************************************************************************************/
   /* Purpose: The height of your card. Home Assistant uses this to automatically distribute all cards over the available columns 
   /*          in masonry view.
-  /* History: 18-FEB-2025 J.Hell   Created
+  /* History: 18-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public getCardSize(): Promise<number> | number {
     return 3;
@@ -89,7 +89,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Open the UI editor
-  /* History: 18-FEB-2025 J.Hell   Created
+  /* History: 18-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   setConfig(config: ExtendedGaugeConfigData): void {
     this._config = {
@@ -99,7 +99,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Get UI editor
-  /* History: 18-FEB-2025 J.Hell   Created
+  /* History: 18-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("./ui-editor/ui-editor");
@@ -108,7 +108,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Get default values for configuration
-  /* History: 18-FEB-2025 J.Hell   Created
+  /* History: 18-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public static getStubConfig(hass: HomeAssistant): object {
     return getDefaultConfig(hass);
@@ -116,7 +116,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Return true if card is in ui edit mode
-  /* History: 10-MAR-2025 J.Hell   Created
+  /* History: 10-MAR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   // private isEditMode()
   // {
@@ -152,7 +152,7 @@ export class ExtendedGaugeCard extends LitElement {
   /* Purpose: LitElement callback. Called after the element has updated its properties and rendered. It runs each time the 
   /*          component updates, unless the update was prevented. Called after the first render (firstUpdated()) and on every 
   /*          subsequent update
-  /* History: 18-FEB-2025 J.Hell  Created
+  /* History: 18-FEB-2025 D.Geisenhoff  Created
   /*****************************************************************************************************************************/
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
@@ -163,7 +163,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*******************************************************************************************************************************/
   /* Purpose: Do not update card while dragging a row
-  /* History: 17-FEB-2025 J.Hell  Created
+  /* History: 17-FEB-2025 D.Geisenhoff  Created
   /*******************************************************************************************************************************/
   protected shouldUpdate(): boolean {
     return true;
@@ -171,7 +171,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*******************************************************************************************************************************/
   /* Purpose: If no min value is defined, set min value to the minimum of the current value of the sensor
-  /* History: 28-MAR-2025 J.Hell  Created
+  /* History: 28-MAR-2025 D.Geisenhoff  Created
   /*******************************************************************************************************************************/
   private _setMinValue(value) {
     if (this._config.main?.min_value != undefined) {
@@ -184,7 +184,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*******************************************************************************************************************************/
   /* Purpose: If no max value is defined, set max value to the maximum of the current value of the sensor
-  /* History: 28-MAR-2025 J.Hell  Created
+  /* History: 28-MAR-2025 D.Geisenhoff  Created
   /*******************************************************************************************************************************/
   private _setMaxValue(value) {
     if (this._config.main?.max_value != undefined) {
@@ -197,7 +197,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*******************************************************************************************************************************/
   /* Purpose: Get current value of sensor
-  /* History: 28-MAR-2025 J.Hell  Created
+  /* History: 28-MAR-2025 D.Geisenhoff  Created
   /*******************************************************************************************************************************/
   private _getValue(): number | undefined {
     let entity;
@@ -222,7 +222,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*******************************************************************************************************************************/
   /* Purpose: Show sensor range colors
-  /* History: 03-APR-2025 J.Hell  Created
+  /* History: 03-APR-2025 D.Geisenhoff  Created
   /*******************************************************************************************************************************/
   private _convertSegments(config: ExtendedGaugeConfigData) {
     const segment_list: GaugeSegment[] = [];
@@ -241,7 +241,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*******************************************************************************************************************************/
   /* Purpose: Get demo data for showing a gauge, if no entity is selected
-  /* History: 16-APR-2025 J.Hell  Created
+  /* History: 16-APR-2025 D.Geisenhoff  Created
   /*******************************************************************************************************************************/
   private _getDemoData(): ExtendedGaugeConfigData {
     const config = { ...this._config };
@@ -315,7 +315,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*******************************************************************************************************************************/
   /* Purpose: Get random value for showing a demo gauge, if no entity is selected
-  /* History: 16-APR-2025 J.Hell  Created
+  /* History: 16-APR-2025 D.Geisenhoff  Created
   /*******************************************************************************************************************************/
   private _updateDemoValue = () => {
     DemoTimerManager.demoValue =
@@ -326,7 +326,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*******************************************************************************************************************************/
   /* Purpose: Render the frontend card
-  /* History: 17-FEB-2025 J.Hell  Created
+  /* History: 17-FEB-2025 D.Geisenhoff  Created
   /*******************************************************************************************************************************/
   protected render(): TemplateResult {
     if (!this._config || !this.hass) {
@@ -399,7 +399,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Styles for this HTML element (MicroteqGauge front end)
-  /* History: 19-FEB-2025 J.Hell  Created
+  /* History: 19-FEB-2025 D.Geisenhoff  Created
   /*****************************************************************************************************************************/
   static styles = css`
     ${styles}

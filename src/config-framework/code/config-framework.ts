@@ -1,6 +1,6 @@
 /*****************************************************************************************************************************/
 /* Purpose: Class which handles the config process
-/* History: 28-MAR-2025 J.Hell   Created
+/* History: 28-MAR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -26,7 +26,7 @@ import { mdiPencil } from "@mdi/js";
 /*          _sectionName:       The name of the current section.
 /*          _rowIndex:          The index of a selected list element.
 /*          _configData:        A pointer to the config data of this page.
-/* History: 28-MAR-2025 J.Hell   Created
+/* History: 28-MAR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 export type Page = {
   title?: string;
@@ -53,7 +53,7 @@ export type Page = {
 /*                                  the schema changes, depending on the selected value from the dropdown.
 /* Params internally used in program:
 /*          _errors:                A list of errors displayed in a form section when validating the form.
-/* History: 28-MAR-2025 J.Hell   Created
+/* History: 28-MAR-2025 D.Geisenhoff   Created
 /*************************************************************************************************************************************/
 export type PageSection = {
   name: string;
@@ -70,7 +70,7 @@ export type PageSection = {
 
 /*****************************************************************************************************************************/
 /* Purpose: Parent class of UI editor class to write easyly configuration interfaces
-/* History: 01-APR-2025 J.Hell   Created
+/* History: 01-APR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 export class ConfigFramework extends LitElement implements LovelaceCardEditor {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -81,7 +81,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Set site structure in constructor
-  /* History: 22-FEB-2025 J.Hell   Created
+  /* History: 22-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   constructor(mainPage: Page) {
     super();
@@ -90,7 +90,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Listen to the lovelace_updated event, to know when the user has saved the config.
-  /* History: 06-JUN-2025 J.Hell   Created
+  /* History: 06-JUN-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public async connectedCallback() {
     super.connectedCallback();
@@ -114,7 +114,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: DOM Destructor
-  /* History: 18-MAR-2025 J.Hell   Created
+  /* History: 18-MAR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -126,7 +126,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Called after config-changed event has been fired. Assert config structure and initialize site history
-  /* History: 22-FEB-2025 J.Hell   Created
+  /* History: 22-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public async setConfig(config: any): Promise<void> {
     // assert(config, cardConfigStruct);
@@ -141,13 +141,13 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Called when the user has saved the configuration.
-  /* History: 01-APR-2025 J.Hell   Created
+  /* History: 01-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected async configSaved() {}
 
   /*****************************************************************************************************************************/
   /* Purpose: Called when a form value has changed on the page. Used for setting default values or auto filling other fields.
-  /* History: 01-APR-2025 J.Hell   Created
+  /* History: 01-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected valueChanged(
     _pageName: string,
@@ -159,13 +159,13 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Called when a new list element has been added. Used for setting default values on the page
-  /* History: 17-APR-2025 J.Hell   Created
+  /* History: 17-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected listElementAdded(_pageName: string, _configData: any): any {}
 
   /*****************************************************************************************************************************/
   /* Purpose: Called before a list element will be removed. Used for comfirmation.
-  /* History: 30-APR-2025 J.Hell   Created
+  /* History: 30-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected listElementRemoving(_pageName: string, _configData: any): boolean {
     return true;
@@ -173,7 +173,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Validate the form section
-  /* History: 07-APR-2025 J.Hell   Created
+  /* History: 07-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected validateForm(
     _pageName: string,
@@ -185,13 +185,13 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Autofill other fields of current form
-  /* History: 01-APR-2025 J.Hell   Created
+  /* History: 01-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected renderCustom(_section: PageSection, _configData: any): any {}
 
   /*****************************************************************************************************************************/
   /* Purpose: Set current page and sectin when a menu item, a add or edit button has been clicked
-  /* History: 22-FEB-2025 J.Hell   Created
+  /* History: 22-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected setCurrentPage(
     selectedSection: PageSection,
@@ -214,7 +214,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
   /*****************************************************************************************************************************/
   /* Purpose: A form value has changed in the form, so update the config. Take the config of the entire page, not the section. 
   /*          This way, the user can change or set values of fields in any section of the page, not only the current one.
-  /* History: 24-FEB-2025 J.Hell   Created
+  /* History: 24-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected updateFormValues(
     pageName: string,
@@ -258,19 +258,19 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Generate localized labels for the config forms when overriding
-  /* History: 24-FEB-2025 J.Hell   Created
+  /* History: 24-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected localizeText(_text: string) {}
 
   /*****************************************************************************************************************************/
   /* Purpose: Generate localized labels for the config forms when overriding
-  /* History: 24-FEB-2025 J.Hell   Created
+  /* History: 24-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected localizeError(_schema: any) {}
 
   /*****************************************************************************************************************************/
   /* Purpose: Generate localized labels for the config forms
-  /* History: 24-FEB-2025 J.Hell   Created
+  /* History: 24-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected computeLabelCallback = (schema: any) =>
     schema?.label
@@ -281,13 +281,13 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Generate localized errors for the config forms
-  /* History: 24-FEB-2025 J.Hell   Created
+  /* History: 24-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected computeErrorCallback = (schema: any) => this.localizeError(schema);
 
   /*****************************************************************************************************************************/
   /* Purpose: Back to previous page
-  /* History: 22-FEB-2025 J.Hell   Created
+  /* History: 22-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _goBack(): void {
     this._siteHistory.pop();
@@ -296,7 +296,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Get the current page
-  /* History: 28-MAR-2025 J.Hell   Created
+  /* History: 28-MAR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _getCurrentPage(): Page {
     return this._siteHistory[this._siteHistory.length - 1];
@@ -304,7 +304,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Update the changed config data of the current page section into a shallow copy of config
-  /* History: 26-MAR-2025 J.Hell   Created
+  /* History: 26-MAR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _updateSectionConfigData(
     sectionName: string | undefined,
@@ -342,7 +342,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Get the config data of the current page section
-  /* History: 27-MAR-2025 J.Hell   Created
+  /* History: 27-MAR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _getSectionConfigData(section: PageSection): any {
     const page = this._getCurrentPage();
@@ -354,7 +354,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Fired when an element has been moved, deleted or added.
-  /* History: 24-MAR-2025 J.Hell  Created
+  /* History: 24-MAR-2025 D.Geisenhoff  Created
   /*****************************************************************************************************************************/
   private _elementListChanged(ev: CustomEvent, section: PageSection): void {
     const elementList = ev.detail.elementList;
@@ -393,7 +393,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Render the page header
-  /* History: 28-MAR-2025 J.Hell   Created
+  /* History: 28-MAR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _renderPageHeader(page: Page): any {
     return page != undefined &&
@@ -417,7 +417,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Render a menu page section
-  /* History: 28-MAR-2025 J.Hell   Created
+  /* History: 28-MAR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _renderMenuEntry(section: PageSection): any {
     const icon = section.icon ?? "mdi:dots-horizontal-circle-outline";
@@ -435,7 +435,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Render an entity picker with an edit button
-  /* History: 24-APR-2025 J.Hell   Created
+  /* History: 24-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _renderEditableEntity(pageName: string, section: PageSection): any {
     const configData = this._getSectionConfigData(section);
@@ -469,7 +469,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Render a form page section
-  /* History: 28-MAR-2025 J.Hell   Created
+  /* History: 28-MAR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _renderForm(pageName: string, section: PageSection): any {
     const configData = this._getSectionConfigData(section);
@@ -493,7 +493,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Render a list of elements page section
-  /* History: 28-MAR-2025 J.Hell   Created
+  /* History: 28-MAR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _renderElementList(section: PageSection): any {
     const elementList: any[] = this._getSectionConfigData(section) || [];
@@ -518,7 +518,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Render a custom page section
-  /* History: 28-MAR-2025 J.Hell   Created
+  /* History: 28-MAR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _renderCustom(pageName: string, section: PageSection): any {
     const configData = this._getSectionConfigData(section);
@@ -528,7 +528,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Render a page section
-  /* History: 22-FEB-2025 J.Hell   Created
+  /* History: 22-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _renderSection(section: PageSection): any {
     let pageName;
@@ -554,7 +554,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Render the page
-  /* History: 22-FEB-2025 J.Hell   Created
+  /* History: 22-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected render() {
     const currentPage = this._getCurrentPage();
@@ -573,7 +573,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Styles for this HTML element (UI editor)
-  /* History: 24-FEB-2025 J.Hell   Created
+  /* History: 24-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   static get styles() {
     return css`

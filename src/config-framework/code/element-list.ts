@@ -7,7 +7,7 @@ import { repeat } from "lit/directives/repeat.js";
 declare global {
   /*****************************************************************************************************************************/
   /* Purpose: Declare the 'go back' event
-  /* History: 24-FEB-2025 J.Hell   Created
+  /* History: 24-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   interface HASSDomEvents {
     "microteq-element-list-changed": EventValue;
@@ -15,7 +15,7 @@ declare global {
 
   /*****************************************************************************************************************************/
   /* Purpose: Assign the HTML tag to this class
-  /* History: 24-FEB-2025 J.Hell   Created
+  /* History: 24-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   // interface HTMLElementTagNameMap
   // {
@@ -25,7 +25,7 @@ declare global {
 
 /*****************************************************************************************************************************/
 /* Purpose: Type declarations for custom event parameters
-/* History: 01-APR-2025 J.Hell   Created
+/* History: 01-APR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 type ChangeType = "add" | "edit" | "remove" | "move";
 interface EventValue {
@@ -36,7 +36,7 @@ interface EventValue {
 
 /*****************************************************************************************************************************/
 /* Purpose: Header section of a configuration page
-/* History: 24-FEB-2025 J.Hell   Created
+/* History: 24-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 //@customElement("microteq-element-list")
 export class ElementList extends LitElement {
@@ -49,7 +49,7 @@ export class ElementList extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Fired when an event has been moved, deleted or added.
-  /* History: 24-MAR-2025 J.Hell  Created
+  /* History: 24-MAR-2025 D.Geisenhoff  Created
   /*****************************************************************************************************************************/
   private _elementListChanged(
     elementList: any[],
@@ -65,7 +65,7 @@ export class ElementList extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Find new list element id. If one of the existing is out of order, take this id-1, otherwise add 1 to the last id
-  /* History: 24-MAR-2025 J.Hell  Created
+  /* History: 24-MAR-2025 D.Geisenhoff  Created
   /*****************************************************************************************************************************/
   private _findNewElementId(elementList: any[]): number {
     if (elementList.length == 0) return 0;
@@ -79,7 +79,7 @@ export class ElementList extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Add a row to a list of elements
-  /* History: 18-FEB-2025 J.Hell  Created
+  /* History: 18-FEB-2025 D.Geisenhoff  Created
   /*****************************************************************************************************************************/
   private async _addRow(): Promise<void> {
     if (!this.elementList) this.elementList = [];
@@ -91,7 +91,7 @@ export class ElementList extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Add a device entity to the list of managed devices
-  /* History: 18-FEB-2025 J.Hell  Created
+  /* History: 18-FEB-2025 D.Geisenhoff  Created
   /*****************************************************************************************************************************/
   private async _editRow(index: number): Promise<void> {
     this._elementListChanged(this.elementList, index, "edit");
@@ -99,7 +99,7 @@ export class ElementList extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Remove a row from the list
-  /* History: 18-FEB-2025 J.Hell  Created
+  /* History: 18-FEB-2025 D.Geisenhoff  Created
   /*****************************************************************************************************************************/
   private _removeRow(index: number): void {
     if (!this.elementList) return;
@@ -110,7 +110,7 @@ export class ElementList extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Called when a row has changed its position in the list (drop)
-  /* History: 01-APR-2025 J.Hell  Created
+  /* History: 01-APR-2025 D.Geisenhoff  Created
   /*****************************************************************************************************************************/
   private _rowMoved(ev: CustomEvent): void {
     if (ev.detail.oldIndex === ev.detail.newIndex) {
@@ -127,7 +127,7 @@ export class ElementList extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Render current HTML element
-  /* History: 01-APR-2025 J.Hell  Created
+  /* History: 01-APR-2025 D.Geisenhoff  Created
   /*****************************************************************************************************************************/
   protected render(): TemplateResult {
     let sortable = false;
@@ -215,7 +215,7 @@ export class ElementList extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Styles of this HTML element
-/* History: 24-FEB-2025 J.Hell   Created
+/* History: 24-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
   static get styles(): CSSResultGroup {
     return css`
@@ -274,7 +274,7 @@ export class ElementList extends LitElement {
 
 /*****************************************************************************************************************************/
 /* Purpose: Assign the HTML tag to this class
-/* History: 24-FEB-2025 J.Hell   Created
+/* History: 24-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 if (!customElements.get("microteq-element-list")) {
   customElements.define(`microteq-element-list`, ElementList);
