@@ -330,7 +330,6 @@ export class ExtendedGaugeCard extends LitElement {
   /*          gauge_and_needle : full arc with segments + needle
   /*          dial_only        : filled dial arc, no segments, no needle
   /*          dial_and_needle  : filled dial arc + needle, no segments
-  /* History: 13-JUL-2025 D.Geisenhoff  Created
   /*******************************************************************************************************************************/
   private _resolveDisplayMode(mode: DisplayMode | undefined): {
     showNeedle: boolean;
