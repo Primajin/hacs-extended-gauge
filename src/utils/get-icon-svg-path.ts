@@ -14,7 +14,7 @@
 /*
 /* Returns: the SVG path "d" attribute string, or null if the icon could not be resolved.
 /*
-/* History: 13-JUL-2025 J.Hell   Created
+/* History: 13-JUL-2026 J.Hell   Created
 /*****************************************************************************************************************************/
 
 /** Cache so we only resolve each icon once per session. */
@@ -24,7 +24,7 @@ const _cache = new Map<string, string | null>();
 /* Purpose: Return the SVG path data for the given HA icon string (e.g. "mdi:home").
 /*          The result is cached so repeated calls are synchronous-equivalent after the first
 /*          resolution.
-/* History: 13-JUL-2025 J.Hell   Created
+/* History: 13-JUL-2026 J.Hell   Created
 /*****************************************************************************************************************************/
 export async function getIconSvgPath(icon: string): Promise<string | null> {
   if (_cache.has(icon)) {
@@ -69,7 +69,7 @@ export async function getIconSvgPath(icon: string): Promise<string | null> {
 /*****************************************************************************************************************************/
 /* Purpose: Create a hidden <ha-icon> element, wait for it to render, then extract the SVG
 /*          path "d" attribute from its shadow DOM.
-/* History: 13-JUL-2025 J.Hell   Created
+/* History: 13-JUL-2026 J.Hell   Created
 /*****************************************************************************************************************************/
 async function _resolveViaHaIconElement(icon: string): Promise<string | null> {
   // Only works in a browser context where <ha-icon> is registered.

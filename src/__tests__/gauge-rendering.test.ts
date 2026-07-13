@@ -16,7 +16,7 @@
 /*     7. renderNeedle dispatch
 /*     8. showNeedle / showDial independence (logic extracted from gauge render())
 /*
-/* History: 13-JUL-2025 J.Hell   Created
+/* History: 13-JUL-2026 J.Hell   Created
 /*****************************************************************************************************************************/
 
 // ---------------------------------------------------------------------------

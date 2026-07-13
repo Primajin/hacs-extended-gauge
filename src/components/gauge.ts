@@ -303,8 +303,8 @@ export class ExtendedGauge extends LitElement {
   /*          style) inside needle-renderer.ts, ensuring it wins over the CSS class
   /*          `.needle-icon-path { fill: var(--primary-text-color) }`.
   /*
-  /* History: 12-JUL-2025 J.Hell   Created
-  /*          13-JUL-2025 J.Hell   Refactored to delegate to needle-renderer.ts
+  /* History: 12-JUL-2026 J.Hell   Created
+  /*          13-JUL-2026 J.Hell   Refactored to delegate to needle-renderer.ts
   /*****************************************************************************************************************************/
   private _renderNeedle() {
     return renderNeedle({
