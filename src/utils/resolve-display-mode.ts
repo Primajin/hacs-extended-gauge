@@ -1,7 +1,9 @@
 /*****************************************************************************************************************************/
 /* Purpose: Resolve the effective needle/dial/segments visibility flags consumed by the gauge component.
-/*          Prefers the `display_mode` enum, but falls back to the legacy `show_needle` / `show_dial` booleans
-/*          (deprecated, kept for backward compatibility with configs created before `display_mode` was introduced).
+/*          Prefers the `display_mode` enum, but falls back to the legacy `show_needle` boolean (the only display option
+/*          that ever existed for real-world users, kept for backward compatibility with configs created before
+/*          `display_mode` was introduced). When `show_needle` is true, the needle and coloured segments are shown; when
+/*          false, only the single-colour dial arc is shown, matching the original behaviour.
 /* History: 14-JUL-2026 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 import { DisplayMode } from "../config-framework/data/config-data";
@@ -15,7 +17,6 @@ export interface ResolvedDisplayMode {
 export interface DisplayModeConfig {
   display_mode?: DisplayMode;
   show_needle?: boolean;
-  show_dial?: boolean;
 }
 
 export function resolveDisplayMode(
@@ -33,12 +34,11 @@ export function resolveDisplayMode(
     }
   }
 
-  // Legacy configs (pre display_mode) used two independent booleans. show_needle also
-  // controlled whether coloured segments were drawn, show_dial defaulted to true.
-  if (config?.show_needle !== undefined || config?.show_dial !== undefined) {
-    const showNeedle = config?.show_needle ?? true;
-    const showDial = config?.show_dial ?? true;
-    return { showNeedle, showDial, showSegments: showNeedle };
+  // Legacy configs (pre display_mode) only had a single show_needle boolean. The dial arc
+  // was shown whenever the needle was hidden, and segments were shown whenever it was visible.
+  if (config?.show_needle !== undefined) {
+    const showNeedle = config.show_needle;
+    return { showNeedle, showDial: !showNeedle, showSegments: showNeedle };
   }
 
   return { showNeedle: true, showDial: false, showSegments: true };

@@ -84,8 +84,6 @@ interface MainConfigData {
   display_mode?: DisplayMode;
   /** @deprecated Use `display_mode` instead. Kept for backward compatibility with configs created before `display_mode` was introduced. */
   show_needle?: boolean;
-  /** @deprecated Use `display_mode` instead. Kept for backward compatibility with configs created before `display_mode` was introduced. */
-  show_dial?: boolean;
   needle?: NeedleConfigData;
   show_entity_name?: boolean;
   show_min_max_values?: boolean;
