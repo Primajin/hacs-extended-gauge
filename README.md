@@ -216,6 +216,8 @@ After installing your Extended Gauge Card, edit your dashboard or create a new o
 | *Show&nbsp;segment&nbsp;thresholds* | Toggle to show or hide the segment threshold values. |
 <br />
 
+> **Note:** Older configs created before `display_mode` was introduced may still use the `show_needle` YAML option. It is deprecated but continues to work as a fallback when `display_mode` is not set. We recommend migrating to `display_mode`.
+
 ### Editing the entity
 To gain more control over how the entity value is displayed, click the edit button to the right of the selected entity Id.
 
