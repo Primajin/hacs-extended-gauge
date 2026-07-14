@@ -27,7 +27,7 @@ entity:
 main:
   min_value: 0
   max_value: 100
-  show_needle: true
+  display_mode: gauge_and_needle
   needle:
     needle_style: default
 segment_list:
@@ -68,9 +68,9 @@ entity:
 main:
   min_value: 0
   max_value: 100
-  show_needle: true
+  display_mode: gauge_and_needle
   needle:
-    needle_style: old
+    needle_style: classic
 segment_list:
   - title: critical
     settings:
@@ -109,7 +109,7 @@ entity:
 main:
   min_value: 0
   max_value: 300
-  show_needle: true
+  display_mode: gauge_and_needle
   show_segment_labels: true
   needle:
     needle_style: default
@@ -161,7 +161,7 @@ entity:
 main:
   min_value: 0
   max_value: 11
-  show_needle: true
+  display_mode: gauge_and_needle
   needle:
     needle_style: icon
     needle_icon: mdi:white-balance-sunny
@@ -213,7 +213,7 @@ entity:
 main:
   min_value: 0
   max_value: 100
-  show_needle: false
+  display_mode: dial_only
 segment_list:
   - title: dry
     settings:
@@ -237,7 +237,7 @@ segment_list:
 ## Power Consumption (W → kW)
 
 Reads a sensor in watts and displays it in kilowatts using the conversion factor.
-Shows both the dial arc and the HA-style needle simultaneously with `show_dial: true`.
+Shows both the dial arc and the HA-style needle simultaneously with `display_mode: dial_and_needle`.
 
 ![Power preview](../assets/examples/power.svg)
 
@@ -254,10 +254,9 @@ entity:
 main:
   min_value: 0
   max_value: 10
-  show_needle: true
-  show_dial: true
+  display_mode: dial_and_needle
   needle:
-    needle_style: old
+    needle_style: classic
 ```
 
 ---
@@ -281,7 +280,7 @@ entity:
 main:
   min_value: 0
   max_value: 120
-  show_needle: true
+  display_mode: gauge_and_needle
   needle:
     needle_style: icon
     needle_icon: mdi:arrow-up-bold
@@ -328,7 +327,7 @@ entity:
 main:
   min_value: 400
   max_value: 2000
-  show_needle: true
+  display_mode: gauge_and_needle
   show_segment_labels: true
   needle:
     needle_style: default
@@ -376,9 +375,9 @@ entity:
 main:
   min_value: -2
   max_value: 10
-  show_needle: true
+  display_mode: gauge_and_needle
   needle:
-    needle_style: old
+    needle_style: classic
 segment_list:
   - title: too_cold
     settings:
@@ -418,7 +417,7 @@ entity:
 main:
   min_value: 0
   max_value: 5000
-  show_needle: false
+  display_mode: dial_only
   show_min_max_values: true
 segment_list:
   - title: low
