@@ -49,6 +49,14 @@ describe("resolveDisplayMode", () => {
       });
     });
 
+    it("falls back to gauge_and_needle-equivalent defaults when config has neither display_mode nor show_needle", () => {
+      expect(resolveDisplayMode({})).toEqual({
+        showNeedle: true,
+        showDial: false,
+        showSegments: true,
+      });
+    });
+
     it("show_needle: true shows needle and segments, hides the dial arc", () => {
       expect(resolveDisplayMode({ show_needle: true })).toEqual({
         showNeedle: true,
