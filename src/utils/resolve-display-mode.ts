@@ -22,24 +22,23 @@ export interface DisplayModeConfig {
 export function resolveDisplayMode(
   config: DisplayModeConfig | undefined
 ): ResolvedDisplayMode {
-  if (config?.display_mode) {
-    switch (config.display_mode) {
-      case "dial_only":
-        return { showNeedle: false, showDial: true, showSegments: false };
-      case "dial_and_needle":
-        return { showNeedle: true, showDial: true, showSegments: false };
-      case "gauge_and_needle":
-      default:
-        return { showNeedle: true, showDial: false, showSegments: true };
-    }
-  }
+  // Legacy configs (pre display_mode) only had a single show_needle boolean. show_needle: true
+  // is equivalent to gauge_and_needle, show_needle: false is equivalent to dial_only.
+  const displayMode: DisplayMode | undefined =
+    config?.display_mode ??
+    (config?.show_needle !== undefined
+      ? config.show_needle
+        ? "gauge_and_needle"
+        : "dial_only"
+      : undefined);
 
-  // Legacy configs (pre display_mode) only had a single show_needle boolean. The dial arc
-  // was shown whenever the needle was hidden, and segments were shown whenever it was visible.
-  if (config?.show_needle !== undefined) {
-    const showNeedle = config.show_needle;
-    return { showNeedle, showDial: !showNeedle, showSegments: showNeedle };
+  switch (displayMode) {
+    case "dial_only":
+      return { showNeedle: false, showDial: true, showSegments: false };
+    case "dial_and_needle":
+      return { showNeedle: true, showDial: true, showSegments: false };
+    case "gauge_and_needle":
+    default:
+      return { showNeedle: true, showDial: false, showSegments: true };
   }
-
-  return { showNeedle: true, showDial: false, showSegments: true };
 }
