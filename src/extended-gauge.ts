@@ -5,7 +5,6 @@ import {
   ExtendedGaugeConfigData,
   SegmentPageConfigData,
   SegmentSettingsConfigData,
-  DisplayMode,
 } from "./config-framework/data/config-data";
 import { styles } from "./style";
 import { getDefaultConfig } from "./utils/get-default-config";
@@ -14,6 +13,7 @@ import { hexToRgb, rgbToHex } from "./utils/convertColor";
 import "./components/gauge";
 import { DemoTimerManager, GaugeSegment } from "./components/gauge";
 import { registerCustomCard } from "./utils/register-custom-card";
+import { resolveDisplayMode } from "./utils/resolve-display-mode";
 
 /*****************************************************************************************************************************/
 /* Purpose: Register the custom card in home assistant
@@ -326,28 +326,6 @@ export class ExtendedGaugeCard extends LitElement {
   };
 
   /*******************************************************************************************************************************/
-  /* Purpose: Resolve display_mode to individual flags consumed by the gauge component.
-  /*          gauge_and_needle : full arc with segments + needle
-  /*          dial_only        : filled dial arc, no segments, no needle
-  /*          dial_and_needle  : filled dial arc + needle, no segments
-  /*******************************************************************************************************************************/
-  private _resolveDisplayMode(mode: DisplayMode | undefined): {
-    showNeedle: boolean;
-    showDial: boolean;
-    showSegments: boolean;
-  } {
-    switch (mode) {
-      case "dial_only":
-        return { showNeedle: false, showDial: true, showSegments: false };
-      case "dial_and_needle":
-        return { showNeedle: true, showDial: true, showSegments: false };
-      case "gauge_and_needle":
-      default:
-        return { showNeedle: true, showDial: false, showSegments: true };
-    }
-  }
-
-  /*******************************************************************************************************************************/
   /* Purpose: Render the frontend card
   /* History: 17-FEB-2025 D.Geisenhoff  Created
   /*******************************************************************************************************************************/
@@ -374,6 +352,7 @@ export class ExtendedGaugeCard extends LitElement {
       this._setMaxValue(value);
       //      DemoTimerManager.unregisterCallback(this._updateDemoValue);
     }
+    const displayMode = resolveDisplayMode(config.main);
     return html`
       <ha-card style="text-align: center !important;">
         <h1 class="card-header">${config.title?.title}</h1>
@@ -389,12 +368,9 @@ export class ExtendedGaugeCard extends LitElement {
                 : config.entity?.entity
               : undefined}"
             .unitOfMeasure=${config.entity?.settings?.unit_of_measurement ?? ""}
-            .showNeedle=${this._resolveDisplayMode(config.main?.display_mode)
-              .showNeedle}
-            .showDial=${this._resolveDisplayMode(config.main?.display_mode)
-              .showDial}
-            .showSegments=${this._resolveDisplayMode(config.main?.display_mode)
-              .showSegments}
+            .showNeedle=${displayMode.showNeedle}
+            .showDial=${displayMode.showDial}
+            .showSegments=${displayMode.showSegments}
             .needleStyle=${config.main?.needle?.needle_style ?? "default"}
             .needleIcon=${config.main?.needle?.needle_icon}
             .needleIconKeepVertical=${config.main?.needle
