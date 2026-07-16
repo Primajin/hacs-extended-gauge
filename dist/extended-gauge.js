@@ -57,16 +57,16 @@ function e(e,t,i,n){var o,s=arguments.length,r=s<3?t:null===n?n=Object.getOwnPro
           style=${we({fill:u,"pointer-events":"none"})}>
         </path>
       </g>
-    `}}(e);default:return ft(e)}}({needleStyle:this.needleStyle,needleIcon:this.needleIcon,needleIconPath:this._needleIconPath,needleIconKeepVertical:this.needleIconKeepVertical,needleIconSize:this.needleIconSize,needleIconColor:this.needleIconColor,needleIconBackgroundColor:this.needleIconBackgroundColor,valueAngle:this._valueAngle,animate:this._updated&&this.animation})}render(){this._normalizeSegments();const e=Object.assign({},this.formatOptions);e.thousandSeparator="";let t=this.gaugeInfoColor;this.segments&&!this.showSegments&&this.segments.sort(((e,t)=>e.lower-t.lower)).map((e=>{this.value>=e.lower&&this.value<=e.upper&&(t=e.color)}));const i=this.showDial;return R`
+    `}}(e);default:return ft(e)}}({needleStyle:this.needleStyle,needleIcon:this.needleIcon,needleIconPath:this._needleIconPath,needleIconKeepVertical:this.needleIconKeepVertical,needleIconSize:this.needleIconSize,needleIconColor:this.needleIconColor,needleIconBackgroundColor:this.needleIconBackgroundColor,valueAngle:this._valueAngle,animate:this._updated&&this.animation})}render(){this._normalizeSegments();const e=Object.assign({},this.formatOptions);e.thousandSeparator="";let t=this.gaugeInfoColor;const i=!(!this.segments||!this.segments.length);i&&!this.showSegments&&this.segments.sort(((e,t)=>e.lower-t.lower)).map((e=>{this.value>=e.lower&&this.value<=e.upper&&(t=e.color)}));const n=this.showDial&&!i;return R`
       <div class="gauge-container">
       <svg viewBox="-50 -50 130 55" class="gauge" style="overflow:visible;">
       <g transform="translate(15 5)">
         <path
-          style =${we({stroke:`${this.segments&&this.showSegments?this.gaugeInfoColor:this.gaugeBackgroundColor}`})}
+          style =${we({stroke:`${i?this.gaugeInfoColor:this.gaugeBackgroundColor}`})}
           class="dial"
           d="M -40 0 A 40 40 0 0 1 40 0">
         </path>
-        ${this.segments&&this.showSegments?this.segments.sort(((e,t)=>e.lower-t.lower)).map((e=>{const t=this._getLowerAngle(e.lower,this.min,this.max),i=this._getUpperAngle(e.upper,this.min,this.max);return j`
+        ${i?this.segments.sort(((e,t)=>e.lower-t.lower)).map((e=>{const t=this._getLowerAngle(e.lower,this.min,this.max),i=this._getUpperAngle(e.upper,this.min,this.max);return j`
                   <path
                       stroke="${e.color}"
                       class="segment"
@@ -79,7 +79,7 @@ function e(e,t,i,n){var o,s=arguments.length,r=s<3?t:null===n?n=Object.getOwnPro
                        ">
                   </path>
                   `})):""}
-          ${i?j`<path
+          ${n?j`<path
                 class="dial ${this._updated&&this.animation?"animation":""}"
                 style =${we({stroke:`${t}`,transform:`rotate(${this._valueAngle-180}deg)`})}
                 d="M -40 0 A 40 40 0 0 1 40 0">

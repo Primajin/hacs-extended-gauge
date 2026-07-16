@@ -540,14 +540,21 @@ describe("renderNeedle dispatch", () => {
  * Reproduces the gauge render() logic for computing display state.
  *
  * IMPORTANT: This is a deliberate, standalone reimplementation of the
- * showNeedle/showDial branching logic found in gauge.ts ExtendedGauge.render()
- * (lines ~416–487 as of 13-JUL-2026).  It is NOT a call into the real
- * component, because gauge.ts uses Lit decorators that cannot run in Node.
+ * showNeedle/showDial/segments branching logic found in gauge.ts
+ * ExtendedGauge.render(). It is NOT a call into the real component, because
+ * gauge.ts uses Lit decorators that cannot run in Node.
  *
  * Consequence: these tests verify the *intended* behaviour.  If the logic in
  * gauge.ts is changed you MUST update this helper to match, otherwise the tests
- * will silently diverge.  When editing gauge.ts, search for "showNeedle" and
+ * will silently diverge.  When editing gauge.ts, search for "hasSegments" and
  * compare the branching conditions to this function.
+ *
+ * Segment colour bands are always shown whenever segments are configured
+ * (regardless of display mode), so that ranges (e.g. "Warm"/"Cold") stay
+ * visible. The single-colour proportional dial fill is only used when there
+ * are no segments — otherwise it would paint one segment's colour across
+ * ranges belonging to other segments (e.g. across the "0" mark when
+ * min_value is negative).
  */
 function deriveGaugeState(opts: {
   showNeedle: boolean;
@@ -557,10 +564,11 @@ function deriveGaugeState(opts: {
   gaugeInfoColor: string;
 }) {
   const { showNeedle, showDial, segments, value, gaugeInfoColor } = opts;
+  const hasSegments = !!(segments && segments.length);
 
   let gaugeValueColor = gaugeInfoColor;
-  if (segments && !showNeedle) {
-    segments
+  if (hasSegments && !showNeedle) {
+    segments!
       .sort((a, b) => a.lower - b.lower)
       .forEach((seg) => {
         if (value >= seg.lower && value <= seg.upper) {
@@ -571,17 +579,17 @@ function deriveGaugeState(opts: {
 
   return {
     gaugeValueColor,
-    dialVisible: showDial,
+    dialVisible: showDial && !hasSegments,
     needleVisible: showNeedle,
-    // Segment arcs are drawn only when the needle is shown.
-    segmentsVisible: !!(segments && showNeedle),
+    // Segment arcs are always drawn when segments are configured.
+    segmentsVisible: hasSegments,
   };
 }
 
 describe("showNeedle / showDial independence", () => {
   const SEG = [{ lower: 0, upper: 100, color: "#00ff00" }];
 
-  it("showNeedle=true  + showDial=true  → needle ✓, dial ✓, segments ✓", () => {
+  it("showNeedle=true  + showDial=true  → needle ✓, dial ✗ (segments present), segments ✓", () => {
     const s = deriveGaugeState({
       showNeedle: true,
       showDial: true,
@@ -590,7 +598,7 @@ describe("showNeedle / showDial independence", () => {
       gaugeInfoColor: "#aaa",
     });
     expect(s.needleVisible).toBe(true);
-    expect(s.dialVisible).toBe(true);
+    expect(s.dialVisible).toBe(false);
     expect(s.segmentsVisible).toBe(true);
   });
 
@@ -607,7 +615,7 @@ describe("showNeedle / showDial independence", () => {
     expect(s.segmentsVisible).toBe(true);
   });
 
-  it("showNeedle=false + showDial=true  → needle ✗, dial ✓, segments ✗, dial uses segment colour", () => {
+  it("showNeedle=false + showDial=true  → needle ✗, dial ✗ (segments present), segments ✓, dial uses segment colour", () => {
     const s = deriveGaugeState({
       showNeedle: false,
       showDial: true,
@@ -616,12 +624,12 @@ describe("showNeedle / showDial independence", () => {
       gaugeInfoColor: "#aaa",
     });
     expect(s.needleVisible).toBe(false);
-    expect(s.dialVisible).toBe(true);
-    expect(s.segmentsVisible).toBe(false);
+    expect(s.dialVisible).toBe(false);
+    expect(s.segmentsVisible).toBe(true);
     expect(s.gaugeValueColor).toBe("#00ff00");
   });
 
-  it("showNeedle=false + showDial=false → needle ✗, dial ✗, segments ✗, colour set to segment", () => {
+  it("showNeedle=false + showDial=false → needle ✗, dial ✗, segments ✓, colour set to segment", () => {
     const s = deriveGaugeState({
       showNeedle: false,
       showDial: false,
@@ -631,7 +639,7 @@ describe("showNeedle / showDial independence", () => {
     });
     expect(s.needleVisible).toBe(false);
     expect(s.dialVisible).toBe(false);
-    expect(s.segmentsVisible).toBe(false);
+    expect(s.segmentsVisible).toBe(true);
     expect(s.gaugeValueColor).toBe("#00ff00");
   });
 
@@ -707,5 +715,43 @@ describe("showNeedle / showDial independence", () => {
       gaugeInfoColor: "#000",
     });
     expect(s.gaugeValueColor).toBe("#222222");
+  });
+
+  // ---------------------------------------------------------------------
+  // Regression: dial_only / dial_and_needle with negative min_value must not
+  // paint a single segment's colour across the whole proportional fill
+  // (which would visually "spill" the active segment's colour past the "0"
+  // mark and across ranges belonging to other segments).
+  // ---------------------------------------------------------------------
+  it("dial_only-style config (showNeedle=false) with negative min_value: dial fill is suppressed, segments stay visible", () => {
+    const s = deriveGaugeState({
+      showNeedle: false,
+      showDial: true,
+      segments: [
+        { lower: -10, upper: -1, color: "#03a9f4" }, // Cold
+        { lower: 1, upper: 10, color: "#ff9800" }, // Warm
+      ],
+      value: 5,
+      gaugeInfoColor: "#aaa",
+    });
+    expect(s.dialVisible).toBe(false);
+    expect(s.segmentsVisible).toBe(true);
+    expect(s.gaugeValueColor).toBe("#ff9800");
+  });
+
+  it("dial_and_needle-style config (showNeedle=true) with segments: dial fill suppressed, needle and segments both visible", () => {
+    const s = deriveGaugeState({
+      showNeedle: true,
+      showDial: true,
+      segments: [
+        { lower: -10, upper: -1, color: "#03a9f4" },
+        { lower: 1, upper: 10, color: "#ff9800" },
+      ],
+      value: 5,
+      gaugeInfoColor: "#aaa",
+    });
+    expect(s.needleVisible).toBe(true);
+    expect(s.dialVisible).toBe(false);
+    expect(s.segmentsVisible).toBe(true);
   });
 });

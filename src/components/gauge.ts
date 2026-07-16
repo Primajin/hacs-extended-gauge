@@ -314,16 +314,20 @@ export class ExtendedGauge extends LitElement {
     const labelsFormatOptions = { ...this.formatOptions };
     labelsFormatOptions.thousandSeparator = "";
     let gaugeValueColor = this.gaugeInfoColor;
-    if (this.segments && !this.showSegments) {
+    const hasSegments = !!(this.segments && this.segments.length);
+    if (hasSegments && !this.showSegments) {
       // set color if gauge to color of segment, where the current value is in
-      this.segments
-        .sort((a, b) => a.lower! - b.lower!)
-        .map((segment) => {
-          if (this.value >= segment.lower! && this.value <= segment.upper!)
-            gaugeValueColor = segment.color;
-        });
+      this.segments!.sort((a, b) => a.lower! - b.lower!).map((segment) => {
+        if (this.value >= segment.lower! && this.value <= segment.upper!)
+          gaugeValueColor = segment.color;
+      });
     }
-    const dialVisible = this.showDial;
+    // The single-colour proportional fill only makes sense when there are no
+    // segments to display: with segments, always show the colour bands (see
+    // below) instead of a flat fill that would paint the current segment's
+    // colour across ranges belonging to other segments (e.g. across the "0"
+    // mark when min_value is negative).
+    const dialVisible = this.showDial && !hasSegments;
     return html`
       <div class="gauge-container">
       <svg viewBox="-50 -50 130 55" class="gauge" style="overflow:visible;">
@@ -331,19 +335,16 @@ export class ExtendedGauge extends LitElement {
         <path
           style =${styleMap({
             stroke: `${
-              this.segments && this.showSegments
-                ? this.gaugeInfoColor
-                : this.gaugeBackgroundColor
+              hasSegments ? this.gaugeInfoColor : this.gaugeBackgroundColor
             }`,
           })}
           class="dial"
           d="M -40 0 A 40 40 0 0 1 40 0">
         </path>
         ${
-          this.segments && this.showSegments
-            ? this.segments
-                .sort((a, b) => a.lower! - b.lower!)
-                .map((segment) => {
+          hasSegments
+            ? this.segments!.sort((a, b) => a.lower! - b.lower!).map(
+                (segment) => {
                   const angle_lower = this._getLowerAngle(
                     segment.lower!,
                     this.min,
@@ -367,7 +368,8 @@ export class ExtendedGauge extends LitElement {
                        ">
                   </path>
                   `;
-                })
+                }
+              )
             : ``
         }
           ${
