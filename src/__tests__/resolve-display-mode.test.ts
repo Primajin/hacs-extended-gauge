@@ -7,13 +7,11 @@ import { resolveDisplayMode } from "../utils/resolve-display-mode";
 describe("resolveDisplayMode", () => {
   describe("display_mode (current config)", () => {
     it("resolves gauge_and_needle to needle, no dial, segments shown", () => {
-      expect(resolveDisplayMode({ display_mode: "gauge_and_needle" })).toEqual(
-        {
-          showNeedle: true,
-          showDial: false,
-          showSegments: true,
-        }
-      );
+      expect(resolveDisplayMode({ display_mode: "gauge_and_needle" })).toEqual({
+        showNeedle: true,
+        showDial: false,
+        showSegments: true,
+      });
     });
 
     it("resolves dial_only to dial only, no needle, no segments", () => {

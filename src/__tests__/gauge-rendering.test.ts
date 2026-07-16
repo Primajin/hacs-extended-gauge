@@ -560,8 +560,14 @@ function deriveGaugeState(opts: {
   value: number;
   gaugeInfoColor: string;
 }) {
-  const { showNeedle, showDial, showSegments, segments, gaugeInfoColor, value } =
-    opts;
+  const {
+    showNeedle,
+    showDial,
+    showSegments,
+    segments,
+    gaugeInfoColor,
+    value,
+  } = opts;
 
   let gaugeValueColor = gaugeInfoColor;
   if (segments && !showSegments) {
@@ -772,4 +778,3 @@ describe("showNeedle / showDial / showSegments independence", () => {
     expect(s.gaugeValueColor).toBe("#ff9800");
   });
 });
-
