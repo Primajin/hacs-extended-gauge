@@ -17,7 +17,7 @@ import { getIconSvgPath } from "../utils/get-icon-svg-path";
 import { renderNeedle } from "../utils/needle-renderer";
 import {
   normalizeSegments,
-  hasVisibleSegments,
+  hasConfiguredSegments,
 } from "../utils/normalize-segments";
 
 // Re-export for consumers that import directly from this file.
@@ -316,21 +316,21 @@ export class ExtendedGauge extends LitElement {
     this._normalizeSegments();
     const labelsFormatOptions = { ...this.formatOptions };
     labelsFormatOptions.thousandSeparator = "";
-    const hasSegments = hasVisibleSegments(this.segments);
-    // Segment colour bands are shown (instead of the flat single-colour fill) whenever the
-    // needle is shown (original behaviour), or whenever min_value is negative: in that case the
-    // flat fill would paint one segment's colour across ranges belonging to other segments
-    // (e.g. across the "0" mark), which is visibly wrong. For min_value >= 0 without a needle,
-    // the original flat-fill behaviour is preserved for backward compatibility.
-    const showSegments = hasSegments && (this.showNeedle || this.min < 0);
-    // The dial arc is only suppressed for the specific negative-min_value fix path: when the
-    // needle is hidden, segments are configured, and min_value is negative, the flat fill would
-    // otherwise be coloured to match a single segment while spanning ranges belonging to other
-    // segments. When the needle is shown, the flat fill was never coloured per-segment (see
-    // gaugeValueColor below) so it was never buggy, and remains visible alongside the segment
-    // bands exactly as it was before this fix, regardless of min_value.
-    const dialVisible =
-      this.showDial && !(hasSegments && this.min < 0 && !this.showNeedle);
+    const hasSegments = hasConfiguredSegments(this.segments);
+    // The flat single-colour fill is only buggy when the needle is hidden, segments are
+    // configured, and min_value is negative: in that case it would be coloured to match a single
+    // segment while spanning ranges belonging to other segments (e.g. across the "0" mark).
+    const isNegativeMinFlatFillBug =
+      hasSegments && this.min < 0 && !this.showNeedle;
+    // Segment colour bands are shown (instead of the flat fill) whenever the needle is shown
+    // (original behaviour), or to work around the negative-min_value bug above. For min_value >= 0
+    // without a needle, the original flat-fill behaviour is preserved for backward compatibility.
+    const showSegments =
+      hasSegments && (this.showNeedle || isNegativeMinFlatFillBug);
+    // The dial arc is only suppressed to work around the bug above; when the needle is shown, the
+    // flat fill was never coloured per-segment (see gaugeValueColor below) so it was never buggy,
+    // and remains visible alongside the segment bands exactly as it was before this fix.
+    const dialVisible = this.showDial && !isNegativeMinFlatFillBug;
     // When the flat fill is shown, colour it to match whichever segment the current value falls
     // into (original behaviour), so plain gauge_and_needle-less configs keep their appearance.
     let gaugeValueColor = this.gaugeInfoColor;

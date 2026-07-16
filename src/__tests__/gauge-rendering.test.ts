@@ -35,7 +35,7 @@ import {
   getAngle,
 } from "../utils/gauge-math";
 import type { GaugeSegment } from "../components/gauge";
-import { hasVisibleSegments } from "../utils/normalize-segments";
+import { hasConfiguredSegments } from "../utils/normalize-segments";
 import {
   renderDefaultNeedle,
   renderClassicNeedle,
@@ -548,7 +548,7 @@ describe("renderNeedle dispatch", () => {
  * Consequence: these tests verify the *intended* behaviour.  If the logic in
  * gauge.ts is changed you MUST update this helper to match, otherwise the tests
  * will silently diverge.  Both this helper and gauge.ts share the
- * `hasVisibleSegments()` utility from normalize-segments.ts so segment
+ * `hasConfiguredSegments()` utility from normalize-segments.ts so segment
  * visibility can't drift out of sync between the two.
  *
  * Segment colour bands are shown instead of the flat single-colour dial fill
@@ -569,7 +569,7 @@ function deriveGaugeState(opts: {
 }) {
   const { showNeedle, showDial, segments, gaugeInfoColor, value } = opts;
   const min = opts.min ?? 0;
-  const hasSegments = hasVisibleSegments(segments as GaugeSegment[]);
+  const hasSegments = hasConfiguredSegments(segments as GaugeSegment[]);
   const segmentsVisible = hasSegments && (showNeedle || min < 0);
 
   let gaugeValueColor = gaugeInfoColor;

@@ -26,6 +26,6 @@ export function normalizeSegments(
 /*          logic in gauge.ts render(), which additionally considers min_value and showNeedle.
 /* History: 16-JUL-2026 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
-export function hasVisibleSegments(segments?: GaugeSegment[]): boolean {
+export function hasConfiguredSegments(segments?: GaugeSegment[]): boolean {
   return !!(segments && segments.length);
 }
