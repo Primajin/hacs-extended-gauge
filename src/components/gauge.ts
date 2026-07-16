@@ -313,13 +313,16 @@ export class ExtendedGauge extends LitElement {
     this._normalizeSegments();
     const labelsFormatOptions = { ...this.formatOptions };
     labelsFormatOptions.thousandSeparator = "";
-    const hasSegments = !!(this.segments && this.segments.length);
-    // The single-colour proportional fill only makes sense when there are no
-    // segments to display: with segments, always show the colour bands (see
-    // below) instead of a flat fill that would paint the current segment's
-    // colour across ranges belonging to other segments (e.g. across the "0"
-    // mark when min_value is negative).
-    const dialVisible = this.showDial && !hasSegments;
+    const showSegments = !!(
+      this.segments &&
+      this.segments.length &&
+      this.showSegments
+    );
+    // The single-colour proportional fill only makes sense when segments are
+    // not being shown: with segment bands visible, a flat fill would paint the
+    // current segment's colour across ranges belonging to other segments
+    // (e.g. across the "0" mark when min_value is negative).
+    const dialVisible = this.showDial && !showSegments;
     const gaugeValueColor = this.gaugeInfoColor;
     return html`
       <div class="gauge-container">
@@ -328,14 +331,14 @@ export class ExtendedGauge extends LitElement {
         <path
           style =${styleMap({
             stroke: `${
-              hasSegments ? this.gaugeInfoColor : this.gaugeBackgroundColor
+              showSegments ? this.gaugeInfoColor : this.gaugeBackgroundColor
             }`,
           })}
           class="dial"
           d="M -40 0 A 40 40 0 0 1 40 0">
         </path>
         ${
-          hasSegments
+          showSegments
             ? this.segments!.sort((a, b) => a.lower! - b.lower!).map(
                 (segment) => {
                   const angle_lower = this._getLowerAngle(

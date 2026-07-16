@@ -14,19 +14,19 @@ describe("resolveDisplayMode", () => {
       });
     });
 
-    it("resolves dial_only to dial only, no needle, no segments", () => {
+    it("resolves dial_only to dial only, no needle, segments still shown", () => {
       expect(resolveDisplayMode({ display_mode: "dial_only" })).toEqual({
         showNeedle: false,
         showDial: true,
-        showSegments: false,
+        showSegments: true,
       });
     });
 
-    it("resolves dial_and_needle to needle+dial, no segments", () => {
+    it("resolves dial_and_needle to needle+dial, segments still shown", () => {
       expect(resolveDisplayMode({ display_mode: "dial_and_needle" })).toEqual({
         showNeedle: true,
         showDial: true,
-        showSegments: false,
+        showSegments: true,
       });
     });
 
@@ -36,7 +36,7 @@ describe("resolveDisplayMode", () => {
           display_mode: "dial_only",
           show_needle: true,
         })
-      ).toEqual({ showNeedle: false, showDial: true, showSegments: false });
+      ).toEqual({ showNeedle: false, showDial: true, showSegments: true });
     });
   });
 
@@ -65,11 +65,11 @@ describe("resolveDisplayMode", () => {
       });
     });
 
-    it("show_needle: false hides needle and segments, shows the dial arc", () => {
+    it("show_needle: false hides needle, shows the dial arc, segments still shown", () => {
       expect(resolveDisplayMode({ show_needle: false })).toEqual({
         showNeedle: false,
         showDial: true,
-        showSegments: false,
+        showSegments: true,
       });
     });
   });

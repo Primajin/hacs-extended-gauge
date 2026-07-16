@@ -2,9 +2,14 @@
 /* Purpose: Resolve the effective needle/dial/segments visibility flags consumed by the gauge component.
 /*          Prefers the `display_mode` enum, but falls back to the legacy `show_needle` boolean (the only display option
 /*          that ever existed for real-world users, kept for backward compatibility with configs created before
-/*          `display_mode` was introduced). When `show_needle` is true, the needle and coloured segments are shown; when
-/*          false, only the single-colour dial arc is shown, matching the original behaviour.
+/*          `display_mode` was introduced). When `show_needle` is true, the needle is shown and the single-colour dial
+/*          arc is hidden in favour of the segments; when false, the dial arc is shown instead of the needle.
+/*          Coloured segment bands are always shown whenever segments are configured, regardless of display mode: the
+/*          single-colour dial fill only makes sense when there are no segments, since it would otherwise paint one
+/*          segment's colour across ranges belonging to other segments (e.g. across the "0" mark when min_value is
+/*          negative).
 /* History: 14-JUL-2026 D.Geisenhoff   Created
+/*          16-JUL-2026 Segments are now always shown when configured, independent of display mode
 /*****************************************************************************************************************************/
 import { DisplayMode } from "../config-framework/data/config-data";
 
@@ -34,9 +39,9 @@ export function resolveDisplayMode(
 
   switch (displayMode) {
     case "dial_only":
-      return { showNeedle: false, showDial: true, showSegments: false };
+      return { showNeedle: false, showDial: true, showSegments: true };
     case "dial_and_needle":
-      return { showNeedle: true, showDial: true, showSegments: false };
+      return { showNeedle: true, showDial: true, showSegments: true };
     case "gauge_and_needle":
     default:
       return { showNeedle: true, showDial: false, showSegments: true };
