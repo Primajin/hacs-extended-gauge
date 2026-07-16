@@ -118,8 +118,9 @@ export interface GaugeSegment {
 /*                                decimal separator is not defined).
 /*          valueText:            Text to be displayed, instead of the value.                           
 /*          showNeedle:           If true, the needle is shown, otherwise hidden. If the needle is shown and there are segments, all the
-/*                                segments are shown, too. If the needle is hidden, only the gauge dial is shown in the color of the 
-/*                                current segment, the value is in.
+/*                                segments are shown, too. If the needle is hidden, only the gauge dial is shown in the color of the
+/*                                current segment, the value is in - unless min is negative, in which case the segments are shown
+/*                                instead, to avoid a single segment's color spilling across ranges belonging to other segments.
 /*          animation:            If true, the value changes are animated.
 /*          segments:             An array of segment objects that will display segments with color, lower bound, upper bound
 /*                                and an optional value replacement label, which replaces the value, if it is in the segment 
@@ -315,17 +316,26 @@ export class ExtendedGauge extends LitElement {
     this._normalizeSegments();
     const labelsFormatOptions = { ...this.formatOptions };
     labelsFormatOptions.thousandSeparator = "";
-    const showSegments = hasVisibleSegments(this.segments);
-    // The single-colour proportional fill only makes sense when segments are
-    // not being shown: with segment bands visible, a flat fill would paint the
-    // current segment's colour across ranges belonging to other segments
-    // (e.g. across the "0" mark when min_value is negative).
+    const hasSegments = hasVisibleSegments(this.segments);
+    // Segment colour bands are shown (instead of the flat single-colour fill) whenever the
+    // needle is shown (original behaviour), or whenever min_value is negative: in that case the
+    // flat fill would paint one segment's colour across ranges belonging to other segments
+    // (e.g. across the "0" mark), which is visibly wrong. For min_value >= 0 without a needle,
+    // the original flat-fill behaviour is preserved for backward compatibility.
+    const showSegments = hasSegments && (this.showNeedle || this.min < 0);
     const dialVisible = this.showDial && !showSegments;
-    // The flat fill is the only place the value's colour ever mattered; now that
-    // it is always suppressed whenever segments are configured (see above),
-    // `gaugeValueColor` is simply `gaugeInfoColor` — segments never need their
-    // own colour here since `dialVisible` is false whenever they are shown.
-    const gaugeValueColor = this.gaugeInfoColor;
+    // When the flat fill is shown, colour it to match whichever segment the current value falls
+    // into (original behaviour), so plain gauge_and_needle-less configs keep their appearance.
+    let gaugeValueColor = this.gaugeInfoColor;
+    if (hasSegments && !showSegments) {
+      this.segments!.slice()
+        .sort((a, b) => a.lower! - b.lower!)
+        .forEach((segment) => {
+          if (this.value >= segment.lower! && this.value <= segment.upper!) {
+            gaugeValueColor = segment.color;
+          }
+        });
+    }
     return html`
       <div class="gauge-container">
       <svg viewBox="-50 -50 130 55" class="gauge" style="overflow:visible;">
