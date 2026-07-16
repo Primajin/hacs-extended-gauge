@@ -66,7 +66,7 @@ function e(e,t,i,n){var o,s=arguments.length,r=s<3?t:null===n?n=Object.getOwnPro
           class="dial"
           d="M -40 0 A 40 40 0 0 1 40 0">
         </path>
-        ${n?this.segments.sort(((e,t)=>e.lower-t.lower)).map((e=>{const t=this._getLowerAngle(e.lower,this.min,this.max),i=this._getUpperAngle(e.upper,this.min,this.max);return j`
+        ${n?this.segments.slice().sort(((e,t)=>e.lower-t.lower)).map((e=>{const t=this._getLowerAngle(e.lower,this.min,this.max),i=this._getUpperAngle(e.upper,this.min,this.max);return j`
                   <path
                       stroke="${e.color}"
                       class="segment"

@@ -351,8 +351,9 @@ export class ExtendedGauge extends LitElement {
         </path>
         ${
           showSegments
-            ? this.segments!.sort((a, b) => a.lower! - b.lower!).map(
-                (segment) => {
+            ? this.segments!.slice()
+                .sort((a, b) => a.lower! - b.lower!)
+                .map((segment) => {
                   const angle_lower = this._getLowerAngle(
                     segment.lower!,
                     this.min,
@@ -376,8 +377,7 @@ export class ExtendedGauge extends LitElement {
                        ">
                   </path>
                   `;
-                }
-              )
+                })
             : ``
         }
           ${
