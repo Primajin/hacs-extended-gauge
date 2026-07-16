@@ -380,9 +380,10 @@ export class ExtendedGauge extends LitElement {
                 }"
                 style =${styleMap({
                   stroke: `${gaugeValueColor}`,
-                  transform: `rotate(${this._valueAngle - 180}deg)`,
                 })}
-                d="M -40 0 A 40 40 0 0 1 40 0">
+                d="M -40 0 A 40 40 0 0 1
+                  ${0 - 40 * Math.cos((this._valueAngle * Math.PI) / 180)}
+                  ${0 - 40 * Math.sin((this._valueAngle * Math.PI) / 180)}">
             </path>
             `
               : ``
