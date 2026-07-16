@@ -586,7 +586,7 @@ function deriveGaugeState(opts: {
 
   return {
     gaugeValueColor,
-    dialVisible: showDial && !segmentsVisible,
+    dialVisible: showDial && !(hasSegments && min < 0 && !showNeedle),
     needleVisible: showNeedle,
     segmentsVisible,
   };
@@ -595,7 +595,7 @@ function deriveGaugeState(opts: {
 describe("showNeedle / showDial independence", () => {
   const SEG = [{ lower: 0, upper: 100, color: "#00ff00" }];
 
-  it("showNeedle=true  + showDial=true  → needle ✓, dial ✗ (segments present), segments ✓", () => {
+  it("showNeedle=true  + showDial=true  → needle ✓, dial ✓ (flat fill shown alongside bands, original behaviour), segments ✓", () => {
     const s = deriveGaugeState({
       showNeedle: true,
       showDial: true,
@@ -604,11 +604,11 @@ describe("showNeedle / showDial independence", () => {
       gaugeInfoColor: "#aaa",
     });
     expect(s.needleVisible).toBe(true);
-    expect(s.dialVisible).toBe(false);
+    expect(s.dialVisible).toBe(true);
     expect(s.segmentsVisible).toBe(true);
   });
 
-  it("showNeedle=true  + showDial=false → needle ✓, dial ✗, segments ✓", () => {
+  it("showNeedle=true  + showDial=false → needle ✓, dial ✗ (showDial false), segments ✓", () => {
     const s = deriveGaugeState({
       showNeedle: true,
       showDial: false,
@@ -716,10 +716,72 @@ describe("showNeedle / showDial independence", () => {
     expect(s.gaugeValueColor).toBe("#ff9800");
   });
 
-  it("dial_and_needle-style config (showNeedle=true) with segments: dial fill suppressed, needle and segments both visible", () => {
+  // ---------------------------------------------------------------------
+  // Flat-fill segment colour-matching coverage (min_value >= 0, showNeedle=false):
+  // this logic is unchanged from the original implementation and must keep working
+  // for out-of-range values, exact bounds, and overlapping segments.
+  // ---------------------------------------------------------------------
+  const FLAT_FILL_SEGMENTS = [
+    { lower: 0, upper: 50, color: "#03a9f4" },
+    { lower: 50, upper: 100, color: "#ff9800" },
+  ];
+
+  it("flat-fill: value outside all segment ranges keeps gaugeInfoColor", () => {
+    const s = deriveGaugeState({
+      showNeedle: false,
+      showDial: true,
+      min: 0,
+      segments: FLAT_FILL_SEGMENTS,
+      value: 200,
+      gaugeInfoColor: "#aaa",
+    });
+    expect(s.gaugeValueColor).toBe("#aaa");
+  });
+
+  it("flat-fill: value at exact lower bound of a segment matches the segment starting there (last match wins on boundary overlap)", () => {
+    const s = deriveGaugeState({
+      showNeedle: false,
+      showDial: true,
+      min: 0,
+      segments: FLAT_FILL_SEGMENTS,
+      value: 50,
+      gaugeInfoColor: "#aaa",
+    });
+    expect(s.gaugeValueColor).toBe("#ff9800");
+  });
+
+  it("flat-fill: value at exact upper bound of a segment matches that segment", () => {
+    const s = deriveGaugeState({
+      showNeedle: false,
+      showDial: true,
+      min: 0,
+      segments: FLAT_FILL_SEGMENTS,
+      value: 100,
+      gaugeInfoColor: "#aaa",
+    });
+    expect(s.gaugeValueColor).toBe("#ff9800");
+  });
+
+  it("flat-fill: multiple overlapping segments, last matching (highest lower bound) segment wins", () => {
+    const s = deriveGaugeState({
+      showNeedle: false,
+      showDial: true,
+      min: 0,
+      segments: [
+        { lower: 0, upper: 100, color: "#03a9f4" },
+        { lower: 25, upper: 75, color: "#ff9800" },
+      ],
+      value: 50,
+      gaugeInfoColor: "#aaa",
+    });
+    expect(s.gaugeValueColor).toBe("#ff9800");
+  });
+
+  it("dial_and_needle-style config (showNeedle=true) with segments and negative min_value: dial fill, needle and segments all visible together (unaffected by the negative-min fix)", () => {
     const s = deriveGaugeState({
       showNeedle: true,
       showDial: true,
+      min: -10,
       segments: [
         { lower: -10, upper: -1, color: "#03a9f4" },
         { lower: 1, upper: 10, color: "#ff9800" },
@@ -728,7 +790,7 @@ describe("showNeedle / showDial independence", () => {
       gaugeInfoColor: "#aaa",
     });
     expect(s.needleVisible).toBe(true);
-    expect(s.dialVisible).toBe(false);
+    expect(s.dialVisible).toBe(true);
     expect(s.segmentsVisible).toBe(true);
   });
 });

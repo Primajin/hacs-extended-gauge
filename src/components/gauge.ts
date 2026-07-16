@@ -323,7 +323,14 @@ export class ExtendedGauge extends LitElement {
     // (e.g. across the "0" mark), which is visibly wrong. For min_value >= 0 without a needle,
     // the original flat-fill behaviour is preserved for backward compatibility.
     const showSegments = hasSegments && (this.showNeedle || this.min < 0);
-    const dialVisible = this.showDial && !showSegments;
+    // The dial arc is only suppressed for the specific negative-min_value fix path: when the
+    // needle is hidden, segments are configured, and min_value is negative, the flat fill would
+    // otherwise be coloured to match a single segment while spanning ranges belonging to other
+    // segments. When the needle is shown, the flat fill was never coloured per-segment (see
+    // gaugeValueColor below) so it was never buggy, and remains visible alongside the segment
+    // bands exactly as it was before this fix, regardless of min_value.
+    const dialVisible =
+      this.showDial && !(hasSegments && this.min < 0 && !this.showNeedle);
     // When the flat fill is shown, colour it to match whichever segment the current value falls
     // into (original behaviour), so plain gauge_and_needle-less configs keep their appearance.
     let gaugeValueColor = this.gaugeInfoColor;
