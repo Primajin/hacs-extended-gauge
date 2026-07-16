@@ -32,7 +32,7 @@ registerCustomCard({
 /* History: 15-JUL-2026 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 function toColorOrUndefined(colorList?: number[]): string | undefined {
-  return colorList ? rgbToHex(colorList) : undefined;
+  return colorList && colorList.length ? rgbToHex(colorList) : undefined;
 }
 
 /*****************************************************************************************************************************/

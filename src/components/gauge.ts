@@ -154,10 +154,11 @@ export class ExtendedGauge extends LitElement {
   @state() private _updated = false;
   @state() private _segment_value_replacement? = "";
   @state() private _needleIconPath: string | null = null;
+  private static _instanceCounter = 0;
   private readonly _dialClipId = `dial-value-clip-${
     typeof crypto !== "undefined" && crypto.randomUUID
       ? crypto.randomUUID()
-      : Math.random().toString(36).slice(2)
+      : `${Date.now()}-${ExtendedGauge._instanceCounter++}`
   }`;
 
   /*****************************************************************************************************************************/
