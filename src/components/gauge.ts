@@ -154,8 +154,9 @@ export class ExtendedGauge extends LitElement {
   @state() private _updated = false;
   @state() private _segment_value_replacement? = "";
   @state() private _needleIconPath: string | null = null;
-  private static _instanceCounter = 0;
-  private readonly _dialClipId = `dial-value-clip-${ExtendedGauge._instanceCounter++}`;
+  private readonly _dialClipId = `dial-value-clip-${Math.random()
+    .toString(36)
+    .slice(2)}`;
 
   /*****************************************************************************************************************************/
   /* Purpose: Constructor
