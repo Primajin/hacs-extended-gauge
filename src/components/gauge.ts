@@ -154,6 +154,8 @@ export class ExtendedGauge extends LitElement {
   @state() private _updated = false;
   @state() private _segment_value_replacement? = "";
   @state() private _needleIconPath: string | null = null;
+  private static _instanceCounter = 0;
+  private readonly _dialClipId = `dial-value-clip-${ExtendedGauge._instanceCounter++}`;
 
   /*****************************************************************************************************************************/
   /* Purpose: Constructor
@@ -333,7 +335,7 @@ export class ExtendedGauge extends LitElement {
           <!-- Clips the rotated value-dial arc to the upper half-plane (y <= 0) of the
                40-unit-radius dial, so it can't visually overflow the gauge bounds while
                still being rotated via a CSS-transitionable transform (see below). -->
-          <clipPath id="dial-value-clip">
+          <clipPath id="${this._dialClipId}">
             <rect x="-50" y="-50" width="100" height="50"></rect>
           </clipPath>
         </defs>
@@ -388,7 +390,7 @@ export class ExtendedGauge extends LitElement {
                 }"
                 style =${styleMap({
                   stroke: `${gaugeValueColor}`,
-                  "clip-path": `url(#dial-value-clip)`,
+                  "clip-path": `url(#${this._dialClipId})`,
                   transform: `rotate(${this._valueAngle - 180}deg)`,
                 })}
                 d="M -40 0 A 40 40 0 0 1 40 0">
