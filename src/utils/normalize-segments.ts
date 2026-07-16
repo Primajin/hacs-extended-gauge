@@ -21,10 +21,9 @@ export function normalizeSegments(
 }
 
 /*****************************************************************************************************************************/
-/* Purpose: Determine whether segment colour bands (and, mutually exclusively, the flat proportional dial fill) should be
-/*          shown. Segments are shown whenever at least one is configured: the flat single-colour fill would otherwise paint
-/*          one segment's colour across ranges belonging to other segments (e.g. across the "0" mark when min_value is
-/*          negative), so it is only used when there are no segments at all.
+/* Purpose: Determine whether at least one segment is configured. This is a prerequisite for showing segment colour bands,
+/*          but does not by itself decide whether bands or the flat proportional dial fill are shown - see the showSegments
+/*          logic in gauge.ts render(), which additionally considers min_value and showNeedle.
 /* History: 16-JUL-2026 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 export function hasVisibleSegments(segments?: GaugeSegment[]): boolean {

@@ -4,13 +4,14 @@
 /*          that ever existed for real-world users, kept for backward compatibility with configs created before
 /*          `display_mode` was introduced). When `show_needle` is true, the needle is shown and the single-colour dial
 /*          arc is hidden in favour of the segments; when false, the dial arc is shown instead of the needle.
-/*          Coloured segment bands are always shown whenever segments are configured, regardless of display mode: the
-/*          single-colour dial fill only makes sense when there are no segments, since it would otherwise paint one
-/*          segment's colour across ranges belonging to other segments (e.g. across the "0" mark when min_value is
-/*          negative). See hasVisibleSegments() in normalize-segments.ts for that check.
+/*          Note: whether coloured segment bands are shown instead of the flat dial fill is NOT decided here - that
+/*          additionally depends on min_value and is computed in gauge.ts (see the showSegments logic in render()),
+/*          to avoid the flat fill painting one segment's colour across ranges belonging to other segments (e.g.
+/*          across the "0" mark when min_value is negative), while preserving the original flat-fill behaviour for
+/*          configs where min_value >= 0.
 /* History: 14-JUL-2026 D.Geisenhoff   Created
-/*          16-JUL-2026 Segments are now always shown when configured, independent of display mode; removed the
-/*                                    showSegments flag from this function since it no longer varies by display mode.
+/*          16-JUL-2026 Removed the showSegments flag from this function; segment-band visibility is now computed in
+/*                                    gauge.ts directly since it depends on min_value, not just display mode.
 /*****************************************************************************************************************************/
 import { DisplayMode } from "../config-framework/data/config-data";
 
