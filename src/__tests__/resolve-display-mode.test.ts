@@ -6,27 +6,24 @@ import { resolveDisplayMode } from "../utils/resolve-display-mode";
 
 describe("resolveDisplayMode", () => {
   describe("display_mode (current config)", () => {
-    it("resolves gauge_and_needle to needle+segments, no dial", () => {
+    it("resolves gauge_and_needle to needle, no dial", () => {
       expect(resolveDisplayMode({ display_mode: "gauge_and_needle" })).toEqual({
         showNeedle: true,
         showDial: false,
-        showSegments: true,
       });
     });
 
-    it("resolves dial_only to dial only, no needle, no segments", () => {
+    it("resolves dial_only to dial only, no needle", () => {
       expect(resolveDisplayMode({ display_mode: "dial_only" })).toEqual({
         showNeedle: false,
         showDial: true,
-        showSegments: false,
       });
     });
 
-    it("resolves dial_and_needle to needle+dial, no segments", () => {
+    it("resolves dial_and_needle to needle+dial", () => {
       expect(resolveDisplayMode({ display_mode: "dial_and_needle" })).toEqual({
         showNeedle: true,
         showDial: true,
-        showSegments: false,
       });
     });
 
@@ -36,7 +33,7 @@ describe("resolveDisplayMode", () => {
           display_mode: "dial_only",
           show_needle: true,
         })
-      ).toEqual({ showNeedle: false, showDial: true, showSegments: false });
+      ).toEqual({ showNeedle: false, showDial: true });
     });
   });
 
@@ -45,7 +42,6 @@ describe("resolveDisplayMode", () => {
       expect(resolveDisplayMode(undefined)).toEqual({
         showNeedle: true,
         showDial: false,
-        showSegments: true,
       });
     });
 
@@ -53,23 +49,20 @@ describe("resolveDisplayMode", () => {
       expect(resolveDisplayMode({})).toEqual({
         showNeedle: true,
         showDial: false,
-        showSegments: true,
       });
     });
 
-    it("show_needle: true shows needle and segments, hides the dial arc", () => {
+    it("show_needle: true shows needle, hides the dial arc", () => {
       expect(resolveDisplayMode({ show_needle: true })).toEqual({
         showNeedle: true,
         showDial: false,
-        showSegments: true,
       });
     });
 
-    it("show_needle: false hides needle and segments, shows the dial arc", () => {
+    it("show_needle: false hides needle, shows the dial arc", () => {
       expect(resolveDisplayMode({ show_needle: false })).toEqual({
         showNeedle: false,
         showDial: true,
-        showSegments: false,
       });
     });
   });

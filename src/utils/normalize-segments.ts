@@ -19,3 +19,13 @@ export function normalizeSegments(
     if (segment.lower! > segment.upper!) segment.lower = segment.upper;
   }
 }
+
+/*****************************************************************************************************************************/
+/* Purpose: Determine whether at least one segment is configured. This is a prerequisite for showing segment colour bands,
+/*          but does not by itself decide whether bands or the flat proportional dial fill are shown - see the showSegments
+/*          logic in gauge.ts render(), which additionally considers min_value and showNeedle.
+/* History: 16-JUL-2026 D.Geisenhoff   Created
+/*****************************************************************************************************************************/
+export function hasConfiguredSegments(segments?: GaugeSegment[]): boolean {
+  return !!(segments && segments.length);
+}
