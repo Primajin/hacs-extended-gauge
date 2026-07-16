@@ -15,7 +15,10 @@ import {
 } from "../utils/gauge-math";
 import { getIconSvgPath } from "../utils/get-icon-svg-path";
 import { renderNeedle } from "../utils/needle-renderer";
-import { normalizeSegments } from "../utils/normalize-segments";
+import {
+  normalizeSegments,
+  hasVisibleSegments,
+} from "../utils/normalize-segments";
 
 // Re-export for consumers that import directly from this file.
 export { normalizeValue, getValueInPercentage, getAngle };
@@ -140,7 +143,6 @@ export class ExtendedGauge extends LitElement {
   @property({ attribute: false }) public locale!: FrontendLocaleData;
   @property({ type: Boolean }) public showNeedle = false;
   @property({ type: Boolean }) public showDial = false;
-  @property({ type: Boolean }) public showSegments = false;
   @property({ type: String }) public needleStyle: NeedleStyle = "default";
   @property({ type: String }) public needleIcon?: string;
   @property({ type: Boolean }) public needleIconKeepVertical = false;
@@ -313,11 +315,7 @@ export class ExtendedGauge extends LitElement {
     this._normalizeSegments();
     const labelsFormatOptions = { ...this.formatOptions };
     labelsFormatOptions.thousandSeparator = "";
-    const showSegments = !!(
-      this.segments &&
-      this.segments.length &&
-      this.showSegments
-    );
+    const showSegments = hasVisibleSegments(this.segments);
     // The single-colour proportional fill only makes sense when segments are
     // not being shown: with segment bands visible, a flat fill would paint the
     // current segment's colour across ranges belonging to other segments

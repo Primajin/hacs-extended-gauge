@@ -19,3 +19,14 @@ export function normalizeSegments(
     if (segment.lower! > segment.upper!) segment.lower = segment.upper;
   }
 }
+
+/*****************************************************************************************************************************/
+/* Purpose: Determine whether segment colour bands (and, mutually exclusively, the flat proportional dial fill) should be
+/*          shown. Segments are shown whenever at least one is configured: the flat single-colour fill would otherwise paint
+/*          one segment's colour across ranges belonging to other segments (e.g. across the "0" mark when min_value is
+/*          negative), so it is only used when there are no segments at all.
+/* History: 16-JUL-2026 D.Geisenhoff   Created
+/*****************************************************************************************************************************/
+export function hasVisibleSegments(segments?: GaugeSegment[]): boolean {
+  return !!(segments && segments.length);
+}
