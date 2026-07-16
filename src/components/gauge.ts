@@ -154,12 +154,8 @@ export class ExtendedGauge extends LitElement {
   @state() private _updated = false;
   @state() private _segment_value_replacement? = "";
   @state() private _needleIconPath: string | null = null;
-  private static _instanceCounter = 0;
-  private readonly _dialClipId = `dial-value-clip-${
-    typeof crypto !== "undefined" && crypto.randomUUID
-      ? crypto.randomUUID()
-      : `${Date.now()}-${ExtendedGauge._instanceCounter++}`
-  }`;
+  // Home Assistant's frontend targets modern browsers, so crypto.randomUUID() is always available.
+  private readonly _dialClipId = `dial-value-clip-${crypto.randomUUID()}`;
 
   /*****************************************************************************************************************************/
   /* Purpose: Constructor
@@ -395,6 +391,9 @@ export class ExtendedGauge extends LitElement {
                 style =${styleMap({
                   stroke: `${gaugeValueColor}`,
                   "clip-path": `url(#${this._dialClipId})`,
+                  // Rotates around the SVG's local origin (0,0), which coincides with the
+                  // center of the 40-unit-radius dial arc defined by the "d" attribute above.
+                  "transform-origin": "0 0",
                   transform: `rotate(${this._valueAngle - 180}deg)`,
                 })}
                 d="M -40 0 A 40 40 0 0 1 40 0">
