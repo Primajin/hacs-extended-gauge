@@ -154,8 +154,12 @@ export class ExtendedGauge extends LitElement {
   @state() private _updated = false;
   @state() private _segment_value_replacement? = "";
   @state() private _needleIconPath: string | null = null;
-  // Home Assistant's frontend targets modern browsers, so crypto.randomUUID() is always available.
-  private readonly _dialClipId = `dial-value-clip-${crypto.randomUUID()}`;
+  // crypto.randomUUID() requires a secure context (HTTPS/localhost); fall back to a
+  // simple per-instance counter if it's unavailable (e.g. plain HTTP deployments).
+  private static _instanceCounter = 0;
+  private readonly _dialClipId = `dial-value-clip-${
+    crypto.randomUUID?.() ?? ExtendedGauge._instanceCounter++
+  }`;
 
   /*****************************************************************************************************************************/
   /* Purpose: Constructor
