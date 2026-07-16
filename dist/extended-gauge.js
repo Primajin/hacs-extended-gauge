@@ -62,6 +62,9 @@ function e(e,t,i,n){var o,s=arguments.length,r=s<3?t:null===n?n=Object.getOwnPro
       <svg viewBox="-50 -50 130 55" class="gauge" style="overflow:visible;">
       <g transform="translate(15 5)">
         <defs>
+          <!-- Clips the rotated value-dial arc to the upper half-plane (y <= 0) of the
+               40-unit-radius dial, so it can't visually overflow the gauge bounds while
+               still being rotated via a CSS-transitionable transform (see below). -->
           <clipPath id="dial-value-clip">
             <rect x="-50" y="-50" width="100" height="50"></rect>
           </clipPath>
