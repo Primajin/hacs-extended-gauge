@@ -321,6 +321,10 @@ export class ExtendedGauge extends LitElement {
     // current segment's colour across ranges belonging to other segments
     // (e.g. across the "0" mark when min_value is negative).
     const dialVisible = this.showDial && !showSegments;
+    // The flat fill is the only place the value's colour ever mattered; now that
+    // it is always suppressed whenever segments are configured (see above),
+    // `gaugeValueColor` is simply `gaugeInfoColor` — segments never need their
+    // own colour here since `dialVisible` is false whenever they are shown.
     const gaugeValueColor = this.gaugeInfoColor;
     return html`
       <div class="gauge-container">
