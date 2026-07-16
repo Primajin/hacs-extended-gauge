@@ -1,23 +1,17 @@
 /*****************************************************************************************************************************/
-/* Purpose: Resolve the effective needle/dial visibility flags consumed by the gauge component.
+/* Purpose: Resolve the effective needle/dial/segments visibility flags consumed by the gauge component.
 /*          Prefers the `display_mode` enum, but falls back to the legacy `show_needle` boolean (the only display option
 /*          that ever existed for real-world users, kept for backward compatibility with configs created before
-/*          `display_mode` was introduced). When `show_needle` is true, the needle is shown and the single-colour dial
-/*          arc is hidden in favour of the segments; when false, the dial arc is shown instead of the needle.
-/*          Note: whether coloured segment bands are shown instead of the flat dial fill is NOT decided here - that
-/*          additionally depends on min_value and is computed in gauge.ts (see the showSegments logic in render()),
-/*          to avoid the flat fill painting one segment's colour across ranges belonging to other segments (e.g.
-/*          across the "0" mark when min_value is negative), while preserving the original flat-fill behaviour for
-/*          configs where min_value >= 0.
+/*          `display_mode` was introduced). When `show_needle` is true, the needle and coloured segments are shown; when
+/*          false, only the single-colour dial arc is shown, matching the original behaviour.
 /* History: 14-JUL-2026 D.Geisenhoff   Created
-/*          16-JUL-2026 Removed the showSegments flag from this function; segment-band visibility is now computed in
-/*                                    gauge.ts directly since it depends on min_value, not just display mode.
 /*****************************************************************************************************************************/
 import { DisplayMode } from "../config-framework/data/config-data";
 
 export interface ResolvedDisplayMode {
   showNeedle: boolean;
   showDial: boolean;
+  showSegments: boolean;
 }
 
 export interface DisplayModeConfig {
@@ -40,11 +34,11 @@ export function resolveDisplayMode(
 
   switch (displayMode) {
     case "dial_only":
-      return { showNeedle: false, showDial: true };
+      return { showNeedle: false, showDial: true, showSegments: false };
     case "dial_and_needle":
-      return { showNeedle: true, showDial: true };
+      return { showNeedle: true, showDial: true, showSegments: false };
     case "gauge_and_needle":
     default:
-      return { showNeedle: true, showDial: false };
+      return { showNeedle: true, showDial: false, showSegments: true };
   }
 }

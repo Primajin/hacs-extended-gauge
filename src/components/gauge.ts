@@ -15,10 +15,7 @@ import {
 } from "../utils/gauge-math";
 import { getIconSvgPath } from "../utils/get-icon-svg-path";
 import { renderNeedle } from "../utils/needle-renderer";
-import {
-  normalizeSegments,
-  hasConfiguredSegments,
-} from "../utils/normalize-segments";
+import { normalizeSegments } from "../utils/normalize-segments";
 
 // Re-export for consumers that import directly from this file.
 export { normalizeValue, getValueInPercentage, getAngle };
@@ -119,8 +116,7 @@ export interface GaugeSegment {
 /*          valueText:            Text to be displayed, instead of the value.                           
 /*          showNeedle:           If true, the needle is shown, otherwise hidden. If the needle is shown and there are segments, all the
 /*                                segments are shown, too. If the needle is hidden, only the gauge dial is shown in the color of the
-/*                                current segment, the value is in - unless min is negative, in which case the segments are shown
-/*                                instead, to avoid a single segment's color spilling across ranges belonging to other segments.
+/*                                current segment, the value is in.
 /*          animation:            If true, the value changes are animated.
 /*          segments:             An array of segment objects that will display segments with color, lower bound, upper bound
 /*                                and an optional value replacement label, which replaces the value, if it is in the segment 
@@ -144,6 +140,7 @@ export class ExtendedGauge extends LitElement {
   @property({ attribute: false }) public locale!: FrontendLocaleData;
   @property({ type: Boolean }) public showNeedle = false;
   @property({ type: Boolean }) public showDial = false;
+  @property({ type: Boolean }) public showSegments = false;
   @property({ type: String }) public needleStyle: NeedleStyle = "default";
   @property({ type: String }) public needleIcon?: string;
   @property({ type: Boolean }) public needleIconKeepVertical = false;
@@ -316,33 +313,18 @@ export class ExtendedGauge extends LitElement {
     this._normalizeSegments();
     const labelsFormatOptions = { ...this.formatOptions };
     labelsFormatOptions.thousandSeparator = "";
-    const hasSegments = hasConfiguredSegments(this.segments);
-    // The flat single-colour fill is only buggy when the needle is hidden, segments are
-    // configured, and min_value is negative: in that case it would be coloured to match a single
-    // segment while spanning ranges belonging to other segments (e.g. across the "0" mark).
-    const isNegativeMinFlatFillBug =
-      hasSegments && this.min < 0 && !this.showNeedle;
-    // Segment colour bands are shown (instead of the flat fill) whenever the needle is shown
-    // (original behaviour), or to work around the negative-min_value bug above. For min_value >= 0
-    // without a needle, the original flat-fill behaviour is preserved for backward compatibility.
-    const showSegments =
-      hasSegments && (this.showNeedle || isNegativeMinFlatFillBug);
-    // The dial arc is only suppressed to work around the bug above; when the needle is shown, the
-    // flat fill was never coloured per-segment (see gaugeValueColor below) so it was never buggy,
-    // and remains visible alongside the segment bands exactly as it was before this fix.
-    const dialVisible = this.showDial && !isNegativeMinFlatFillBug;
-    // When the flat fill is shown, colour it to match whichever segment the current value falls
-    // into (original behaviour), so plain gauge_and_needle-less configs keep their appearance.
     let gaugeValueColor = this.gaugeInfoColor;
-    if (hasSegments && !showSegments) {
-      this.segments!.slice()
+    if (this.segments && !this.showSegments) {
+      // set color if gauge to color of segment, where the current value is in
+      this.segments
+        .slice()
         .sort((a, b) => a.lower! - b.lower!)
         .forEach((segment) => {
-          if (this.value >= segment.lower! && this.value <= segment.upper!) {
+          if (this.value >= segment.lower! && this.value <= segment.upper!)
             gaugeValueColor = segment.color;
-          }
         });
     }
+    const dialVisible = this.showDial;
     return html`
       <div class="gauge-container">
       <svg viewBox="-50 -50 130 55" class="gauge" style="overflow:visible;">
@@ -350,15 +332,18 @@ export class ExtendedGauge extends LitElement {
         <path
           style =${styleMap({
             stroke: `${
-              showSegments ? this.gaugeInfoColor : this.gaugeBackgroundColor
+              this.segments && this.showSegments
+                ? this.gaugeInfoColor
+                : this.gaugeBackgroundColor
             }`,
           })}
           class="dial"
           d="M -40 0 A 40 40 0 0 1 40 0">
         </path>
         ${
-          showSegments
-            ? this.segments!.slice()
+          this.segments && this.showSegments
+            ? this.segments
+                .slice()
                 .sort((a, b) => a.lower! - b.lower!)
                 .map((segment) => {
                   const angle_lower = this._getLowerAngle(

@@ -35,7 +35,6 @@ import {
   getAngle,
 } from "../utils/gauge-math";
 import type { GaugeSegment } from "../components/gauge";
-import { hasConfiguredSegments } from "../utils/normalize-segments";
 import {
   renderDefaultNeedle,
   renderClassicNeedle,
@@ -527,54 +526,52 @@ describe("renderNeedle dispatch", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 8. showNeedle / showDial independence
+// 8. showNeedle / showDial / showSegments independence
 // ---------------------------------------------------------------------------
 //
-// showNeedle and showDial are independent flags:
-//   showNeedle  → whether the needle is visible AND whether segments are drawn
-//                 AND whether the filled dial uses segment colour (when needle hidden)
-//   showDial    → whether the filled dial arc is shown
+// showSegments is resolved by resolveDisplayMode() from the display mode /
+// legacy show_needle config (see resolve-display-mode.test.ts) and passed
+// into the gauge as its own property, independent of showDial:
+//   showSegments → whether the coloured segment bands are drawn, and whether
+//                   the flat dial fill is coloured to match the segment the
+//                   value falls into (when segments are configured but not
+//                   shown as bands)
+//   showDial     → whether the filled dial arc is shown
 //
-// Any combination of the two flags must be valid.
+// Any combination of the flags must be valid.
 
 /**
  * Reproduces the gauge render() logic for computing display state.
  *
  * IMPORTANT: This is a deliberate, standalone reimplementation of the
- * showNeedle/showDial/segments branching logic found in gauge.ts
+ * showNeedle/showDial/showSegments branching logic found in gauge.ts
  * ExtendedGauge.render(). It is NOT a call into the real component, because
  * gauge.ts uses Lit decorators that cannot run in Node.
  *
- * Consequence: these tests verify the *intended* behaviour.  If the logic in
- * gauge.ts is changed you MUST update this helper to match, otherwise the tests
- * will silently diverge.  Both this helper and gauge.ts share the
- * `hasConfiguredSegments()` utility from normalize-segments.ts so segment
- * visibility can't drift out of sync between the two.
- *
- * Segment colour bands are shown instead of the flat single-colour dial fill
- * whenever the needle is shown (original/upstream behaviour), OR whenever
- * min_value is negative: in that case the flat fill would otherwise paint one
- * segment's colour across ranges belonging to other segments (e.g. across the
- * "0" mark). For min_value >= 0 without a needle, the original flat-fill
- * behaviour (colour matched to whichever segment the value falls into) is
- * preserved for backward compatibility.
+ * Consequence: these tests verify the *intended* behaviour. If the logic in
+ * gauge.ts is changed you MUST update this helper to match, otherwise the
+ * tests will silently diverge.
  */
 function deriveGaugeState(opts: {
   showNeedle: boolean;
   showDial: boolean;
+  showSegments: boolean;
   segments?: { lower: number; upper: number; color: string }[];
   value: number;
   gaugeInfoColor: string;
-  min?: number;
 }) {
-  const { showNeedle, showDial, segments, gaugeInfoColor, value } = opts;
-  const min = opts.min ?? 0;
-  const hasSegments = hasConfiguredSegments(segments as GaugeSegment[]);
-  const segmentsVisible = hasSegments && (showNeedle || min < 0);
+  const {
+    showNeedle,
+    showDial,
+    showSegments,
+    segments,
+    gaugeInfoColor,
+    value,
+  } = opts;
 
   let gaugeValueColor = gaugeInfoColor;
-  if (hasSegments && !segmentsVisible) {
-    segments!
+  if (segments && !showSegments) {
+    segments
       .slice()
       .sort((a, b) => a.lower - b.lower)
       .forEach((segment) => {
@@ -586,19 +583,20 @@ function deriveGaugeState(opts: {
 
   return {
     gaugeValueColor,
-    dialVisible: showDial && !(hasSegments && min < 0 && !showNeedle),
+    dialVisible: showDial,
     needleVisible: showNeedle,
-    segmentsVisible,
+    segmentsVisible: !!segments && showSegments,
   };
 }
 
-describe("showNeedle / showDial independence", () => {
+describe("showNeedle / showDial / showSegments independence", () => {
   const SEG = [{ lower: 0, upper: 100, color: "#00ff00" }];
 
-  it("showNeedle=true  + showDial=true  → needle ✓, dial ✓ (flat fill shown alongside bands, original behaviour), segments ✓", () => {
+  it("showNeedle=true + showDial=true + showSegments=true → needle ✓, dial ✓, segments ✓", () => {
     const s = deriveGaugeState({
       showNeedle: true,
       showDial: true,
+      showSegments: true,
       segments: SEG,
       value: 50,
       gaugeInfoColor: "#aaa",
@@ -608,10 +606,11 @@ describe("showNeedle / showDial independence", () => {
     expect(s.segmentsVisible).toBe(true);
   });
 
-  it("showNeedle=true  + showDial=false → needle ✓, dial ✗ (showDial false), segments ✓", () => {
+  it("showNeedle=true + showDial=false + showSegments=true → needle ✓, dial ✗ (showDial false), segments ✓", () => {
     const s = deriveGaugeState({
       showNeedle: true,
       showDial: false,
+      showSegments: true,
       segments: SEG,
       value: 50,
       gaugeInfoColor: "#aaa",
@@ -621,10 +620,11 @@ describe("showNeedle / showDial independence", () => {
     expect(s.segmentsVisible).toBe(true);
   });
 
-  it("showNeedle=false + showDial=true + min=0 → needle ✗, dial ✓ (flat fill, backward compatible), segments ✗", () => {
+  it("showNeedle=false + showDial=true + showSegments=false → needle ✗, dial ✓ (flat fill, backward compatible), segments ✗", () => {
     const s = deriveGaugeState({
       showNeedle: false,
       showDial: true,
+      showSegments: false,
       segments: SEG,
       value: 50,
       gaugeInfoColor: "#aaa",
@@ -635,10 +635,11 @@ describe("showNeedle / showDial independence", () => {
     expect(s.gaugeValueColor).toBe("#00ff00");
   });
 
-  it("showNeedle=false + showDial=false + min=0 → needle ✗, dial ✗ (showDial false), segments ✗", () => {
+  it("showNeedle=false + showDial=false + showSegments=false → needle ✗, dial ✗ (showDial false), segments ✗", () => {
     const s = deriveGaugeState({
       showNeedle: false,
       showDial: false,
+      showSegments: false,
       segments: SEG,
       value: 50,
       gaugeInfoColor: "#aaa",
@@ -648,10 +649,11 @@ describe("showNeedle / showDial independence", () => {
     expect(s.segmentsVisible).toBe(false);
   });
 
-  it("no segments + showNeedle=false → gaugeInfoColor kept, no segments", () => {
+  it("no segments + showSegments=false → gaugeInfoColor kept, no segments", () => {
     const s = deriveGaugeState({
       showNeedle: false,
       showDial: true,
+      showSegments: false,
       segments: undefined,
       value: 50,
       gaugeInfoColor: "#aaa",
@@ -661,10 +663,11 @@ describe("showNeedle / showDial independence", () => {
     expect(s.dialVisible).toBe(true);
   });
 
-  it("no segments + showNeedle=true → needle visible, gaugeInfoColor kept, no segments", () => {
+  it("no segments + showSegments=true → gaugeInfoColor kept, no segments (nothing to draw)", () => {
     const s = deriveGaugeState({
       showNeedle: true,
       showDial: true,
+      showSegments: true,
       segments: undefined,
       value: 50,
       gaugeInfoColor: "#bbb",
@@ -675,19 +678,16 @@ describe("showNeedle / showDial independence", () => {
   });
 
   // ---------------------------------------------------------------------
-  // Regression: dial_only / dial_and_needle with negative min_value must not
-  // paint a single segment's colour across the whole proportional fill
-  // (which would visually "spill" the active segment's colour past the "0"
-  // mark and across ranges belonging to other segments). The fix ensures the
-  // flat fill is suppressed in favour of segment colour bands, but only when
-  // min_value is negative — configs with min_value >= 0 keep the original
-  // flat-fill behaviour for backward compatibility.
+  // Backward compatibility: dial_only / show_needle: false configs with a
+  // negative min_value keep showing the flat, value-reactive dial fill
+  // coloured to match whichever segment the value falls into - exactly as
+  // legacy YAML configs (created before display_mode existed) always did.
   // ---------------------------------------------------------------------
-  it("dial_only-style config (showNeedle=false) with negative min_value: dial fill is suppressed, segments become visible", () => {
+  it("dial_only-style config (showNeedle=false, showSegments=false) with negative-min segments keeps the flat, value-reactive fill", () => {
     const s = deriveGaugeState({
       showNeedle: false,
       showDial: true,
-      min: -10,
+      showSegments: false,
       segments: [
         { lower: -10, upper: -1, color: "#03a9f4" }, // Cold
         { lower: 1, upper: 10, color: "#ff9800" }, // Warm
@@ -695,30 +695,13 @@ describe("showNeedle / showDial independence", () => {
       value: 5,
       gaugeInfoColor: "#aaa",
     });
-    expect(s.dialVisible).toBe(false);
-    expect(s.segmentsVisible).toBe(true);
-  });
-
-  it("dial_only-style config (showNeedle=false) with non-negative min_value keeps original flat-fill behaviour", () => {
-    const s = deriveGaugeState({
-      showNeedle: false,
-      showDial: true,
-      min: 0,
-      segments: [
-        { lower: 0, upper: 50, color: "#03a9f4" },
-        { lower: 50, upper: 100, color: "#ff9800" },
-      ],
-      value: 75,
-      gaugeInfoColor: "#aaa",
-    });
-    expect(s.segmentsVisible).toBe(false);
     expect(s.dialVisible).toBe(true);
+    expect(s.segmentsVisible).toBe(false);
     expect(s.gaugeValueColor).toBe("#ff9800");
   });
 
   // ---------------------------------------------------------------------
-  // Flat-fill segment colour-matching coverage (min_value >= 0, showNeedle=false):
-  // this logic is unchanged from the original implementation and must keep working
+  // Flat-fill segment colour-matching coverage: this logic must keep working
   // for out-of-range values, exact bounds, and overlapping segments.
   // ---------------------------------------------------------------------
   const FLAT_FILL_SEGMENTS = [
@@ -730,7 +713,7 @@ describe("showNeedle / showDial independence", () => {
     const s = deriveGaugeState({
       showNeedle: false,
       showDial: true,
-      min: 0,
+      showSegments: false,
       segments: FLAT_FILL_SEGMENTS,
       value: 200,
       gaugeInfoColor: "#aaa",
@@ -742,7 +725,7 @@ describe("showNeedle / showDial independence", () => {
     const s = deriveGaugeState({
       showNeedle: false,
       showDial: true,
-      min: 0,
+      showSegments: false,
       segments: FLAT_FILL_SEGMENTS,
       value: 50,
       gaugeInfoColor: "#aaa",
@@ -754,7 +737,7 @@ describe("showNeedle / showDial independence", () => {
     const s = deriveGaugeState({
       showNeedle: false,
       showDial: true,
-      min: 0,
+      showSegments: false,
       segments: FLAT_FILL_SEGMENTS,
       value: 100,
       gaugeInfoColor: "#aaa",
@@ -766,7 +749,7 @@ describe("showNeedle / showDial independence", () => {
     const s = deriveGaugeState({
       showNeedle: false,
       showDial: true,
-      min: 0,
+      showSegments: false,
       segments: [
         { lower: 0, upper: 100, color: "#03a9f4" },
         { lower: 25, upper: 75, color: "#ff9800" },
@@ -777,11 +760,11 @@ describe("showNeedle / showDial independence", () => {
     expect(s.gaugeValueColor).toBe("#ff9800");
   });
 
-  it("dial_and_needle-style config (showNeedle=true) with segments and negative min_value: dial fill, needle and segments all visible together (unaffected by the negative-min fix)", () => {
+  it("dial_and_needle-style config (showNeedle=true, showSegments=false) with negative-min segments: dial fill and needle both visible, no bands", () => {
     const s = deriveGaugeState({
       showNeedle: true,
       showDial: true,
-      min: -10,
+      showSegments: false,
       segments: [
         { lower: -10, upper: -1, color: "#03a9f4" },
         { lower: 1, upper: 10, color: "#ff9800" },
@@ -791,6 +774,7 @@ describe("showNeedle / showDial independence", () => {
     });
     expect(s.needleVisible).toBe(true);
     expect(s.dialVisible).toBe(true);
-    expect(s.segmentsVisible).toBe(true);
+    expect(s.segmentsVisible).toBe(false);
+    expect(s.gaugeValueColor).toBe("#ff9800");
   });
 });
