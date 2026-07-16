@@ -27,6 +27,15 @@ registerCustomCard({
 });
 
 /*****************************************************************************************************************************/
+/* Purpose: Convert an optional RGB color list to a hex color string, or undefined if not configured. Used with the
+/*          `ifDefined` directive so that unconfigured colors don't override the child component's default color.
+/* History: 15-JUL-2026 D.Geisenhoff   Created
+/*****************************************************************************************************************************/
+function toColorOrUndefined(colorList?: number[]): string | undefined {
+  return colorList ? rgbToHex(colorList) : undefined;
+}
+
+/*****************************************************************************************************************************/
 /* Purpose: Main display element of the custom card (extended gauge card)
 /* History: 18-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
@@ -385,14 +394,10 @@ export class ExtendedGaugeCard extends LitElement {
               ? rgbToHex(config.main.needle.needle_icon_background_color)
               : undefined}
             .gaugeInfoColor=${ifDefined(
-              config.main?.color_value
-                ? rgbToHex(config.main.color_value)
-                : undefined
+              toColorOrUndefined(config.main?.color_value)
             )}
             .gaugeBackgroundColor=${ifDefined(
-              config.main?.color_background
-                ? rgbToHex(config.main.color_background)
-                : undefined
+              toColorOrUndefined(config.main?.color_background)
             )}
             .segments=${this._convertSegments(config)}
             .showSegmentLabels=${config.main?.show_segment_labels}
