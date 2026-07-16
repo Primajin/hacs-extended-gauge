@@ -15,6 +15,7 @@ import {
 } from "../utils/gauge-math";
 import { getIconSvgPath } from "../utils/get-icon-svg-path";
 import { renderNeedle } from "../utils/needle-renderer";
+import { normalizeSegments } from "../utils/normalize-segments";
 
 // Re-export for consumers that import directly from this file.
 export { normalizeValue, getValueInPercentage, getAngle };
@@ -175,11 +176,7 @@ export class ExtendedGauge extends LitElement {
   /*****************************************************************************************************************************/
   private _normalizeSegments() {
     if (this.segments) {
-      for (const segment of this.segments) {
-        if (isNaN(segment.lower!)) segment.lower = this.min;
-        if (isNaN(segment.upper!)) segment.upper = this.max;
-        if (segment.lower! > segment.upper!) segment.lower = segment.upper;
-      }
+      normalizeSegments(this.segments, this.min, this.max);
     }
   }
 

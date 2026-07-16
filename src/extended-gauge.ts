@@ -230,8 +230,8 @@ export class ExtendedGaugeCard extends LitElement {
     if (config.segment_list) {
       for (const segment of config.segment_list) {
         segment_list.push({
-          lower: segment.settings?.segment_lower ?? 0,
-          upper: segment.settings?.segment_upper ?? 0,
+          lower: segment.settings?.segment_lower,
+          upper: segment.settings?.segment_upper,
           color: rgbToHex(segment.settings?.segment_color),
           valueReplacement: segment.settings?.segment_value_replacement,
         });
