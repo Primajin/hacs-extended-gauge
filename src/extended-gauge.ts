@@ -1,5 +1,6 @@
 import { HomeAssistant, LovelaceCardEditor } from "custom-card-helpers";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { customElement, property, state } from "lit/decorators.js";
 import {
   ExtendedGaugeConfigData,
@@ -383,8 +384,16 @@ export class ExtendedGaugeCard extends LitElement {
               ?.needle_icon_background_color
               ? rgbToHex(config.main.needle.needle_icon_background_color)
               : undefined}
-            .gaugeInfoColor=${rgbToHex(config.main?.color_value)}
-            .gaugeBackgroundColor=${rgbToHex(config.main?.color_background)}
+            .gaugeInfoColor=${ifDefined(
+              config.main?.color_value
+                ? rgbToHex(config.main.color_value)
+                : undefined
+            )}
+            .gaugeBackgroundColor=${ifDefined(
+              config.main?.color_background
+                ? rgbToHex(config.main.color_background)
+                : undefined
+            )}
             .segments=${this._convertSegments(config)}
             .showSegmentLabels=${config.main?.show_segment_labels}
             .showMinMax=${config.main?.show_min_max_values}
