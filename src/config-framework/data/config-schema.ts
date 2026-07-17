@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/extensions */
-import {
+import 
+{
   any,
   array,
   assign,
@@ -14,14 +15,18 @@ import {
 import memoizeOne from "memoize-one";
 import localize from "../../localize/localize";
 
+
+
 /*****************************************************************************************************************************/
 /* Purpose: Configuration structure of lovelace caed
 /* History: 15-APR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
-const baseLovelaceCardConfig = object({
+const baseLovelaceCardConfig = object(
+{
   type: string(),
   view_layout: any(),
 });
+
 
 /*****************************************************************************************************************************/
 /* Purpose: Configuration structure for the card.
@@ -29,8 +34,10 @@ const baseLovelaceCardConfig = object({
 /*****************************************************************************************************************************/
 export const cardConfigStruct = assign(
   baseLovelaceCardConfig,
-  object({
-    main: object({
+  object(
+  {
+    main: object(
+    {
       title: optional(string()),
       sensor: optional(string()),
       min_value: optional(number()),
@@ -40,22 +47,25 @@ export const cardConfigStruct = assign(
   })
 );
 
-/*****************************************************************************************************************************/
-/* Purpose: Schema for title section HA Form
-/* History: 26-MAR-2025 D.Geisenhoff   Created
-/*****************************************************************************************************************************/
-export const titleConfigSchema = [
-  {
-    name: "title",
-    selector: { text: {} },
-  },
-];
 
 /*****************************************************************************************************************************/
 /* Purpose: Schema for title section HA Form
 /* History: 26-MAR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
-// export const titleConfigSchema =
+export const titleConfigSchema =
+[
+  {
+    name: "title",
+    selector: { text: {} },
+  },
+]
+
+
+/*****************************************************************************************************************************/
+/* Purpose: Schema for title section HA Form
+/* History: 26-MAR-2025 D.Geisenhoff   Created
+/*****************************************************************************************************************************/
+// export const titleConfigSchema = 
 // [
 //   {
 //     type: "grid",
@@ -64,26 +74,25 @@ export const titleConfigSchema = [
 //   },
 // ]
 
+
 /*****************************************************************************************************************************/
 /* Purpose: Schema for the settings section of a HA form for segment settings page
 /* History: 016APR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
-export const segmentSettingsConfigSchema = [
+export const segmentSettingsConfigSchema = 
+[
   {
     type: "grid",
     column_min_width: "200px",
-    schema: [
-      {
-        name: "segment_lower",
-        selector: {
-          number: { mode: "box", min: -1000000, max: 1000000, step: 0.01 },
-        },
+    schema: 
+    [
+      { 
+        name: "segment_lower", 
+        selector: { number: { mode: "box", min: -1000000, max: 1000000, step: 0.01 }}
       },
       {
-        name: "segment_upper",
-        selector: {
-          number: { mode: "box", min: -1000000, max: 1000000, step: 0.01 },
-        },
+        name: "segment_upper", 
+        selector: { number: { mode: "box", min: -1000000, max: 1000000, step: 0.01 }} 
       },
       {
         name: "segment_color",
@@ -97,147 +106,86 @@ export const segmentSettingsConfigSchema = [
   },
 ];
 
+
 /*****************************************************************************************************************************/
 /* Purpose: Schema for title section HA form of segment page
 /* History: 02-APR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
-export const segmentConfigSchema = titleConfigSchema;
+export const segmentConfigSchema =  titleConfigSchema;
+
 
 /*****************************************************************************************************************************/
 /* Purpose: Entity details config schema
 /* History: 23-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
-export const entitySettingsConfigSchema = [
+export const entitySettingsConfigSchema =
+[
   {
     type: "grid",
     column_min_width: "200px",
-    schema: [
-      {
-        name: "name",
-        selector: { text: {} },
+    schema: 
+    [
+      { 
+        name: "name", 
+        selector: { text: {} }
       },
       {
-        name: "unit_of_measurement",
-        selector: { text: {} },
+        name: "unit_of_measurement", 
+        selector: { text: {} } 
+      },
+      { 
+        name: "conversion_factor", 
+        selector: { number: {mode: "box", min: -1000000, max: 1000000, step: 0.01 } }
+      },
+      { 
+        name: "decimals", 
+        selector: { number: {mode: "box", min: -1000000, max: 1000000, step: 0.01 } }
+      },
+      { 
+        name: "thousand_separator", 
+        selector: { text: {} }
       },
       {
-        name: "conversion_factor",
-        selector: {
-          number: { mode: "box", min: -1000000, max: 1000000, step: 0.01 },
-        },
-      },
-      {
-        name: "decimals",
-        selector: {
-          number: { mode: "box", min: -1000000, max: 1000000, step: 0.01 },
-        },
-      },
-      {
-        name: "thousand_separator",
-        selector: { text: {} },
-      },
-      {
-        name: "decimal_separator",
-        selector: { text: {} },
+        name: "decimal_separator", 
+        selector: { text: {} } 
       },
     ],
   },
 ];
 
+
 /*****************************************************************************************************************************/
 /* Purpose: Sensor entity config Schema
 /* History: 07-APR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
-export const entityConfigSchema = [
+export const entityConfigSchema = 
+[
   {
     name: "entity",
-    selector: {
-      entity: { filter: { domain: ["sensor", "number", "input_number"] } },
-    },
+    selector: { entity: { filter: {domain: ["sensor","number","input_number"]}}},
   },
 ];
 
-/*****************************************************************************************************************************/
-/* Purpose: Needle settings config schema
-/* History: 12-JUL-2025 D.Geisenhoff   Created
-/*****************************************************************************************************************************/
-export const needleConfigSchema = (needleConfig: any) => {
-  const needleStyle = needleConfig?.needle_style;
-  const bgEnabled = needleConfig?.needle_icon_background_color_enabled;
-  return [
-    {
-      type: "grid",
-      column_min_width: "200px",
-      schema: [
-        {
-          name: "needle_style",
-          selector: {
-            select: {
-              options: ["default", "classic", "icon"],
-              mode: "dropdown",
-            },
-          },
-        },
-        ...(needleStyle === "icon"
-          ? [
-              {
-                name: "needle_icon",
-                selector: { icon: {} },
-              },
-              {
-                name: "needle_icon_keep_vertical",
-                selector: { boolean: {} },
-              },
-              {
-                name: "needle_icon_size",
-                selector: {
-                  number: { mode: "box", min: 0.1, max: 10, step: 0.1 },
-                },
-              },
-              {
-                name: "needle_icon_color",
-                selector: { color_rgb: {} },
-              },
-              {
-                name: "needle_icon_background_color_enabled",
-                selector: { boolean: {} },
-              },
-              ...(bgEnabled
-                ? [
-                    {
-                      name: "needle_icon_background_color",
-                      selector: { color_rgb: {} },
-                    },
-                  ]
-                : []),
-            ]
-          : []),
-      ],
-    },
-  ];
-};
 
 /*****************************************************************************************************************************/
 /* Purpose: Main page config Schema
 /* History: 23-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
-export const mainConfigSchema = [
+export const mainConfigSchema =  
+[
   {
     type: "grid",
     column_min_width: "200px",
-    schema: [
+    schema: 
+    [
       {
         name: "min_value",
-        selector: {
-          number: { mode: "box", min: -1000000, max: 1000000, step: 0.01 },
-        },
-      },
+        selector: { number: {mode: "box", min: -1000000, max: 1000000, step: 0.01 } }
+      },  
       {
         name: "max_value",
-        selector: {
-          number: { mode: "box", min: -1000000, max: 1000000, step: 0.01 },
-        },
-      },
+        selector: { number: {mode: "box", min: -1000000, max: 1000000, step: 0.01 } }
+      },  
       {
         name: "color_value",
         selector: { color_rgb: {} },
@@ -247,17 +195,37 @@ export const mainConfigSchema = [
         selector: { color_rgb: {} },
       },
       {
-        name: "display_mode",
+        name: "show_needle",
+        selector: { boolean: {} },
+      },
+      {
+        name: "needle_style",
         selector: {
           select: {
             options: [
-              { value: "gauge_and_needle", label: "Full gauge with needle" },
-              { value: "dial_only", label: "Dial only" },
-              { value: "dial_and_needle", label: "Dial with needle" },
+              { value: "default", label: "Default Needle" },
+              { value: "classic", label: "Classic Needle" },
+              { value: "icon", label: "Icon Needle" },
+              { value: "none", label: "No Needle" },
             ],
-            mode: "dropdown",
           },
         },
+      },
+      {
+        name: "needle_icon",
+        selector: { icon: {} },
+      },
+      {
+        name: "needle_icon_size",
+        selector: { number: { mode: "box", min: 0.1, max: 10, step: 0.1 } }
+      },
+      {
+        name: "needle_icon_color",
+        selector: { color_rgb: {} },
+      },
+      {
+        name: "needle_icon_keep_vertical",
+        selector: { boolean: {} },
       },
       {
         name: "show_entity_name",
@@ -274,3 +242,4 @@ export const mainConfigSchema = [
     ],
   },
 ];
+

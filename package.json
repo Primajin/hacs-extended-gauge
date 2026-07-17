@@ -22,7 +22,7 @@
   "homepage": "https://github.com/microteq/extended-gauge#readme",
   "scripts": {
     "build": "rollup -c",
-    "lint": "eslint 'src/**/*.ts'",
+    "lint": "eslint src/*",
     "release": "semantic-release",
     "start": "rollup -wc",
     "watch": "rollup -c --watch",
@@ -59,7 +59,6 @@
     "@rollup/plugin-typescript": "^8.3.2",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
-    "@types/jest": "^30.0.0",
     "@types/node": "^20.12.7",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
