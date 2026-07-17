@@ -77,6 +77,17 @@ export class ExtendedGaugeUiEditor extends ConfigFramework {
             pageConfigData[sectionName] = sectionConfigData;
             break;
           }
+          case "main": {
+            if (
+              sectionConfigData.display_mode !== undefined &&
+              sectionConfigData.show_needle !== undefined
+            ) {
+              sectionConfigData = { ...sectionConfigData };
+              delete sectionConfigData.show_needle;
+              pageConfigData[sectionName] = sectionConfigData;
+            }
+            break;
+          }
         }
         break;
       // Needle settings page

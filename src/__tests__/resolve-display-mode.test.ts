@@ -29,18 +29,18 @@ describe("resolveDisplayMode", () => {
         showSegments: false,
       });
     });
+  });
 
-    it("display_mode takes precedence over legacy show_needle when both are set", () => {
+  describe("legacy show_needle (backward compatibility)", () => {
+    it("legacy show_needle takes precedence over display_mode when both are set", () => {
       expect(
         resolveDisplayMode({
           display_mode: "dial_only",
           show_needle: true,
         })
-      ).toEqual({ showNeedle: false, showDial: true, showSegments: false });
+      ).toEqual({ showNeedle: true, showDial: false, showSegments: true });
     });
-  });
 
-  describe("legacy show_needle (backward compatibility)", () => {
     it("falls back to gauge_and_needle-equivalent defaults when config is undefined", () => {
       expect(resolveDisplayMode(undefined)).toEqual({
         showNeedle: true,

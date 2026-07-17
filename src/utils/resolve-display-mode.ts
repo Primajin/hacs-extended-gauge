@@ -1,10 +1,9 @@
 /*****************************************************************************************************************************/
 /* Purpose: Resolve the effective needle/dial/segments visibility flags consumed by the gauge component.
-/*          Prefers the `display_mode` enum, but falls back to the legacy `show_needle` boolean (the only display option
-/*          that ever existed for real-world users, kept for backward compatibility with configs created before
-/*          `display_mode` was introduced). When `show_needle` is true, the needle and coloured segments are shown; when
-/*          false, only the single-colour dial arc is shown, matching the original behaviour.
+/*          Prioritizes the legacy `show_needle` boolean if explicitly defined, to maintain 100% backward compatibility.
+/*          If `show_needle` is not present, falls back to the modern `display_mode` enum.
 /* History: 14-JUL-2026 D.Geisenhoff   Created
+/*          17-JUL-2026 Copilot        Prioritize show_needle over display_mode for backwards compatibility
 /*****************************************************************************************************************************/
 import { DisplayMode } from "../config-framework/data/config-data";
 
@@ -22,15 +21,17 @@ export interface DisplayModeConfig {
 export function resolveDisplayMode(
   config: DisplayModeConfig | undefined
 ): ResolvedDisplayMode {
-  // Legacy configs (pre display_mode) only had a single show_needle boolean. show_needle: true
-  // is equivalent to gauge_and_needle, show_needle: false is equivalent to dial_only.
-  const displayMode: DisplayMode | undefined =
-    config?.display_mode ??
-    (config?.show_needle !== undefined
-      ? config.show_needle
-        ? "gauge_and_needle"
-        : "dial_only"
-      : undefined);
+  // If the user explicitly has show_needle set, we honor their explicit show_needle toggle.
+  // This ensures 100% backward compatibility for configs that still have show_needle defined.
+  if (config?.show_needle !== undefined) {
+    if (config.show_needle) {
+      return { showNeedle: true, showDial: false, showSegments: true };
+    } else {
+      return { showNeedle: false, showDial: true, showSegments: false };
+    }
+  }
+
+  const displayMode = config?.display_mode ?? "gauge_and_needle";
 
   switch (displayMode) {
     case "dial_only":
