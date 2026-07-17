@@ -12,36 +12,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run typecheck
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run typecheck
 
   lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run lint
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint
 
   format:
     name: Format Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run format:check
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run format:check
 
   build:
     name: Build
@@ -50,12 +59,15 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run build
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
       - name: Check dist for changes
         id: dist-check
         run: git diff --quiet dist/ || echo "changed=true" >> $GITHUB_OUTPUT
@@ -70,7 +82,7 @@ jobs:
       - name: Fail if dist is out of sync (pull request)
         if: github.event_name == 'pull_request' && steps.dist-check.outputs.changed == 'true'
         run: |
-          echo "dist/ is out of sync with the source. Please run 'npm run build' and commit the result."
+          echo "dist/ is out of sync with the source. Please run 'pnpm build' and commit the result."
           exit 1
 
   test:
@@ -78,9 +90,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm test
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
