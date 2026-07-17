@@ -19,7 +19,7 @@ declare global {
 
 /*****************************************************************************************************************************/
 /* Purpose: Extended gauge editor class
-/* History: 22-FEB-2025 D. Geisenhoff   Created
+/* History: 22-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 @customElement("extended-gauge-ui-editor")
 export class ExtendedGaugeUiEditor extends ConfigFramework {
@@ -73,6 +73,20 @@ export class ExtendedGaugeUiEditor extends ConfigFramework {
                 sectionConfigData.settings = { ...sectionConfigData.settings };
                 delete sectionConfigData.settings.unit_of_measurement;
               }
+            }
+            pageConfigData[sectionName] = sectionConfigData;
+            break;
+          }
+        }
+        break;
+      // Needle settings page
+      case "main":
+        switch (sectionName) {
+          case "needle": {
+            // When background color toggle is turned off, remove the color from config
+            if (!sectionConfigData?.needle_icon_background_color_enabled) {
+              sectionConfigData = { ...sectionConfigData };
+              delete sectionConfigData.needle_icon_background_color;
             }
             pageConfigData[sectionName] = sectionConfigData;
             break;

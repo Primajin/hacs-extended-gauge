@@ -26,7 +26,7 @@ export function getDefaultConfig(_hass: HomeAssistant): object {
   config.main = {
     color_value: normalColor,
     color_background: backgroundColor,
-    show_needle: true,
+    display_mode: "gauge_and_needle",
     show_entity_name: true,
     show_min_max_values: true,
     show_segment_labels: true,

@@ -158,6 +158,66 @@ export const entityConfigSchema = [
 ];
 
 /*****************************************************************************************************************************/
+/* Purpose: Needle settings config schema
+/* History: 12-JUL-2025 D.Geisenhoff   Created
+/*****************************************************************************************************************************/
+export const needleConfigSchema = (needleConfig: any) => {
+  const needleStyle = needleConfig?.needle_style;
+  const bgEnabled = needleConfig?.needle_icon_background_color_enabled;
+  return [
+    {
+      type: "grid",
+      column_min_width: "200px",
+      schema: [
+        {
+          name: "needle_style",
+          selector: {
+            select: {
+              options: ["default", "classic", "icon"],
+              mode: "dropdown",
+            },
+          },
+        },
+        ...(needleStyle === "icon"
+          ? [
+              {
+                name: "needle_icon",
+                selector: { icon: {} },
+              },
+              {
+                name: "needle_icon_keep_vertical",
+                selector: { boolean: {} },
+              },
+              {
+                name: "needle_icon_size",
+                selector: {
+                  number: { mode: "box", min: 0.1, max: 10, step: 0.1 },
+                },
+              },
+              {
+                name: "needle_icon_color",
+                selector: { color_rgb: {} },
+              },
+              {
+                name: "needle_icon_background_color_enabled",
+                selector: { boolean: {} },
+              },
+              ...(bgEnabled
+                ? [
+                    {
+                      name: "needle_icon_background_color",
+                      selector: { color_rgb: {} },
+                    },
+                  ]
+                : []),
+            ]
+          : []),
+      ],
+    },
+  ];
+};
+
+/*****************************************************************************************************************************/
 /* Purpose: Main page config Schema
 /* History: 23-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
@@ -187,37 +247,17 @@ export const mainConfigSchema = [
         selector: { color_rgb: {} },
       },
       {
-        name: "show_needle",
-        selector: { boolean: {} },
-      },
-      {
-        name: "needle_style",
+        name: "display_mode",
         selector: {
           select: {
             options: [
-              { value: "default", label: "Default Needle" },
-              { value: "classic", label: "Classic Needle" },
-              { value: "icon", label: "Icon Needle" },
-              { value: "none", label: "No Needle" },
+              { value: "gauge_and_needle", label: "Full gauge with needle" },
+              { value: "dial_only", label: "Dial only" },
+              { value: "dial_and_needle", label: "Dial with needle" },
             ],
+            mode: "dropdown",
           },
         },
-      },
-      {
-        name: "needle_icon",
-        selector: { icon: {} },
-      },
-      {
-        name: "needle_icon_size",
-        selector: { number: { mode: "box", min: 0.1, max: 10, step: 0.1 } },
-      },
-      {
-        name: "needle_icon_color",
-        selector: { color_rgb: {} },
-      },
-      {
-        name: "needle_icon_keep_vertical",
-        selector: { boolean: {} },
       },
       {
         name: "show_entity_name",

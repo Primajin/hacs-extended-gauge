@@ -1,18 +1,28 @@
 /*****************************************************************************************************************************/
 /* Purpose: Gauge component, based on HA-Gauge
-/* History: 10-MAR-2025 D. Geisenhoff   Created
+/* History: 10-MAR-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 import { styleMap } from "lit/directives/style-map.js";
 import { formatNumber, NumberFormatOptions } from "../utils/format";
 import { FrontendLocaleData } from "custom-card-helpers";
 import { css, html, LitElement, svg, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit-element";
-import { renderNeedle } from "../utils/needle-renderer";
+import { NeedleStyle } from "../config-framework/data/config-data";
+import {
+  normalizeValue,
+  getValueInPercentage,
+  getAngle,
+} from "../utils/gauge-math";
 import { getIconSvgPath } from "../utils/get-icon-svg-path";
+import { renderNeedle } from "../utils/needle-renderer";
+import { normalizeSegments } from "../utils/normalize-segments";
+
+// Re-export for consumers that import directly from this file.
+export { normalizeValue, getValueInPercentage, getAngle };
 
 /*****************************************************************************************************************************/
 /* Purpose: Interface for demo timer management
-/* History: 26-JUN-2025 D. Geisenhoff   Created
+/* History: 26-JUN-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 interface DemoTimerManager {
   timerId: number | null;
@@ -26,7 +36,7 @@ interface DemoTimerManager {
 
 /*****************************************************************************************************************************/
 /* Purpose: Singleton for demo timer management
-/* History: 26-JUN-2025 D. Geisenhoff   Created
+/* History: 26-JUN-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 export const DemoTimerManager: DemoTimerManager = {
   timerId: null,
@@ -105,7 +115,7 @@ export interface GaugeSegment {
 /*                                decimal separator is not defined).
 /*          valueText:            Text to be displayed, instead of the value.                           
 /*          showNeedle:           If true, the needle is shown, otherwise hidden. If the needle is shown and there are segments, all the
-/*                                segments are shown, too. If the needle is hidden, only the gauge dial is shown in the color of the 
+/*                                segments are shown, too. If the needle is hidden, only the gauge dial is shown in the color of the
 /*                                current segment, the value is in.
 /*          animation:            If true, the value changes are animated.
 /*          segments:             An array of segment objects that will display segments with color, lower bound, upper bound
@@ -129,23 +139,27 @@ export class ExtendedGauge extends LitElement {
   @property({ attribute: false, type: String }) public valueText?: string;
   @property({ attribute: false }) public locale!: FrontendLocaleData;
   @property({ type: Boolean }) public showNeedle = false;
-  @property({ type: String }) public needleStyle?:
-    | "default"
-    | "classic"
-    | "icon"
-    | "none";
+  @property({ type: Boolean }) public showDial = false;
+  @property({ type: Boolean }) public showSegments = false;
+  @property({ type: String }) public needleStyle: NeedleStyle = "default";
   @property({ type: String }) public needleIcon?: string;
   @property({ type: Boolean }) public needleIconKeepVertical = false;
   @property({ type: Number }) public needleIconSize = 1;
   @property({ type: String }) public needleIconColor?: string;
   @property({ type: String }) public needleIconBackgroundColor?: string;
-  @state() private _needleIconPath: string | null = null;
   @property({ type: Boolean }) public animation = true;
   @property({ type: Array }) public segments?: GaugeSegment[];
   @property({ type: Boolean }) public showSegmentLabels = true;
   @state() private _valueAngle = 0;
   @state() private _updated = false;
   @state() private _segment_value_replacement? = "";
+  @state() private _needleIconPath: string | null = null;
+  // crypto.randomUUID() requires a secure context (HTTPS/localhost); fall back to a
+  // simple per-instance counter if it's unavailable (e.g. plain HTTP deployments).
+  private static _instanceCounter = 0;
+  private readonly _dialClipId = `dial-value-clip-${
+    crypto.randomUUID?.() ?? ExtendedGauge._instanceCounter++
+  }`;
 
   /*****************************************************************************************************************************/
   /* Purpose: Constructor
@@ -154,6 +168,7 @@ export class ExtendedGauge extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     this._valueAngle = this._getAngle(this.value, this.min, this.max);
+    // Resolve icon path on mount if an icon is already configured.
     if (this.needleIcon) {
       getIconSvgPath(this.needleIcon).then((path) => {
         this._needleIconPath = path;
@@ -167,11 +182,7 @@ export class ExtendedGauge extends LitElement {
   /*****************************************************************************************************************************/
   private _normalizeSegments() {
     if (this.segments) {
-      for (const segment of this.segments) {
-        if (isNaN(segment.lower!)) segment.lower = this.min;
-        if (isNaN(segment.upper!)) segment.upper = this.max;
-        if (segment.lower! > segment.upper!) segment.lower = segment.upper;
-      }
+      normalizeSegments(this.segments, this.min, this.max);
     }
   }
 
@@ -179,19 +190,8 @@ export class ExtendedGauge extends LitElement {
   /* Purpose: Keep value in range of defined min and max
   /* History: 24-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
-  private _normalizeValue = (
-    value: number,
-    min: number,
-    max: number
-  ): number => {
-    if (isNaN(value) || isNaN(min) || isNaN(max)) {
-      // Not a number, return 0
-      return 0;
-    }
-    if (value > max) return max;
-    if (value < min) return min;
-    return value;
-  };
+  private _normalizeValue = (value: number, min: number, max: number): number =>
+    normalizeValue(value, min, max);
 
   /*****************************************************************************************************************************/
   /* Purpose: Get percentage of value
@@ -201,24 +201,14 @@ export class ExtendedGauge extends LitElement {
     value: number,
     min: number,
     max: number
-  ): number => {
-    const newMax = max - min;
-    const newVal = value - min;
-    return (100 * newVal) / newMax;
-  };
+  ): number => getValueInPercentage(value, min, max);
 
   /*****************************************************************************************************************************/
   /* Purpose: Compute angle in a percentage of 180° depending on value
   /* History: 04-APR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
-  private _getAngle = (value: number, min: number, max: number) => {
-    const percentage = this._getValueInPercentage(
-      this._normalizeValue(value, min, max),
-      min,
-      max
-    );
-    return (percentage * 180) / 100;
-  };
+  private _getAngle = (value: number, min: number, max: number) =>
+    getAngle(value, min, max);
 
   /*****************************************************************************************************************************/
   /* Purpose: Compute lower angle 
@@ -258,6 +248,7 @@ export class ExtendedGauge extends LitElement {
     this._valueAngle = this._getAngle(this.value, this.min, this.max);
     this._segment_value_replacement = this._getSegmentValueReplacement();
     this._rescaleSvgText("text");
+    // Resolve the icon SVG path whenever the icon changes.
     if (changedProperties.has("needleIcon") && this.needleIcon) {
       this._needleIconPath = null;
       getIconSvgPath(this.needleIcon).then((path) => {
@@ -305,33 +296,13 @@ export class ExtendedGauge extends LitElement {
     return "";
   }
 
-  /*******************************************************************************************************************************/
-  /* Purpose: Render this HTML element
-  /* History: 04-APR-2025 D.Geisenhoff  Created
-  /*                                    Animate needle only after first render and if animation property is true
-  /*******************************************************************************************************************************/
-
-  private _getEffectiveNeedleStyle(): string {
-    if (this.needleStyle && this.needleStyle !== "none") {
-      return this.needleStyle;
-    }
-    if (this.needleStyle === "none") {
-      return "none";
-    }
-    // Fallback for backwards compatibility with show_needle
-    if (this.showNeedle) {
-      return "default";
-    }
-    return "none";
-  }
-
-  private _renderNeedle(effectiveStyle: string) {
+  private _renderNeedle() {
     return renderNeedle({
-      needleStyle: effectiveStyle,
+      needleStyle: this.needleStyle,
       needleIcon: this.needleIcon,
       needleIconPath: this._needleIconPath,
       needleIconKeepVertical: this.needleIconKeepVertical,
-      needleIconSize: this.needleIconSize || 1,
+      needleIconSize: this.needleIconSize,
       needleIconColor: this.needleIconColor,
       needleIconBackgroundColor: this.needleIconBackgroundColor,
       valueAngle: this._valueAngle,
@@ -339,36 +310,43 @@ export class ExtendedGauge extends LitElement {
     });
   }
 
+  /*******************************************************************************************************************************/
+  /* Purpose: Render this HTML element
+  /* History: 04-APR-2025 D.Geisenhoff  Created
+  /*                                    Animate needle only after first render and if animation property is true
+  /*******************************************************************************************************************************/
   protected render() {
     this._normalizeSegments();
     const labelsFormatOptions = { ...this.formatOptions };
     labelsFormatOptions.thousandSeparator = "";
     let gaugeValueColor = this.gaugeInfoColor;
-    const effectiveNeedleStyle = this._getEffectiveNeedleStyle();
-    const showNeedleEffective = effectiveNeedleStyle !== "none";
-
-    if (this.segments && !showNeedleEffective) {
+    if (this.segments && !this.showSegments) {
       // set color if gauge to color of segment, where the current value is in
       this.segments
         .slice()
         .sort((a, b) => a.lower! - b.lower!)
-        .map((segment) => {
+        .forEach((segment) => {
           if (this.value >= segment.lower! && this.value <= segment.upper!)
             gaugeValueColor = segment.color;
         });
     }
-
-    const pathLength = 125.664; // Math.PI * 40
-    const dashOffset = pathLength - (pathLength * this._valueAngle) / 180;
-
+    const dialVisible = this.showDial;
     return html`
       <div class="gauge-container">
-      <svg viewBox="-50 -50 130 55" class="gauge">
+      <svg viewBox="-50 -50 130 55" class="gauge" style="overflow:visible;">
       <g transform="translate(15 5)">
-        <path 
+        <defs>
+          <!-- Clips the rotated value-dial arc to the upper half-plane (y <= 0) of the
+               40-unit-radius dial, so it can't visually overflow the gauge bounds while
+               still being rotated via a CSS-transitionable transform (see below). -->
+          <clipPath id="${this._dialClipId}">
+            <rect x="-50" y="-50" width="100" height="50"></rect>
+          </clipPath>
+        </defs>
+        <path
           style =${styleMap({
             stroke: `${
-              this.segments && showNeedleEffective
+              this.segments && this.showSegments
                 ? this.gaugeInfoColor
                 : this.gaugeBackgroundColor
             }`,
@@ -377,8 +355,9 @@ export class ExtendedGauge extends LitElement {
           d="M -40 0 A 40 40 0 0 1 40 0">
         </path>
         ${
-          this.segments && showNeedleEffective
+          this.segments && this.showSegments
             ? this.segments
+                .slice()
                 .sort((a, b) => a.lower! - b.lower!)
                 .map((segment) => {
                   const angle_lower = this._getLowerAngle(
@@ -398,30 +377,38 @@ export class ExtendedGauge extends LitElement {
                       d="M
                         ${0 - 40 * Math.cos((angle_lower * Math.PI) / 180)}
                         ${0 - 40 * Math.sin((angle_lower * Math.PI) / 180)}
-                       A 40 40 0 0 1 
+                       A 40 40 0 0 1
                         ${0 - 40 * Math.cos((angle_upper * Math.PI) / 180)}
                         ${0 - 40 * Math.sin((angle_upper * Math.PI) / 180)}
                        ">
                   </path>
                   `;
                 })
-            : svg`<path
+            : ``
+        }
+          ${
+            dialVisible
+              ? svg`<path
                 class="dial ${
                   this._updated && this.animation ? `animation` : ``
                 }"
                 style =${styleMap({
                   stroke: `${gaugeValueColor}`,
-                  strokeDasharray: `${pathLength}`,
-                  strokeDashoffset: `${dashOffset}`,
+                  "clip-path": `url(#${this._dialClipId})`,
+                  // Rotates around the SVG's local origin (0,0), which coincides with the
+                  // center of the 40-unit-radius dial arc defined by the "d" attribute above.
+                  "transform-origin": "0 0",
+                  transform: `rotate(${this._valueAngle - 180}deg)`,
                 })}
                 d="M -40 0 A 40 40 0 0 1 40 0">
             </path>
             `
-        }
-          ${showNeedleEffective ? this._renderNeedle(effectiveNeedleStyle) : ``}
+              : ``
+          }
+          ${this.showNeedle ? this._renderNeedle() : ``}
       ${(this._updated = true)}
-      </svg>
       </g>
+      </svg>
       <svg class="text">
         <text class="center">
           <tspan class="value-text">
@@ -544,6 +531,21 @@ export class ExtendedGauge extends LitElement {
     }
 
     .needle {
+      fill: var(--primary-text-color);
+    }
+
+    .needle-classic {
+      fill: var(--primary-text-color);
+      stroke: var(--card-background-color);
+      stroke-width: 1;
+      stroke-linecap: round;
+    }
+
+    .needle-pivot {
+      fill: var(--primary-text-color);
+    }
+
+    .needle-icon-path {
       fill: var(--primary-text-color);
     }
 

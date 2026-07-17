@@ -81,7 +81,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Set site structure in constructor
-  /* History: 22-FEB-2025 D. Geisenhoff   Created
+  /* History: 22-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   constructor(mainPage: Page) {
     super();
@@ -126,7 +126,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Called after config-changed event has been fired. Assert config structure and initialize site history
-  /* History: 22-FEB-2025 D. Geisenhoff   Created
+  /* History: 22-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public async setConfig(config: any): Promise<void> {
     // assert(config, cardConfigStruct);
@@ -191,7 +191,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Set current page and sectin when a menu item, a add or edit button has been clicked
-  /* History: 22-FEB-2025 D. Geisenhoff   Created
+  /* History: 22-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   protected setCurrentPage(
     selectedSection: PageSection,
@@ -287,7 +287,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Back to previous page
-  /* History: 22-FEB-2025 D. Geisenhoff   Created
+  /* History: 22-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _goBack(): void {
     this._siteHistory.pop();
@@ -342,7 +342,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
 
   /*****************************************************************************************************************************/
   /* Purpose: Get the config data of the current page section
-  /* History: 27-MAR-2025 D. Geisenhoff   Created
+  /* History: 27-MAR-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   private _getSectionConfigData(section: PageSection): any {
     const page = this._getCurrentPage();
@@ -444,9 +444,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
         <ha-form
           .hass=${this.hass}
           .schema=${section.conditionalSchemaField
-            ? section.schema(
-                configData ? configData[section.conditionalSchemaField] : ""
-              )
+            ? section.schema(configData)
             : section.schema}
           .data=${configData}
           .computeLabel=${this.computeLabelCallback}
@@ -480,9 +478,7 @@ export class ConfigFramework extends LitElement implements LovelaceCardEditor {
       <ha-form
         .hass=${this.hass}
         .schema=${section.conditionalSchemaField
-          ? section.schema(
-              configData ? configData[section.conditionalSchemaField] : ""
-            )
+          ? section.schema(configData)
           : section.schema}
         .data=${configData}
         .computeLabel=${this.computeLabelCallback}

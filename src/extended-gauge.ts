@@ -1,5 +1,6 @@
 import { HomeAssistant, LovelaceCardEditor } from "custom-card-helpers";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { customElement, property, state } from "lit/decorators.js";
 import {
   ExtendedGaugeConfigData,
@@ -13,6 +14,7 @@ import { hexToRgb, rgbToHex } from "./utils/convertColor";
 import "./components/gauge";
 import { DemoTimerManager, GaugeSegment } from "./components/gauge";
 import { registerCustomCard } from "./utils/register-custom-card";
+import { resolveDisplayMode } from "./utils/resolve-display-mode";
 
 /*****************************************************************************************************************************/
 /* Purpose: Register the custom card in home assistant
@@ -25,8 +27,17 @@ registerCustomCard({
 });
 
 /*****************************************************************************************************************************/
+/* Purpose: Convert an optional RGB color list to a hex color string, or undefined if not configured. Used with the
+/*          `ifDefined` directive so that unconfigured colors don't override the child component's default color.
+/* History: 15-JUL-2026 D.Geisenhoff   Created
+/*****************************************************************************************************************************/
+function toColorOrUndefined(colorList?: number[]): string | undefined {
+  return colorList && colorList.length ? rgbToHex(colorList) : undefined;
+}
+
+/*****************************************************************************************************************************/
 /* Purpose: Main display element of the custom card (extended gauge card)
-/* History: 18-FEB-2025 D. Geisenhoff   Created
+/* History: 18-FEB-2025 D.Geisenhoff   Created
 /*****************************************************************************************************************************/
 @customElement("extended-gauge-card")
 export class ExtendedGaugeCard extends LitElement {
@@ -70,7 +81,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: The grid options of your card. Home Assistant uses this to set the card size in sections view.
-  /* History: 27-JUN-2025 D. Geisenhoff   Created
+  /* History: 27-JUN-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   getGridOptions() {
     return {
@@ -81,7 +92,7 @@ export class ExtendedGaugeCard extends LitElement {
   /*****************************************************************************************************************************/
   /* Purpose: The height of your card. Home Assistant uses this to automatically distribute all cards over the available columns 
   /*          in masonry view.
-  /* History: 18-FEB-2025 D. Geisenhoff   Created
+  /* History: 18-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public getCardSize(): Promise<number> | number {
     return 3;
@@ -99,7 +110,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Get UI editor
-  /* History: 18-FEB-2025 D. Geisenhoff   Created
+  /* History: 18-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("./ui-editor/ui-editor");
@@ -108,7 +119,7 @@ export class ExtendedGaugeCard extends LitElement {
 
   /*****************************************************************************************************************************/
   /* Purpose: Get default values for configuration
-  /* History: 18-FEB-2025 D. Geisenhoff   Created
+  /* History: 18-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   public static getStubConfig(hass: HomeAssistant): object {
     return getDefaultConfig(hass);
@@ -351,6 +362,7 @@ export class ExtendedGaugeCard extends LitElement {
       this._setMaxValue(value);
       //      DemoTimerManager.unregisterCallback(this._updateDemoValue);
     }
+    const displayMode = resolveDisplayMode(config.main);
     return html`
       <ha-card style="text-align: center !important;">
         <h1 class="card-header">${config.title?.title}</h1>
@@ -366,14 +378,27 @@ export class ExtendedGaugeCard extends LitElement {
                 : config.entity?.entity
               : undefined}"
             .unitOfMeasure=${config.entity?.settings?.unit_of_measurement ?? ""}
-            .showNeedle=${config.main?.show_needle}
-            .needleStyle=${config.main?.needle_style}
-            .needleIcon=${config.main?.needle_icon}
-            .needleIconSize=${config.main?.needle_icon_size ?? 1}
-            .needleIconColor=${rgbToHex(config.main?.needle_icon_color)}
-            .needleIconKeepVertical=${config.main?.needle_icon_keep_vertical}
-            .gaugeInfoColor=${rgbToHex(config.main?.color_value)}
-            .gaugeBackgroundColor=${rgbToHex(config.main?.color_background)}
+            .showNeedle=${displayMode.showNeedle}
+            .showDial=${displayMode.showDial}
+            .showSegments=${displayMode.showSegments}
+            .needleStyle=${config.main?.needle?.needle_style ?? "default"}
+            .needleIcon=${config.main?.needle?.needle_icon}
+            .needleIconKeepVertical=${config.main?.needle
+              ?.needle_icon_keep_vertical ?? false}
+            .needleIconSize=${config.main?.needle?.needle_icon_size ?? 1}
+            .needleIconColor=${config.main?.needle?.needle_icon_color
+              ? rgbToHex(config.main.needle.needle_icon_color)
+              : undefined}
+            .needleIconBackgroundColor=${config.main?.needle
+              ?.needle_icon_background_color
+              ? rgbToHex(config.main.needle.needle_icon_background_color)
+              : undefined}
+            .gaugeInfoColor=${ifDefined(
+              toColorOrUndefined(config.main?.color_value)
+            )}
+            .gaugeBackgroundColor=${ifDefined(
+              toColorOrUndefined(config.main?.color_background)
+            )}
             .segments=${this._convertSegments(config)}
             .showSegmentLabels=${config.main?.show_segment_labels}
             .showMinMax=${config.main?.show_min_max_values}

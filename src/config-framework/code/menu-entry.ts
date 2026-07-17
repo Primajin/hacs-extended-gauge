@@ -9,7 +9,7 @@ declare global {
   /* History: 24-FEB-2025 D.Geisenhoff   Created
   /*****************************************************************************************************************************/
   interface HASSDomEvents {
-    "microteq-menu-click": Record<string, unknown>;
+    "microteq-menu-click": Record<string, never>;
   }
 
   /*****************************************************************************************************************************/

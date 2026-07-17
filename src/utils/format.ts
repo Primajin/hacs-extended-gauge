@@ -37,13 +37,12 @@ export const formatNumber = (
   }
   const thousandSeparator =
     options.thousandSeparator !== undefined ? options.thousandSeparator : "";
-  // Round to the numer of decimals and split integer from decimals
-  const [integerPartRaw, decimalPart = ""] = value
-    .toFixed(decimalPlaces)
-    .split(".");
+  // Round to the number of decimals and split integer from decimals
+  const split = value.toFixed(decimalPlaces).split(".");
+  let integerPart = split[0];
+  const decimalPart = split[1] ?? "";
 
   // Insert thousands separators, if defined
-  let integerPart = integerPartRaw;
   if (thousandSeparator !== undefined) {
     // Save negative sign, if needed
     const isNegative = integerPart.startsWith("-");
@@ -57,7 +56,7 @@ export const formatNumber = (
     // if it's at the end or followed by another group of three digits
     const regex = /\B(?=(\d{3})+(?!\d))/g;
 
-    // Insert thoudands seperator with regula expressions
+    // Insert thousands separator with regular expressions
     integerPart = integerPart.replace(regex, thousandSeparator!);
 
     // Re-add sign, if needed
