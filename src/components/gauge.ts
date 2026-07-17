@@ -154,12 +154,6 @@ export class ExtendedGauge extends LitElement {
   @state() private _updated = false;
   @state() private _segment_value_replacement? = "";
   @state() private _needleIconPath: string | null = null;
-  // crypto.randomUUID() requires a secure context (HTTPS/localhost); fall back to a
-  // simple per-instance counter if it's unavailable (e.g. plain HTTP deployments).
-  private static _instanceCounter = 0;
-  private readonly _dialClipId = `dial-value-clip-${
-    crypto.randomUUID?.() ?? ExtendedGauge._instanceCounter++
-  }`;
 
   /*****************************************************************************************************************************/
   /* Purpose: Constructor
@@ -331,18 +325,13 @@ export class ExtendedGauge extends LitElement {
         });
     }
     const dialVisible = this.showDial;
+    const pathLength = 125.664; // Math.PI * 40
+    const dashOffset = pathLength - (pathLength * this._valueAngle) / 180;
+
     return html`
       <div class="gauge-container">
       <svg viewBox="-50 -50 130 55" class="gauge" style="overflow:visible;">
       <g transform="translate(15 5)">
-        <defs>
-          <!-- Clips the rotated value-dial arc to the upper half-plane (y <= 0) of the
-               40-unit-radius dial, so it can't visually overflow the gauge bounds while
-               still being rotated via a CSS-transitionable transform (see below). -->
-          <clipPath id="${this._dialClipId}">
-            <rect x="-50" y="-50" width="100" height="50"></rect>
-          </clipPath>
-        </defs>
         <path
           style =${styleMap({
             stroke: `${
@@ -394,11 +383,8 @@ export class ExtendedGauge extends LitElement {
                 }"
                 style =${styleMap({
                   stroke: `${gaugeValueColor}`,
-                  "clip-path": `url(#${this._dialClipId})`,
-                  // Rotates around the SVG's local origin (0,0), which coincides with the
-                  // center of the 40-unit-radius dial arc defined by the "d" attribute above.
-                  "transform-origin": "0 0",
-                  transform: `rotate(${this._valueAngle - 180}deg)`,
+                  strokeDasharray: `${pathLength}`,
+                  strokeDashoffset: `${dashOffset}`,
                 })}
                 d="M -40 0 A 40 40 0 0 1 40 0">
             </path>
