@@ -1,5 +1,6 @@
 import { HomeAssistant, LovelaceCardEditor } from "custom-card-helpers";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { ifDefined } from "lit/directives/if-defined.js";
 import { customElement, property, state } from "lit/decorators.js";
 import {
   ExtendedGaugeConfigData,
@@ -24,6 +25,15 @@ registerCustomCard({
   name: "Extended Gauge",
   description: "Extended Gauge Card with multiple segments.",
 });
+
+/*****************************************************************************************************************************/
+/* Purpose: Convert an optional RGB color list to a hex color string, or undefined if not configured. Used with the
+/*          `ifDefined` directive so that unconfigured colors don't override the child component's default color.
+/* History: 15-JUL-2026 D.Geisenhoff   Created
+/*****************************************************************************************************************************/
+function toColorOrUndefined(colorList?: number[]): string | undefined {
+  return colorList && colorList.length ? rgbToHex(colorList) : undefined;
+}
 
 /*****************************************************************************************************************************/
 /* Purpose: Main display element of the custom card (extended gauge card)
@@ -383,8 +393,12 @@ export class ExtendedGaugeCard extends LitElement {
               ?.needle_icon_background_color
               ? rgbToHex(config.main.needle.needle_icon_background_color)
               : undefined}
-            .gaugeInfoColor=${rgbToHex(config.main?.color_value)}
-            .gaugeBackgroundColor=${rgbToHex(config.main?.color_background)}
+            .gaugeInfoColor=${ifDefined(
+              toColorOrUndefined(config.main?.color_value)
+            )}
+            .gaugeBackgroundColor=${ifDefined(
+              toColorOrUndefined(config.main?.color_background)
+            )}
             .segments=${this._convertSegments(config)}
             .showSegmentLabels=${config.main?.show_segment_labels}
             .showMinMax=${config.main?.show_min_max_values}
