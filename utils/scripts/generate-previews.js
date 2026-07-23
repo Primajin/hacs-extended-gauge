@@ -368,6 +368,45 @@ function exampleAqi() {
   return svgWrap([BG_ARC, ...segs, defaultNeedle(angle), gaugeLabelsCustom('120', '0', '300')].join('\n    '), labels);
 }
 
+// 3.b AQI Gradient
+function exampleAqiGradient() {
+  const mn = 0, mx = 300, val = 120;
+  const angle = valueToAngle(val, mn, mx);
+  const segData = [
+    { lower: 0, upper: 50, color: '#00e400' },
+    { lower: 50, upper: 100, color: '#ffff00' },
+    { lower: 100, upper: 150, color: '#ff7e00' },
+    { lower: 150, upper: 200, color: '#ff0000' },
+    { lower: 200, upper: 300, color: '#8f3f97' },
+  ];
+  
+  let stops = '';
+  segData.forEach((seg) => {
+    const ang = valueToAngle(seg.lower, mn, mx);
+    const offset = ((1 - Math.cos((ang * Math.PI) / 180)) / 2) * 100;
+    stops += `\n      <stop offset="${r2(offset)}%" stop-color="${seg.color}" />`;
+  });
+
+  const defs = `<defs>
+    <linearGradient id="aqi-grad" gradientUnits="userSpaceOnUse" x1="-40" y1="0" x2="40" y2="0">${stops}
+    </linearGradient>
+  </defs>`;
+
+  // Just one full arc that uses the gradient
+  const gradientArc = `<path d="M -40 0 A 40 40 0 0 1 40 0" stroke="url(#aqi-grad)" fill="none" stroke-width="15" opacity="0.85"/>`;
+
+  const labels = thresholdLabels([
+    { val: 50,  color: '#ffff00', label: '50'  },
+    { val: 100, color: '#ff7e00', label: '100' },
+    { val: 150, color: '#ff0000', label: '150' },
+    { val: 200, color: '#8f3f97', label: '200' },
+  ], mn, mx);
+  
+  // The needle should probably be the same as the regular AQI
+  return svgWrap([defs, BG_ARC, gradientArc, defaultNeedle(angle), gaugeLabelsCustom('120', '0', '300')].join('\n    '), labels);
+}
+
+
 // 4. UV Index — value 7, min=0 max=11, icon needle (sun), 4 segments
 function exampleUvIndex() {
   const mn = 0, mx = 11, val = 7;
@@ -485,6 +524,7 @@ const EXAMPLE_FILES = {
   'cpu-temp.svg':   exampleCpuTemp(),
   'battery.svg':    exampleBattery(),
   'aqi.svg':        exampleAqi(),
+  'aqi-gradient.svg': exampleAqiGradient(),
   'uv-index.svg':   exampleUvIndex(),
   'humidity.svg':   exampleHumidity(),
   'power.svg':      examplePower(),

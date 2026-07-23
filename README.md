@@ -290,6 +290,9 @@ Add segments with threshold values to your gauge to highlight specific value ran
 
 **YAML example — smooth AQI/rainbow gradient:**
 By enabling the *Use color gradient* option, the gauge will smoothly transition between segment colors instead of showing hard boundaries.
+
+![AQI gradient preview](assets/examples/aqi-gradient.svg)
+
 ```yaml
 type: custom:extended-gauge-card
 entity: sensor.aqi
