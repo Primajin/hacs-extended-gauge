@@ -14,6 +14,16 @@ The following domains are on the custom allowlist and can be accessed for resear
 
 ## Session Workflow
 
+### 0. Branching for upstream contributions
+
+When working on changes intended for upstream contribution, **do not branch from this fork's local `main` by default** if it has diverged from upstream history.
+
+- Treat the upstream repository's default branch as the starting point for contribution branches.
+- Create fresh work branches from `upstream/main` (or the upstream default branch if different), not from `origin/main`, whenever the goal is a clean upstream PR.
+- If uncertain about the correct upstream branch, check remotes and branch relationships before creating the branch.
+- Avoid including fork-only divergence commits in contribution branches intended for upstream.
+- If changes already exist on a branch based on the fork's divergent history, prefer recreating a clean branch from upstream and cherry-picking only the relevant new commits.
+
 ### 1. Start of Session — Install Dependencies
 
 Always begin by installing dependencies before making any changes:
