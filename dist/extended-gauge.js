@@ -57,7 +57,7 @@ function e(e,t,i,n){var s,o=arguments.length,r=o<3?t:null===n?n=Object.getOwnPro
           style=${$e({fill:u,"pointer-events":"none"})}>
         </path>
       </g>
-    `}}(e);default:return yt(e)}}({needleStyle:this.needleStyle,needleIcon:this.needleIcon,needleIconPath:this._needleIconPath,needleIconKeepVertical:this.needleIconKeepVertical,needleIconSize:this.needleIconSize,needleIconColor:this.needleIconColor,needleIconBackgroundColor:this.needleIconBackgroundColor,valueAngle:this._valueAngle,animate:this._updated&&this.animation})}_renderGradientSlices(){if(!this.segments||0===this.segments.length)return j``;const e=this.segments.slice().sort(((e,t)=>e.lower-t.lower)),t=e.map((e=>{const t=this._getLowerAngle(e.lower,this.min,this.max),i=ve(e.color)||[128,128,128];return{angle:t,r:i[0],g:i[1],b:i[2]}}));if(0===t.length)return j``;const i=e=>{if(e<=t[0].angle)return t[0];if(e>=t[t.length-1].angle)return t[t.length-1];for(let i=0;i<t.length-1;i++){const n=t[i],s=t[i+1];if(e>=n.angle&&e<=s.angle){const t=(e-n.angle)/(s.angle-n.angle);return{r:Math.round(n.r+t*(s.r-n.r)),g:Math.round(n.g+t*(s.g-n.g)),b:Math.round(n.b+t*(s.b-n.b))}}}return t[0]},n=[];for(let e=0;e<180;e++){const t=e,s=e+1.5,o=i(e),r=0-40*Math.cos(t*Math.PI/180),l=0-40*Math.sin(t*Math.PI/180),a=0-40*Math.cos(s*Math.PI/180),d=0-40*Math.sin(s*Math.PI/180);n.push(j`<path d="M ${r} ${l} A 40 40 0 0 1 ${a} ${d}" fill="none" stroke="rgb(${o.r},${o.g},${o.b})" stroke-width="15" stroke-linecap="butt" />`)}return n}render(){this._normalizeSegments();const e=Object.assign({},this.formatOptions);e.thousandSeparator="";let t=this.gaugeInfoColor;this.segments&&!this.showSegments&&this.segments.slice().sort(((e,t)=>e.lower-t.lower)).forEach((e=>{this.value>=e.lower&&this.value<=e.upper&&(t=e.color)}));const i=this.showDial,n=125.664,s=n-n*this._valueAngle/180,o=this.useGradient&&this.segments&&this.segments.length>0;return!o||this.segments.slice().sort(((e,t)=>e.lower-t.lower)),R`
+    `}}(e);default:return yt(e)}}({needleStyle:this.needleStyle,needleIcon:this.needleIcon,needleIconPath:this._needleIconPath,needleIconKeepVertical:this.needleIconKeepVertical,needleIconSize:this.needleIconSize,needleIconColor:this.needleIconColor,needleIconBackgroundColor:this.needleIconBackgroundColor,valueAngle:this._valueAngle,animate:this._updated&&this.animation})}_renderGradientSlices(){if(!this.segments||0===this.segments.length)return j``;const e=this.segments.slice().sort(((e,t)=>e.lower-t.lower)),t=e.map((e=>{const t=this._getLowerAngle(e.lower,this.min,this.max),i=ve(e.color)||[128,128,128];return{angle:t,r:i[0],g:i[1],b:i[2]}}));if(0===t.length)return j``;const i=e=>{if(e<=t[0].angle)return t[0];if(e>=t[t.length-1].angle)return t[t.length-1];for(let i=0;i<t.length-1;i++){const n=t[i],s=t[i+1];if(e>=n.angle&&e<=s.angle){const t=(e-n.angle)/(s.angle-n.angle);return{r:Math.round(n.r+t*(s.r-n.r)),g:Math.round(n.g+t*(s.g-n.g)),b:Math.round(n.b+t*(s.b-n.b))}}}return t[0]},n=[];for(let e=0;e<180;e++){const t=e,s=e+1.5,o=i(e),r=0-40*Math.cos(t*Math.PI/180),l=0-40*Math.sin(t*Math.PI/180),a=0-40*Math.cos(s*Math.PI/180),d=0-40*Math.sin(s*Math.PI/180);n.push(j`<path d="M ${r} ${l} A 40 40 0 0 1 ${a} ${d}" fill="none" stroke="rgb(${o.r},${o.g},${o.b})" stroke-width="16" stroke-linecap="butt" />`)}return n}render(){this._normalizeSegments();const e=Object.assign({},this.formatOptions);e.thousandSeparator="";let t=this.gaugeInfoColor;this.segments&&!this.showSegments&&this.segments.slice().sort(((e,t)=>e.lower-t.lower)).forEach((e=>{this.value>=e.lower&&this.value<=e.upper&&(t=e.color)}));const i=this.showDial,n=125.664,s=n-n*this._valueAngle/180,o=this.useGradient&&this.segments&&this.segments.length>0;return!o||this.segments.slice().sort(((e,t)=>e.lower-t.lower)),R`
       <div class="gauge-container">
       <svg viewBox="-50 -50 130 55" class="gauge" style="overflow:visible;">
       ${o?j`
@@ -65,7 +65,7 @@ function e(e,t,i,n){var s,o=arguments.length,r=o<3?t:null===n?n=Object.getOwnPro
               <g id="gradient-slices">
                 ${this._renderGradientSlices()}
               </g>
-              <mask id="dial-mask">
+              <mask id="dial-mask" x="-50%" y="-50%" width="200%" height="200%">
                 <path
                   class="dial ${this._updated&&this.animation?"animation":""}"
                   stroke="white"
@@ -74,7 +74,7 @@ function e(e,t,i,n){var s,o=arguments.length,r=o<3?t:null===n?n=Object.getOwnPro
                   d="M -40 0 A 40 40 0 0 1 40 0">
                 </path>
               </mask>
-              <mask id="segments-mask">
+              <mask id="segments-mask" x="-50%" y="-50%" width="200%" height="200%">
                 ${this.segments&&this.showSegments?this.segments.map((e=>{const t=this._getLowerAngle(e.lower,this.min,this.max),i=this._getUpperAngle(e.upper,this.min,this.max);return j`
                             <path
                               class="segment"

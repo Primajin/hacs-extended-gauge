@@ -355,7 +355,7 @@ export class ExtendedGauge extends LitElement {
       const x2 = 0 - 40 * Math.cos((angle2 * Math.PI) / 180);
       const y2 = 0 - 40 * Math.sin((angle2 * Math.PI) / 180);
       
-      paths.push(svg`<path d="M ${x1} ${y1} A 40 40 0 0 1 ${x2} ${y2}" fill="none" stroke="rgb(${color.r},${color.g},${color.b})" stroke-width="15" stroke-linecap="butt" />`);
+      paths.push(svg`<path d="M ${x1} ${y1} A 40 40 0 0 1 ${x2} ${y2}" fill="none" stroke="rgb(${color.r},${color.g},${color.b})" stroke-width="16" stroke-linecap="butt" />`);
     }
     return paths;
   }
@@ -395,7 +395,7 @@ export class ExtendedGauge extends LitElement {
               <g id="gradient-slices">
                 ${this._renderGradientSlices()}
               </g>
-              <mask id="dial-mask">
+              <mask id="dial-mask" x="-50%" y="-50%" width="200%" height="200%">
                 <path
                   class="dial ${this._updated && this.animation ? `animation` : ``}"
                   stroke="white"
@@ -404,7 +404,7 @@ export class ExtendedGauge extends LitElement {
                   d="M -40 0 A 40 40 0 0 1 40 0">
                 </path>
               </mask>
-              <mask id="segments-mask">
+              <mask id="segments-mask" x="-50%" y="-50%" width="200%" height="200%">
                 ${
                   this.segments && this.showSegments
                     ? this.segments

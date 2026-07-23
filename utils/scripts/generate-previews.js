@@ -410,10 +410,10 @@ function exampleAqiGradient() {
     const x2 = r2(-40 * Math.cos(angle2 * Math.PI / 180));
     const y2 = r2(-40 * Math.sin(angle2 * Math.PI / 180));
     
-    paths += '<path d="M ' + x1 + ' ' + y1 + ' A 40 40 0 0 1 ' + x2 + ' ' + y2 + '" fill="none" stroke="rgb(' + color.r + ',' + color.g + ',' + color.b + ')" stroke-width="15" stroke-linecap="butt" />';
+    paths += '<path d="M ' + x1 + ' ' + y1 + ' A 40 40 0 0 1 ' + x2 + ' ' + y2 + '" fill="none" stroke="rgb(' + color.r + ',' + color.g + ',' + color.b + ')" stroke-width="16" stroke-linecap="butt" />';
   }
 
-  const defs = '<defs><g id="aqi-slices">' + paths + '</g><mask id="aqi-mask">' + 
+  const defs = '<defs><g id="aqi-slices">' + paths + '</g><mask id="aqi-mask" x="-50%" y="-50%" width="200%" height="200%">' + 
     segmentArcPathV(0, 50, mn, mx, "white") +
     segmentArcPathV(50, 100, mn, mx, "white") +
     segmentArcPathV(100, 150, mn, mx, "white") +
