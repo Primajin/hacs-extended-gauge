@@ -399,6 +399,7 @@ export class ExtendedGaugeCard extends LitElement {
             .gaugeBackgroundColor=${ifDefined(
               toColorOrUndefined(config.main?.color_background)
             )}
+            .useGradient=${config.main?.use_gradient}
             .segments=${this._convertSegments(config)}
             .showSegmentLabels=${config.main?.show_segment_labels}
             .showMinMax=${config.main?.show_min_max_values}

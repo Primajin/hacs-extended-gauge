@@ -211,6 +211,7 @@ After installing your Extended Gauge Card, edit your dashboard or create a new o
 | *Color&nbsp;for&nbsp;value&nbsp;display* | The default background color when the needle is shown, or the color of the current value display if the needle is hidden. |
 | *Background&nbsp;color&nbsp;(no&nbsp;value)* | The default background color when the needle is shown, or the color of the current value display if the needle is hidden. |
 | *Display mode* | Selects how the gauge is rendered. Options: `gauge_and_needle` (full gauge with needle), `dial_only` (no needle), `dial_and_needle` (dial fill arc and needle shown at the same time). |
+| *Use color gradient* | Toggle to smoothly transition between segment colors instead of using distinct solid color bands. |
 | *Show entity name* | Toggle to show or hide the entity name below the value. |
 | *Show min&nbsp;/&nbsp;max values* | Toggle to show or hide the gauge’s minimum and maximum values. |
 | *Show&nbsp;segment&nbsp;thresholds* | Toggle to show or hide the segment threshold values. |
@@ -285,6 +286,64 @@ Add segments with threshold values to your gauge to highlight specific value ran
 | *Upper bound* | The upper bound of the segment. If not specified, the gauge's maximum value will be used by default. |
 | *Segment color* | The color in which the segment should be displayed. |
 | *Override&nbsp;value* | A text that will be shown instead of the entity’s value when it falls within the segment bounds. |
+<br />
+
+**YAML example — smooth AQI/rainbow gradient:**
+By enabling the *Use color gradient* option, the gauge will smoothly transition between segment colors instead of showing hard boundaries.
+```yaml
+type: custom:extended-gauge-card
+entity: sensor.aqi
+main:
+  min_value: 0
+  max_value: 300
+  use_gradient: true
+segment_list:
+  - id: 1
+    title: Good
+    settings:
+      segment_lower: 0
+      segment_upper: 50
+      segment_color:
+        - 76
+        - 175
+        - 80
+  - id: 2
+    title: Moderate
+    settings:
+      segment_lower: 50
+      segment_upper: 100
+      segment_color:
+        - 255
+        - 235
+        - 59
+  - id: 3
+    title: Unhealthy for Sensitive Groups
+    settings:
+      segment_lower: 100
+      segment_upper: 150
+      segment_color:
+        - 255
+        - 152
+        - 0
+  - id: 4
+    title: Unhealthy
+    settings:
+      segment_lower: 150
+      segment_upper: 200
+      segment_color:
+        - 244
+        - 67
+        - 54
+  - id: 5
+    title: Very Unhealthy
+    settings:
+      segment_lower: 200
+      segment_upper: 300
+      segment_color:
+        - 156
+        - 39
+        - 176
+```
 <br />
 <br />
 

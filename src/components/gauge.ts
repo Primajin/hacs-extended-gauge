@@ -141,6 +141,8 @@ export class ExtendedGauge extends LitElement {
   @property({ type: Boolean }) public showNeedle = false;
   @property({ type: Boolean }) public showDial = false;
   @property({ type: Boolean }) public showSegments = false;
+
+  @property({ type: Boolean }) public useGradient = false;
   @property({ type: String }) public needleStyle: NeedleStyle = "default";
   @property({ type: String }) public needleIcon?: string;
   @property({ type: Boolean }) public needleIconKeepVertical = false;
@@ -328,9 +330,35 @@ export class ExtendedGauge extends LitElement {
     const pathLength = 125.664; // Math.PI * 40
     const dashOffset = pathLength - (pathLength * this._valueAngle) / 180;
 
+    const hasGradient =
+      this.useGradient && this.segments && this.segments.length > 0;
+    const sortedSegmentsForGradient = hasGradient
+      ? this.segments!.slice().sort((a, b) => a.lower! - b.lower!)
+      : [];
+
     return html`
       <div class="gauge-container">
       <svg viewBox="-50 -50 130 55" class="gauge" style="overflow:visible;">
+      ${
+        hasGradient
+          ? svg`
+            <defs>
+              <linearGradient id="segment-gradient" gradientUnits="userSpaceOnUse" x1="-40" y1="0" x2="40" y2="0">
+                ${sortedSegmentsForGradient.map((segment) => {
+                  const angle = this._getLowerAngle(
+                    segment.lower!,
+                    this.min,
+                    this.max
+                  );
+                  const offset =
+                    ((1 - Math.cos((angle * Math.PI) / 180)) / 2) * 100;
+                  return svg`<stop offset="${offset}%" stop-color="${segment.color}" />`;
+                })}
+              </linearGradient>
+            </defs>
+          `
+          : ``
+      }
       <g transform="translate(15 5)">
         <path
           style =${styleMap({
@@ -361,7 +389,9 @@ export class ExtendedGauge extends LitElement {
                   );
                   return svg`
                   <path
-                      stroke="${segment.color}"
+                      stroke="${
+                        hasGradient ? "url(#segment-gradient)" : segment.color
+                      }"
                       class="segment"
                       d="M
                         ${0 - 40 * Math.cos((angle_lower * Math.PI) / 180)}
@@ -382,7 +412,9 @@ export class ExtendedGauge extends LitElement {
                   this._updated && this.animation ? `animation` : ``
                 }"
                 style =${styleMap({
-                  stroke: `${gaugeValueColor}`,
+                  stroke: `${
+                    hasGradient ? "url(#segment-gradient)" : gaugeValueColor
+                  }`,
                   strokeDasharray: `${pathLength}`,
                   strokeDashoffset: `${dashOffset}`,
                 })}

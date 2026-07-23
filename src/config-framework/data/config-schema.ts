@@ -249,6 +249,10 @@ export const mainConfigSchema = [
         },
       },
       {
+        name: "use_gradient",
+        selector: { boolean: {} },
+      },
+      {
         name: "color_value",
         selector: { color_rgb: {} },
       },
