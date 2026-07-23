@@ -372,28 +372,56 @@ function exampleAqi() {
 function exampleAqiGradient() {
   const mn = 0, mx = 300, val = 120;
   const angle = valueToAngle(val, mn, mx);
-  const segData = [
-    { lower: 0, upper: 50, color: '#00e400' },
-    { lower: 50, upper: 100, color: '#ffff00' },
-    { lower: 100, upper: 150, color: '#ff7e00' },
-    { lower: 150, upper: 200, color: '#ff0000' },
-    { lower: 200, upper: 300, color: '#8f3f97' },
+  
+  const colorStops = [
+    { v: 0, r: 0, g: 228, b: 0 },
+    { v: 50, r: 255, g: 255, b: 0 },
+    { v: 100, r: 255, g: 126, b: 0 },
+    { v: 150, r: 255, g: 0, b: 0 },
+    { v: 200, r: 143, g: 63, b: 151 },
+    { v: 300, r: 143, g: 63, b: 151 }
   ];
   
-  let stops = '';
-  segData.forEach((seg) => {
-    const ang = valueToAngle(seg.lower, mn, mx);
-    const offset = ((1 - Math.cos((ang * Math.PI) / 180)) / 2) * 100;
-    stops += `\n      <stop offset="${r2(offset)}%" stop-color="${seg.color}" />`;
-  });
+  let paths = '';
+  for (let i = 0; i < 180; i++) {
+    const angle1 = i;
+    const angle2 = i + 1.5;
+    const v = mn + (i / 180) * (mx - mn);
+    
+    let color = colorStops[0];
+    if (v >= colorStops[colorStops.length - 1].v) {
+      color = colorStops[colorStops.length - 1];
+    } else {
+      for (let j = 0; j < colorStops.length - 1; j++) {
+        if (v >= colorStops[j].v && v <= colorStops[j+1].v) {
+          const t = (v - colorStops[j].v) / (colorStops[j+1].v - colorStops[j].v);
+          color = {
+            r: Math.round(colorStops[j].r + t * (colorStops[j+1].r - colorStops[j].r)),
+            g: Math.round(colorStops[j].g + t * (colorStops[j+1].g - colorStops[j].g)),
+            b: Math.round(colorStops[j].b + t * (colorStops[j+1].b - colorStops[j].b))
+          };
+          break;
+        }
+      }
+    }
+    
+    const x1 = r2(-40 * Math.cos(angle1 * Math.PI / 180));
+    const y1 = r2(-40 * Math.sin(angle1 * Math.PI / 180));
+    const x2 = r2(-40 * Math.cos(angle2 * Math.PI / 180));
+    const y2 = r2(-40 * Math.sin(angle2 * Math.PI / 180));
+    
+    paths += '<path d="M ' + x1 + ' ' + y1 + ' A 40 40 0 0 1 ' + x2 + ' ' + y2 + '" fill="none" stroke="rgb(' + color.r + ',' + color.g + ',' + color.b + ')" stroke-width="15" stroke-linecap="butt" />';
+  }
 
-  const defs = `<defs>
-    <linearGradient id="aqi-grad" gradientUnits="userSpaceOnUse" x1="-40" y1="0" x2="40" y2="0">${stops}
-    </linearGradient>
-  </defs>`;
+  const defs = '<defs><g id="aqi-slices">' + paths + '</g><mask id="aqi-mask">' + 
+    segmentArcPathV(0, 50, mn, mx, "white") +
+    segmentArcPathV(50, 100, mn, mx, "white") +
+    segmentArcPathV(100, 150, mn, mx, "white") +
+    segmentArcPathV(150, 200, mn, mx, "white") +
+    segmentArcPathV(200, 300, mn, mx, "white") +
+    '</mask></defs>';
 
-  // Just one full arc that uses the gradient
-  const gradientArc = `<path d="M -40 0 A 40 40 0 0 1 40 0" stroke="url(#aqi-grad)" fill="none" stroke-width="15" opacity="0.85"/>`;
+  const gradientArc = '<use href="#aqi-slices" mask="url(#aqi-mask)" />';
 
   const labels = thresholdLabels([
     { val: 50,  color: '#ffff00', label: '50'  },
@@ -402,7 +430,6 @@ function exampleAqiGradient() {
     { val: 200, color: '#8f3f97', label: '200' },
   ], mn, mx);
   
-  // The needle should probably be the same as the regular AQI
   return svgWrap([defs, BG_ARC, gradientArc, defaultNeedle(angle), gaugeLabelsCustom('120', '0', '300')].join('\n    '), labels);
 }
 

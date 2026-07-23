@@ -16,6 +16,7 @@ import {
 import { getIconSvgPath } from "../utils/get-icon-svg-path";
 import { renderNeedle } from "../utils/needle-renderer";
 import { normalizeSegments } from "../utils/normalize-segments";
+import { hexToRgb } from "../utils/convertColor";
 
 // Re-export for consumers that import directly from this file.
 export { normalizeValue, getValueInPercentage, getAngle };
@@ -311,6 +312,54 @@ export class ExtendedGauge extends LitElement {
   /* History: 04-APR-2025 D.Geisenhoff  Created
   /*                                    Animate needle only after first render and if animation property is true
   /*******************************************************************************************************************************/
+  
+  private _renderGradientSlices() {
+    if (!this.segments || this.segments.length === 0) return svg``;
+
+    const sorted = this.segments.slice().sort((a, b) => a.lower! - b.lower!);
+    
+    const colorStops = sorted.map(seg => {
+      const angle = this._getLowerAngle(seg.lower!, this.min, this.max);
+      const rgb = hexToRgb(seg.color) || [128, 128, 128];
+      return { angle, r: rgb[0], g: rgb[1], b: rgb[2] };
+    });
+
+    if (colorStops.length === 0) return svg``;
+
+    const interpolate = (ang: number) => {
+      if (ang <= colorStops[0].angle) return colorStops[0];
+      if (ang >= colorStops[colorStops.length - 1].angle) return colorStops[colorStops.length - 1];
+
+      for (let i = 0; i < colorStops.length - 1; i++) {
+        const s1 = colorStops[i];
+        const s2 = colorStops[i + 1];
+        if (ang >= s1.angle && ang <= s2.angle) {
+          const t = (ang - s1.angle) / (s2.angle - s1.angle);
+          return {
+            r: Math.round(s1.r + t * (s2.r - s1.r)),
+            g: Math.round(s1.g + t * (s2.g - s1.g)),
+            b: Math.round(s1.b + t * (s2.b - s1.b)),
+          };
+        }
+      }
+      return colorStops[0];
+    };
+
+    const paths: any[] = [];
+    for (let i = 0; i < 180; i++) {
+      const angle1 = i;
+      const angle2 = i + 1.5;
+      const color = interpolate(i);
+      const x1 = 0 - 40 * Math.cos((angle1 * Math.PI) / 180);
+      const y1 = 0 - 40 * Math.sin((angle1 * Math.PI) / 180);
+      const x2 = 0 - 40 * Math.cos((angle2 * Math.PI) / 180);
+      const y2 = 0 - 40 * Math.sin((angle2 * Math.PI) / 180);
+      
+      paths.push(svg`<path d="M ${x1} ${y1} A 40 40 0 0 1 ${x2} ${y2}" fill="none" stroke="rgb(${color.r},${color.g},${color.b})" stroke-width="15" stroke-linecap="butt" />`);
+    }
+    return paths;
+  }
+
   protected render() {
     this._normalizeSegments();
     const labelsFormatOptions = { ...this.formatOptions };
@@ -343,18 +392,36 @@ export class ExtendedGauge extends LitElement {
         hasGradient
           ? svg`
             <defs>
-              <linearGradient id="segment-gradient" gradientUnits="userSpaceOnUse" x1="-40" y1="0" x2="40" y2="0">
-                ${sortedSegmentsForGradient.map((segment) => {
-                  const angle = this._getLowerAngle(
-                    segment.lower!,
-                    this.min,
-                    this.max
-                  );
-                  const offset =
-                    ((1 - Math.cos((angle * Math.PI) / 180)) / 2) * 100;
-                  return svg`<stop offset="${offset}%" stop-color="${segment.color}" />`;
-                })}
-              </linearGradient>
+              <g id="gradient-slices">
+                ${this._renderGradientSlices()}
+              </g>
+              <mask id="dial-mask">
+                <path
+                  class="dial ${this._updated && this.animation ? `animation` : ``}"
+                  stroke="white"
+                  stroke-dasharray="${pathLength}"
+                  stroke-dashoffset="${dashOffset}"
+                  d="M -40 0 A 40 40 0 0 1 40 0">
+                </path>
+              </mask>
+              <mask id="segments-mask">
+                ${
+                  this.segments && this.showSegments
+                    ? this.segments
+                        .map((segment) => {
+                          const angle_lower = this._getLowerAngle(segment.lower!, this.min, this.max);
+                          const angle_upper = this._getUpperAngle(segment.upper!, this.min, this.max);
+                          return svg`
+                            <path
+                              class="segment"
+                              stroke="white"
+                              d="M ${0 - 40 * Math.cos((angle_lower * Math.PI) / 180)} ${0 - 40 * Math.sin((angle_lower * Math.PI) / 180)} A 40 40 0 0 1 ${0 - 40 * Math.cos((angle_upper * Math.PI) / 180)} ${0 - 40 * Math.sin((angle_upper * Math.PI) / 180)}"
+                            ></path>
+                          `;
+                        })
+                    : ``
+                }
+              </mask>
             </defs>
           `
           : ``
@@ -373,54 +440,56 @@ export class ExtendedGauge extends LitElement {
         </path>
         ${
           this.segments && this.showSegments
-            ? this.segments
-                .slice()
-                .sort((a, b) => a.lower! - b.lower!)
-                .map((segment) => {
-                  const angle_lower = this._getLowerAngle(
-                    segment.lower!,
-                    this.min,
-                    this.max
-                  );
-                  const angle_upper = this._getUpperAngle(
-                    segment.upper!,
-                    this.min,
-                    this.max
-                  );
-                  return svg`
-                  <path
-                      stroke="${
-                        hasGradient ? "url(#segment-gradient)" : segment.color
-                      }"
-                      class="segment"
-                      d="M
-                        ${0 - 40 * Math.cos((angle_lower * Math.PI) / 180)}
-                        ${0 - 40 * Math.sin((angle_lower * Math.PI) / 180)}
-                       A 40 40 0 0 1
-                        ${0 - 40 * Math.cos((angle_upper * Math.PI) / 180)}
-                        ${0 - 40 * Math.sin((angle_upper * Math.PI) / 180)}
-                       ">
-                  </path>
-                  `;
-                })
+            ? (hasGradient
+                ? svg`<use href="#gradient-slices" style="mask: url(#segments-mask); -webkit-mask: url(#segments-mask);" />`
+                : this.segments
+                    .slice()
+                    .sort((a, b) => a.lower! - b.lower!)
+                    .map((segment) => {
+                      const angle_lower = this._getLowerAngle(
+                        segment.lower!,
+                        this.min,
+                        this.max
+                      );
+                      const angle_upper = this._getUpperAngle(
+                        segment.upper!,
+                        this.min,
+                        this.max
+                      );
+                      return svg`
+                      <path
+                          stroke="${segment.color}"
+                          class="segment"
+                          d="M
+                            ${0 - 40 * Math.cos((angle_lower * Math.PI) / 180)}
+                            ${0 - 40 * Math.sin((angle_lower * Math.PI) / 180)}
+                           A 40 40 0 0 1
+                            ${0 - 40 * Math.cos((angle_upper * Math.PI) / 180)}
+                            ${0 - 40 * Math.sin((angle_upper * Math.PI) / 180)}
+                           ">
+                      </path>
+                      `;
+                    })
+              )
             : ``
         }
           ${
             dialVisible
-              ? svg`<path
-                class="dial ${
-                  this._updated && this.animation ? `animation` : ``
-                }"
-                style =${styleMap({
-                  stroke: `${
-                    hasGradient ? "url(#segment-gradient)" : gaugeValueColor
-                  }`,
-                  strokeDasharray: `${pathLength}`,
-                  strokeDashoffset: `${dashOffset}`,
-                })}
-                d="M -40 0 A 40 40 0 0 1 40 0">
-            </path>
-            `
+              ? (hasGradient
+                  ? svg`<use href="#gradient-slices" style="mask: url(#dial-mask); -webkit-mask: url(#dial-mask);" />`
+                  : svg`<path
+                    class="dial ${
+                      this._updated && this.animation ? `animation` : ``
+                    }"
+                    style =${styleMap({
+                      stroke: `${gaugeValueColor}`,
+                      strokeDasharray: `${pathLength}`,
+                      strokeDashoffset: `${dashOffset}`,
+                    })}
+                    d="M -40 0 A 40 40 0 0 1 40 0">
+                </path>
+                `
+                )
               : ``
           }
           ${this.showNeedle ? this._renderNeedle() : ``}
