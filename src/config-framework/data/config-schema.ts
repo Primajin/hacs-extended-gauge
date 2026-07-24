@@ -249,10 +249,6 @@ export const mainConfigSchema = [
         },
       },
       {
-        name: "use_gradient",
-        selector: { boolean: {} },
-      },
-      {
         name: "color_value",
         selector: { color_rgb: {} },
       },
@@ -292,6 +288,10 @@ export const mainConfigSchema = [
       },
       {
         name: "show_segment_labels",
+        selector: { boolean: {} },
+      },
+      {
+        name: "use_gradient",
         selector: { boolean: {} },
       },
     ],

@@ -312,13 +312,13 @@ export class ExtendedGauge extends LitElement {
   /* History: 04-APR-2025 D.Geisenhoff  Created
   /*                                    Animate needle only after first render and if animation property is true
   /*******************************************************************************************************************************/
-  
+
   private _renderGradientSlices() {
     if (!this.segments || this.segments.length === 0) return svg``;
 
     const sorted = this.segments.slice().sort((a, b) => a.lower! - b.lower!);
-    
-    const colorStops = sorted.map(seg => {
+
+    const colorStops = sorted.map((seg) => {
       const angle = this._getLowerAngle(seg.lower!, this.min, this.max);
       const rgb = hexToRgb(seg.color) || [128, 128, 128];
       return { angle, r: rgb[0], g: rgb[1], b: rgb[2] };
@@ -328,7 +328,8 @@ export class ExtendedGauge extends LitElement {
 
     const interpolate = (ang: number) => {
       if (ang <= colorStops[0].angle) return colorStops[0];
-      if (ang >= colorStops[colorStops.length - 1].angle) return colorStops[colorStops.length - 1];
+      if (ang >= colorStops[colorStops.length - 1].angle)
+        return colorStops[colorStops.length - 1];
 
       for (let i = 0; i < colorStops.length - 1; i++) {
         const s1 = colorStops[i];
@@ -354,8 +355,10 @@ export class ExtendedGauge extends LitElement {
       const y1 = 0 - 40 * Math.sin((angle1 * Math.PI) / 180);
       const x2 = 0 - 40 * Math.cos((angle2 * Math.PI) / 180);
       const y2 = 0 - 40 * Math.sin((angle2 * Math.PI) / 180);
-      
-      paths.push(svg`<path d="M ${x1} ${y1} A 40 40 0 0 1 ${x2} ${y2}" fill="none" stroke="rgb(${color.r},${color.g},${color.b})" stroke-width="16" stroke-linecap="butt" />`);
+
+      paths.push(
+        svg`<path d="M ${x1} ${y1} A 40 40 0 0 1 ${x2} ${y2}" fill="none" stroke="rgb(${color.r},${color.g},${color.b})" stroke-width="16" stroke-linecap="butt" />`
+      );
     }
     return paths;
   }
@@ -397,7 +400,9 @@ export class ExtendedGauge extends LitElement {
               </g>
               <mask id="dial-mask" x="-50%" y="-50%" width="200%" height="200%">
                 <path
-                  class="dial ${this._updated && this.animation ? `animation` : ``}"
+                  class="dial ${
+                    this._updated && this.animation ? `animation` : ``
+                  }"
                   stroke="white"
                   stroke-dasharray="${pathLength}"
                   stroke-dashoffset="${dashOffset}"
@@ -407,18 +412,31 @@ export class ExtendedGauge extends LitElement {
               <mask id="segments-mask" x="-50%" y="-50%" width="200%" height="200%">
                 ${
                   this.segments && this.showSegments
-                    ? this.segments
-                        .map((segment) => {
-                          const angle_lower = this._getLowerAngle(segment.lower!, this.min, this.max);
-                          const angle_upper = this._getUpperAngle(segment.upper!, this.min, this.max);
-                          return svg`
+                    ? this.segments.map((segment) => {
+                        const angle_lower = this._getLowerAngle(
+                          segment.lower!,
+                          this.min,
+                          this.max
+                        );
+                        const angle_upper = this._getUpperAngle(
+                          segment.upper!,
+                          this.min,
+                          this.max
+                        );
+                        return svg`
                             <path
                               class="segment"
                               stroke="white"
-                              d="M ${0 - 40 * Math.cos((angle_lower * Math.PI) / 180)} ${0 - 40 * Math.sin((angle_lower * Math.PI) / 180)} A 40 40 0 0 1 ${0 - 40 * Math.cos((angle_upper * Math.PI) / 180)} ${0 - 40 * Math.sin((angle_upper * Math.PI) / 180)}"
+                              d="M ${
+                                0 - 40 * Math.cos((angle_lower * Math.PI) / 180)
+                              } ${
+                          0 - 40 * Math.sin((angle_lower * Math.PI) / 180)
+                        } A 40 40 0 0 1 ${
+                          0 - 40 * Math.cos((angle_upper * Math.PI) / 180)
+                        } ${0 - 40 * Math.sin((angle_upper * Math.PI) / 180)}"
                             ></path>
                           `;
-                        })
+                      })
                     : ``
                 }
               </mask>
@@ -440,23 +458,23 @@ export class ExtendedGauge extends LitElement {
         </path>
         ${
           this.segments && this.showSegments
-            ? (hasGradient
-                ? svg`<use href="#gradient-slices" style="mask: url(#segments-mask); -webkit-mask: url(#segments-mask);" />`
-                : this.segments
-                    .slice()
-                    .sort((a, b) => a.lower! - b.lower!)
-                    .map((segment) => {
-                      const angle_lower = this._getLowerAngle(
-                        segment.lower!,
-                        this.min,
-                        this.max
-                      );
-                      const angle_upper = this._getUpperAngle(
-                        segment.upper!,
-                        this.min,
-                        this.max
-                      );
-                      return svg`
+            ? hasGradient
+              ? svg`<use href="#gradient-slices" style="mask: url(#segments-mask); -webkit-mask: url(#segments-mask);" />`
+              : this.segments
+                  .slice()
+                  .sort((a, b) => a.lower! - b.lower!)
+                  .map((segment) => {
+                    const angle_lower = this._getLowerAngle(
+                      segment.lower!,
+                      this.min,
+                      this.max
+                    );
+                    const angle_upper = this._getUpperAngle(
+                      segment.upper!,
+                      this.min,
+                      this.max
+                    );
+                    return svg`
                       <path
                           stroke="${segment.color}"
                           class="segment"
@@ -469,15 +487,14 @@ export class ExtendedGauge extends LitElement {
                            ">
                       </path>
                       `;
-                    })
-              )
+                  })
             : ``
         }
           ${
             dialVisible
-              ? (hasGradient
-                  ? svg`<use href="#gradient-slices" style="mask: url(#dial-mask); -webkit-mask: url(#dial-mask);" />`
-                  : svg`<path
+              ? hasGradient
+                ? svg`<use href="#gradient-slices" style="mask: url(#dial-mask); -webkit-mask: url(#dial-mask);" />`
+                : svg`<path
                     class="dial ${
                       this._updated && this.animation ? `animation` : ``
                     }"
@@ -489,7 +506,6 @@ export class ExtendedGauge extends LitElement {
                     d="M -40 0 A 40 40 0 0 1 40 0">
                 </path>
                 `
-                )
               : ``
           }
           ${this.showNeedle ? this._renderNeedle() : ``}
